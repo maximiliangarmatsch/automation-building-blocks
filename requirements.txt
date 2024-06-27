@@ -1,0 +1,13 @@
+openai
+pdfreader
+dotenv
+pac-resolver
+pdf-parse
+pdfjs
+pdfjs-dist
+pdfreader
+puppeteer
+puppeteer-extra
+puppeteer-extra-plugin-stealth
+readline
+socks
