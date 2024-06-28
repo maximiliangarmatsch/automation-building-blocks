@@ -7,6 +7,7 @@ import readline from 'readline';
 import OpenAI from 'openai';
 import dotenv from 'dotenv';
 dotenv.config();
+
 // Module Import
 import {processAllFiles} from "./pdf_reader.js";
 import {checkFolderIsEmpty} from "./helper_functions.js"
@@ -185,17 +186,29 @@ In the beginning, go to a direct URL that you think might contain the answer to 
 
                     // Check user action is open unread email or other navigation
                     if (action_take){
-                      // Wait for the unread emails to load
-                      await page.waitForSelector('tr.zA.zE', { visible: true });
-
-                      // Click the first unread email
-                      const firstUnreadEmail = await page.$('tr.zA.zE');
-                      if (firstUnreadEmail) {
-                          await firstUnreadEmail.click({ delay: 100 });
-                      } else {
-                          console.log('First unread email not found');
-                          download_attachement_file = false
-                      }
+                        try {
+                            // Wait for the unread emails to load (optional increase of timeout)
+                            await page.waitForSelector('tr.zA.zE', { visible: true});
+                        
+                            // Check if the first unread email exists
+                            const firstUnreadEmail = await page.$('tr.zA.zE');
+                            if (firstUnreadEmail) {
+                                await firstUnreadEmail.click({ delay: 100 });
+                            } else {
+                                console.log('No Unread email found');
+                                download_attachement_file = false;
+                            }
+                        } catch (error) {
+                            if (error.name === 'TimeoutError') {
+                                console.log('No Unread email found');
+                                download_attachement_file = false;
+                                // break the loop
+                                break
+                            } else {
+                                // Handle other potential errors
+                                console.error('Error occurred:', error);
+                            }
+                        }
 
                       // Wait for the email content to load
                       await page.waitForSelector('a.aQy.aZr.e');
