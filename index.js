@@ -79,6 +79,7 @@ In the beginning, go to a direct URL that you think might contain the answer to 
     let phone = process.env.PHONE;
     let password = process.env.PASSWORD;
     let screenshot_taken = false;
+    let login_status = false
     let action = "";
     // Get prompt and action from User input.
     if (prompt.toLowerCase().includes("url:")) {
@@ -173,16 +174,26 @@ In the beginning, go to a direct URL that you think might contain the answer to 
                     console.log("Filling in Verification Code...");
                     await verificationNumberInput.type(verificationCode);
 
-                    await page.click('.VfPpkd-LgbsSe.VfPpkd-LgbsSe-OWXEXe-k8QpJ.VfPpkd-LgbsSe-OWXEXe-dgl2Hf.nCP5yc.AjY5Oe.DuMIQc.LQeN7.BqKGqe.Jskylb.TrZEUc.lw1w4b'); // Adjust selector if necessary
-                    // Wait for navigation (optional, depends on next steps)
-                    await page.waitForNavigation();
-                    console.log("Logged in successfully.");
+                    // Login to google account and Open Gmail
+                    try {
+                        // Click the login button
+                        await page.click('.VfPpkd-LgbsSe.VfPpkd-LgbsSe-OWXEXe-k8QpJ.VfPpkd-LgbsSe-OWXEXe-dgl2Hf.nCP5yc.AjY5Oe.DuMIQc.LQeN7.BqKGqe.Jskylb.TrZEUc.lw1w4b');               
+                        // Wait for navigation
+                        await page.waitForNavigation();
+                        console.log("Logged in successfully.");
 
-                    // Navigate to Gmail
-                    await page.goto('https://mail.google.com/mail/');
-                    console.log("Navigated to Gmail.");
-                    // Wait for navigation after login
-                    await page.waitForNavigation({ waitUntil: 'networkidle2' });
+                        // Navigate to Gmail
+                        await page.goto('https://mail.google.com/mail/');
+                        console.log("Navigated to Gmail.");
+                        // Wait for navigation after login
+                        await page.waitForNavigation({ waitUntil: 'networkidle2' })
+
+                        // Change login status
+                        login_status = true;
+
+                    } catch (error) {
+                        console.log("Login failed or navigation error:", error);
+                    }
 
                     // Check user action is open unread email or other navigation
                     if (action_take){
@@ -210,36 +221,48 @@ In the beginning, go to a direct URL that you think might contain the answer to 
                             }
                         }
 
-                      // Wait for the email content to load
-                      await page.waitForSelector('a.aQy.aZr.e');
+                        // Check for Email Attachment
+                        try{ 
+                            // Wait for the email content to load
+                            await page.waitForSelector('a.aQy.aZr.e');
 
-                      // Get the URL of the attachment and modify disp parameter to 'safe'
-                      const attachmentUrl = await page.evaluate(() => {
-                          const anchor = document.querySelector('a.aQy.aZr.e');
-                          if (anchor) {
-                              let url = anchor.href;
-                              url = url.replace('disp=inline', 'disp=safe');
-                              return url;
-                          }
-                          return null;
-                      });
+                            // Get the URL of the attachment and modify disp parameter to 'safe'
+                            const attachmentUrl = await page.evaluate(() => {
+                                const anchor = document.querySelector('a.aQy.aZr.e');
+                                if (anchor) {
+                                    let url = anchor.href;
+                                    url = url.replace('disp=inline', 'disp=safe');
+                                    return url;
+                                }
+                                return null;
+                            });
+                            
+                            // Download the email attachment in specified folder or path.
+                            download(page, attachmentUrl)
 
-                      // Download the email attachment in specified folder or path.
-                      download(page, attachmentUrl)
+                            // wait for 3 seconds to download the file.
+                            await sleep(3000);
 
-                      // wait for 3 seconds to download the file.
-                      await sleep(3000);
-
-                      // check attachment file download or not.
-                        (async () => {
-                          const folderPath = './data'; // Replace with your actual folder path
-                          const isDownloaded = await checkFolderIsEmpty(folderPath);
-                          if (isDownloaded) {
-                            download_attachement_file = true
-                          } else {
-                            download_attachement_file = false
+                            // check attachment file download or not.
+                            (async () => {
+                            const folderPath = './data'; // Replace with your actual folder path
+                            const isDownloaded = await checkFolderIsEmpty(folderPath);
+                            if (isDownloaded) {
+                                download_attachement_file = true
+                            } else {
+                                download_attachement_file = false
+                            }
+                            })();
+                       }
+                       catch(error){
+                        if (error.name === 'TimeoutError') {
+                            console.log('Email attachement not found');
+                            download_attachement_file = false;
+                        } else {
+                            // Handle other potential errors
+                            console.error('Error occurred:', error);
                         }
-                        })();
+                       }
                     }
                   } 
                 
@@ -391,6 +414,35 @@ In the beginning, go to a direct URL that you think might contain the answer to 
           break;
       } 
       
+    }
+    if(login_status){
+        console.log("logout from Google account")
+        
+        // Wait for the logout selector 
+        await page.waitForSelector('a.gb_d.gb_Ja.gb_K');
+
+        // Get the URL of the logout page
+        const logoutUrl = await page.evaluate(() => {
+            const anchor = document.querySelector('a.gb_d.gb_Ja.gb_K');
+            if (anchor) {
+                let url = anchor.href;
+                return url;
+            }
+            return null;
+        });
+        
+        // Navigate to Gmail
+        await page.goto(logoutUrl);
+        console.log(logoutUrl)
+        console.log("Navigated to logout page.");
+        // Click the logout button
+        await page.click('button[name="signout"]');
+        await sleep(20000)
+        await page.screenshot({
+            path: "screenshot.jpg",
+            quality: 100,
+        });
+        console.log("Clicked the logout button.");
     }
     await browser.close();
 })();
