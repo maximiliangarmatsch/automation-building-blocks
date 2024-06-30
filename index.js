@@ -11,11 +11,11 @@ dotenv.config();
 // Module Import
 import {processAllFiles} from "./pdf_reader.js";
 import {checkFolderIsEmpty} from "./helper_functions.js"
-import {download} from "./helper_functions.js"
-import {image_to_base64} from "./helper_functions.js"
-import {input} from "./helper_functions.js"
+import {downloadEmailAttachement} from "./helper_functions.js"
+import {imageToBase64} from "./helper_functions.js"
+import {userInput} from "./helper_functions.js"
 import {sleep} from "./helper_functions.js"
-import {highlight_links} from "./helper_functions.js"
+import {highlightLinks} from "./helper_functions.js"
 import {waitForEvent} from "./helper_functions.js"
 
 // Pupeteer stealth for pupeteer plugins
@@ -64,7 +64,7 @@ In the beginning, go to a direct URL that you think might contain the answer to 
 
     console.log("GPT: How can I assist you today?");
     // Get user input
-    const prompt = await input("You: ");
+    const prompt = await userInput("You: ");
     console.log();
     // Push user prompt to main Prompt
     messages.push({
@@ -190,6 +190,7 @@ In the beginning, go to a direct URL that you think might contain the answer to 
 
                         // Change login status
                         login_status = true;
+                        await highlightLinks(page);
                         await page.screenshot({
                             path: "screenshot_emails.jpg",
                             quality: 100,
@@ -241,7 +242,7 @@ In the beginning, go to a direct URL that you think might contain the answer to 
                             });
                             
                             // Download the email attachment in specified folder or path.
-                            download(page, attachmentUrl)
+                            downloadEmailAttachement(page, attachmentUrl)
 
                             // wait for 3 seconds to download the file.
                             await sleep(3000);
@@ -273,14 +274,14 @@ In the beginning, go to a direct URL that you think might contain the answer to 
                     console.error("Error during login:", error);
                 }
             }            
-            await highlight_links(page);
+            await highlightLinks(page);
 
             await Promise.race([
                 waitForEvent(page, 'load'),
                 sleep(timeout)
             ]);
 
-            await highlight_links(page);
+            await highlightLinks(page);
 
             await page.screenshot({
                 path: "screenshot.jpg",
@@ -292,7 +293,7 @@ In the beginning, go to a direct URL that you think might contain the answer to 
         }
         // LLM Text Based Response
         if (download_attachement_file) {
-            const base64_image = await image_to_base64("screenshot.jpg");
+            const base64_image = await imageToBase64("screenshot.jpg");
             // GPT promtp to response from screenshots.
             messages.push({
                 "role": "user",
@@ -376,7 +377,7 @@ In the beginning, go to a direct URL that you think might contain the answer to 
         // LLM Actions Based Response
         else if (screenshot_taken) 
         {
-          const base64_image = await image_to_base64("screenshot.jpg");
+          const base64_image = await imageToBase64("screenshot.jpg");
           // GPT promtp to response from screenshots.
           messages.push({
               "role": "user",
@@ -431,7 +432,7 @@ In the beginning, go to a direct URL that you think might contain the answer to 
                 await page.waitForNavigation({ waitUntil: 'networkidle2' });
                 console.log("Successful. navigate the page."); 
                 //Highlight the href or buttons on new page               
-                await highlight_links(page);
+                await highlightLinks(page);
 
                 // Take screenshot of navigated page
                 await page.screenshot({
