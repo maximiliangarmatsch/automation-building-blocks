@@ -190,7 +190,10 @@ In the beginning, go to a direct URL that you think might contain the answer to 
 
                         // Change login status
                         login_status = true;
-
+                        await page.screenshot({
+                            path: "screenshot_emails.jpg",
+                            quality: 100,
+                        });
                     } catch (error) {
                         console.log("Login failed or navigation error:", error);
                     }
@@ -289,6 +292,38 @@ In the beginning, go to a direct URL that you think might contain the answer to 
         }
         // LLM Text Based Response
         if (download_attachement_file) {
+            const base64_image = await image_to_base64("screenshot.jpg");
+            // GPT promtp to response from screenshots.
+            messages.push({
+                "role": "user",
+                "content": [
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": base64_image
+                        },
+                    },
+                    {
+                        "type": "text",
+                        "text": "Here's the screenshot of the email just Give me the Summary of Email in bullet points.",
+                    }
+                ]
+            });
+
+            const response_screenshot = await openai.chat.completions.create({
+                model: "gpt-4o",
+                max_tokens: 1024,
+                messages: messages,
+            });
+    
+            const message_screenshot = response_screenshot.choices[0].message;
+            const message_text_screenshot = message_screenshot.content;
+    
+            messages.push({
+                "role": "assistant",
+                "content": message_text_screenshot,
+            });
+          //
           let extractedText = "";
           // Extract content from PDF file
           processAllFiles(folderPath)
@@ -328,7 +363,14 @@ In the beginning, go to a direct URL that you think might contain the answer to 
             console.log("###########################################");
             console.log("# Email Attachment Key Points #");
             console.log("###########################################\n\n");
+            console.log("\n# Email Summary #");
+            console.log(message_text_screenshot)
+            console.log("\n")
+            console.log("\n# Email Attachement Summary #");
             console.log(message_text);
+            console.log("\n###########################################");
+            console.log("# End Of Response #");
+            console.log("###########################################\n\n");
             break;
         }
         // LLM Actions Based Response
@@ -373,7 +415,6 @@ In the beginning, go to a direct URL that you think might contain the answer to 
       });
 
       console.log("GPT: " + message_text);
-
       // Check GPT predicted action
       if (message_text.indexOf('{"click": "') !== -1) {
           let parts = message_text.split('{"click": "');
@@ -383,7 +424,7 @@ In the beginning, go to a direct URL that you think might contain the answer to 
           console.log("Navigating to link " + link_text);
           // Check GPT suggest any action or not
           try {
-            if (link_text) {
+            if (link_text!="compose") {
                 let navogation_url = `https://mail.google.com/mail/u/0/#${link_text}`
                 await page.goto(navogation_url);
                 // Wait for navigation
@@ -399,7 +440,13 @@ In the beginning, go to a direct URL that you think might contain the answer to 
                 });
                 screenshot_taken = true;
                 console.log("Screenshot taken.");
-            } else {
+            } 
+            else if(link_text=="compose") {
+                let current_page_url = page.url()
+                let navogation_url = `${current_page_url}?${link_text}=new`
+                console.log(navogation_url)
+            }
+            else {
                 throw new Error("Can't find link");
             }
           } catch (error) {
@@ -417,7 +464,6 @@ In the beginning, go to a direct URL that you think might contain the answer to 
     }
     if(login_status){
         console.log("logout from Google account")
-        
         // Wait for the logout selector 
         await page.waitForSelector('a.gb_d.gb_Ja.gb_K');
 
@@ -433,15 +479,10 @@ In the beginning, go to a direct URL that you think might contain the answer to 
         
         // Navigate to Gmail
         await page.goto(logoutUrl);
-        console.log(logoutUrl)
         console.log("Navigated to logout page.");
         // Click the logout button
         await page.click('button[name="signout"]');
         await sleep(20000)
-        await page.screenshot({
-            path: "screenshot.jpg",
-            quality: 100,
-        });
         console.log("Clicked the logout button.");
     }
     await browser.close();

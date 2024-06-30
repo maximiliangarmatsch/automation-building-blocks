@@ -23,7 +23,7 @@ export async function checkFolderIsEmpty(folderPath) {
   }
   
 //Function to download the attachment file. 
-export async function download(page, link) {
+export async function downloadEmailAttachement(page, link) {
     const client = await page.target().createCDPSession();
     await client.send('Page.setDownloadBehavior', {
         behavior: 'allow',
@@ -39,7 +39,7 @@ export async function download(page, link) {
   }
   
 // function convert image to base64
-export async function image_to_base64(image_file) {
+export async function imageToBase64(image_file) {
     return await new Promise((resolve, reject) => {
         fs.readFile(image_file, (err, data) => {
             if (err) {
@@ -55,7 +55,7 @@ export async function image_to_base64(image_file) {
   }
   
 // Function to take input from user
-export async function input(text) {
+export async function userInput(text) {
       return new Promise(resolve => {
           const rl = readline.createInterface({
               input: process.stdin,
@@ -76,7 +76,7 @@ export async function sleep(milliseconds) {
   }
 
 // Function to highlight the Links or buttons in screenshot and mark border around. 
-export async function highlight_links(page) {
+export async function highlightLinks(page) {
       await page.evaluate(() => {
           document.querySelectorAll('[gpt-link-text]').forEach(e => {
               e.removeAttribute("gpt-link-text");

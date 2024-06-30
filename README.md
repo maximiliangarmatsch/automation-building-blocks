@@ -1,6 +1,6 @@
 # auto-website-ai
 
-This is a GPT4 Vision API and Puppeteer powered tool that can crawl into Persons google account  and can answer from attached PDF with new unread emails and also cananswer based on screenchot.
+This is a GPT4 Vision API and Puppeteer powered tool that can crawl into Persons google account  and can answer from attached PDF with new unread emails and also cananswer based on screenshot.
 
 ## Setup
 
@@ -37,7 +37,7 @@ You can ask stuff like this,
 Go to the URL and tell me the number of sent emails  URL:https://accounts.google.com/AccountChooser?service=mail&continue=https://google.com&hl=en
 ```
 
-2. Open Unrad Emails and reponse from attached emails.
+2. Open Unread Emails and reponse from attached emails.
 ```
 Go to the URL and give me the summary of attached PDF  URL:https://accounts.google.com/AccountChooser?service=mail&continue=https://google.com&hl=en. Action:email
 ```
