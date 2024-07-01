@@ -10,13 +10,9 @@ dotenv.config();
 
 // Module Import
 import {processAllFiles} from "./utils/pdf_reader.js";
-import {checkFolderIsEmpty} from "./utils/helper_functions.js"
-import {downloadEmailAttachement} from "./utils/helper_functions.js"
-import {imageToBase64} from "./utils/helper_functions.js"
-import {userInput} from "./utils/helper_functions.js"
-import {sleep} from "./utils/helper_functions.js"
-import {highlightLinks} from "./utils/helper_functions.js"
-import {waitForEvent} from "./utils/helper_functions.js"
+import { checkFolderIsEmpty,  downloadEmailAttachement, imageToBase64, userInput,
+    sleep, highlightLinks, waitForEvent,logoutGmail, readPromptFromFile} from './utils/helper_functions.js';
+
 
 // Pupeteer stealth for pupeteer plugins
 const stealth = StealthPlugin()
@@ -44,21 +40,13 @@ const timeout = 8000;
         height: 1200,
         deviceScaleFactor: 1.75,
     });
-    // GPT prompt
+    // Read GPT main prompt from text file
+    const main_prompt = await readPromptFromFile('./prompt/main_prompt.txt');
+    // Format Prompt 
     const messages = [
         {
             "role": "system",
-            "content": `You are a website crawler. You will be given instructions on what to do by browsing. You are connected to a web browser and you will be given the screenshot of the website you are on. The links on the website will be highlighted in red in the screenshot. Always read what is in the screenshot. Don't guess link names.
-
-You can go to a specific URL by answering with the following JSON format:
-{"url": "url goes here"}
-
-You can click links on the website by referencing the text inside of the link/button, by answering in the following JSON format:
-{"click": "Text in link"}
-
-Once you are on a URL and you have found the answer to the user's question, you can answer with a regular message.
-
-In the beginning, go to a direct URL that you think might contain the answer to the user's question. Prefer to go directly to sub-urls like 'https://google.com/search?q=search' if applicable. Prefer to use Google for simple queries. If the user provides a direct URL, go to that one.`,
+            "content": main_prompt
         }
     ];
 
@@ -72,7 +60,7 @@ In the beginning, go to a direct URL that you think might contain the answer to 
         "content": prompt,
     });
     //Intialize variables
-    let url;
+    let url = process.env.LOGIN_URL;
     let action_take = false
     let download_attachement_file = false
     let email = process.env.EMAIL;
@@ -82,11 +70,7 @@ In the beginning, go to a direct URL that you think might contain the answer to 
     let login_status = false
     let action = "";
     // Get prompt and action from User input.
-    if (prompt.toLowerCase().includes("url:")) {
-        const urlMatch = prompt.match(/URL:([^\s]+)/);
-        if (urlMatch) {
-            url = urlMatch[1].trim();
-        }
+    if (prompt.toLowerCase()) {
         const actionMatch = prompt.match(/Action:(\S+)/);
         if (actionMatch) {
             action = actionMatch[1];
@@ -465,26 +449,13 @@ In the beginning, go to a direct URL that you think might contain the answer to 
     }
     if(login_status){
         console.log("logout from Google account")
-        // Wait for the logout selector 
-        await page.waitForSelector('a.gb_d.gb_Ja.gb_K');
-
-        // Get the URL of the logout page
-        const logoutUrl = await page.evaluate(() => {
-            const anchor = document.querySelector('a.gb_d.gb_Ja.gb_K');
-            if (anchor) {
-                let url = anchor.href;
-                return url;
-            }
-            return null;
-        });
-        
-        // Navigate to Gmail
-        await page.goto(logoutUrl);
-        console.log("Navigated to logout page.");
-        // Click the logout button
-        await page.click('button[name="signout"]');
-        await sleep(20000)
-        console.log("Clicked the logout button.");
+        // Call the logout function
+        const logout_reponse = await logoutGmail(page);
+        if (logout_reponse) {
+            console.log("Successfully logged out.");
+        } else {
+            console.log("Failed to log out.");
+        }
     }
     await browser.close();
 })();

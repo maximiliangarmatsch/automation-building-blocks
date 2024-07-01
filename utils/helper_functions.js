@@ -4,6 +4,7 @@ Helper functions module
 import { promises as FS } from 'fs';
 import readline from 'readline';
 import fs from 'fs';
+import { promisify } from 'util';
 
 // Function to Check the file download in specified folder or not.
 export async function checkFolderIsEmpty(folderPath) {
@@ -138,3 +139,46 @@ export async function waitForEvent(page, event) {
           });
       }, event)
   }
+
+
+// Function to logout from google account
+export async function logoutGmail(page) {
+    try {
+        // Wait for the logout selector 
+        await page.waitForSelector('a.gb_d.gb_Ja.gb_K');
+        // Get the URL of the logout page
+        const logoutUrl = await page.evaluate(() => {
+            const anchor = document.querySelector('a.gb_d.gb_Ja.gb_K');
+            if (anchor) {
+                let url = anchor.href;
+                return url;
+            }
+            return null;
+        });
+        // Navigate to account logout page
+        await page.goto(logoutUrl);
+        console.log("Navigated to logout page.");
+        // Click the logout button
+        await page.click('button[name="signout"]');
+        console.log("Clicked the logout button.");
+        await sleep(20000)
+        return true;
+    } catch (error) {
+        console.error("Logout failed:", error);
+        return false;
+    }
+}
+
+// Promisify the readFile function
+const readFileAsync = promisify(fs.readFile);
+
+// Read prompt from .txt file
+export async function readPromptFromFile(filePath) {
+    try {
+        const data = await readFileAsync(filePath, 'utf8');
+        return data;
+    } catch (error) {
+        console.error('Error reading the file:', error);
+        throw error;
+    }
+}
