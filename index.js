@@ -9,14 +9,14 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Module Import
-import {processAllFiles} from "./pdf_reader.js";
-import {checkFolderIsEmpty} from "./helper_functions.js"
-import {downloadEmailAttachement} from "./helper_functions.js"
-import {imageToBase64} from "./helper_functions.js"
-import {userInput} from "./helper_functions.js"
-import {sleep} from "./helper_functions.js"
-import {highlightLinks} from "./helper_functions.js"
-import {waitForEvent} from "./helper_functions.js"
+import {processAllFiles} from "./utils/pdf_reader.js";
+import {checkFolderIsEmpty} from "./utils/helper_functions.js"
+import {downloadEmailAttachement} from "./utils/helper_functions.js"
+import {imageToBase64} from "./utils/helper_functions.js"
+import {userInput} from "./utils/helper_functions.js"
+import {sleep} from "./utils/helper_functions.js"
+import {highlightLinks} from "./utils/helper_functions.js"
+import {waitForEvent} from "./utils/helper_functions.js"
 
 // Pupeteer stealth for pupeteer plugins
 const stealth = StealthPlugin()
@@ -101,7 +101,7 @@ In the beginning, go to a direct URL that you think might contain the answer to 
                 waitUntil: "domcontentloaded",
             });
             if (email && password) {
-                console.log("Using credentials: " + email + " / " + password + " / " + phone);
+                // console.log("Using credentials: " + email + " / " + password + " / " + phone);
                 try {
                     // Wait for the email input and fill it
                     await page.waitForSelector('input[type="email"]', { timeout: 60000 });

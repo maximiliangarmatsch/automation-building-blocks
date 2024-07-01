@@ -27,7 +27,7 @@ $ node index.js
 ### Gernal Website automation
 
 ```shell
-$ node vision_crawl.js
+$ node ./utils/vision_crew_ai.js
 ```
 ## Gmail Examples
 
@@ -45,5 +45,5 @@ Go to the URL and give me the summary of attached PDF  URL:https://accounts.goog
 ## General Website Examples.
 
 ```
-Go to the URL and give me the Public Holidays list URL: https://mukabbirnew.pixelpk.com/. If ask for login Email: Your Email Here and Password: Your password here.
+Go to the URL and give me the {Your action or query} URL: Your URL. If ask for login Email: Your Email Here and Password: Your password here.
 ```
