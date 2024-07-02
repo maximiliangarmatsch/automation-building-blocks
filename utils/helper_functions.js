@@ -145,10 +145,10 @@ export async function waitForEvent(page, event) {
 export async function logoutGmail(page) {
     try {
         // Wait for the logout selector 
-        await page.waitForSelector('a.gb_d.gb_Ja.gb_K');
+        await page.waitForSelector('a.gb_d.gb_ya.gb_z');
         // Get the URL of the logout page
         const logoutUrl = await page.evaluate(() => {
-            const anchor = document.querySelector('a.gb_d.gb_Ja.gb_K');
+            const anchor = document.querySelector('a.gb_d.gb_ya.gb_z');
             if (anchor) {
                 let url = anchor.href;
                 return url;
@@ -181,4 +181,12 @@ export async function readPromptFromFile(filePath) {
         console.error('Error reading the file:', error);
         throw error;
     }
+}
+
+// Take page screenshot
+export async function pageScreenShot(page){
+    await page.screenshot({
+        path: "screenshot.jpg",
+        quality: 100,
+    });
 }

@@ -11,7 +11,7 @@ dotenv.config();
 // Module Import
 import {processAllFiles} from "./pdf_reader.js";
 import { checkFolderIsEmpty,  downloadEmailAttachement, imageToBase64,
-    sleep, highlightLinks, waitForEvent, readPromptFromFile} from './helper_functions.js';
+    sleep, highlightLinks, waitForEvent, readPromptFromFile, pageScreenShot} from './helper_functions.js';
 
 // Pupeteer stealth for pupeteer plugins
 const stealth = StealthPlugin()
@@ -173,11 +173,6 @@ export async function main(userInput){
 
                         // Change login status
                         login_status = true;
-                        await highlightLinks(page);
-                        await page.screenshot({
-                            path: "screenshot_emails.jpg",
-                            quality: 100,
-                        });
                     } catch (error) {
                         console.log("Login failed or navigation error:", error);
                     }
@@ -259,20 +254,13 @@ export async function main(userInput){
                     console.error("Error during login:", error);
                 }
             }            
-            await highlightLinks(page);
-
             await Promise.race([
                 waitForEvent(page, 'load'),
                 sleep(timeout)
             ]);
 
-            await highlightLinks(page);
-
-            await page.screenshot({
-                path: "screenshot.jpg",
-                quality: 100,
-            });
-
+            await highlightLinks(page); // Highlight tags
+            await pageScreenShot(page) // Take screenshot
             screenshot_taken = true;
             url = null;
         }
@@ -423,10 +411,7 @@ export async function main(userInput){
                 await highlightLinks(page);
 
                 // Take screenshot of navigated page
-                await page.screenshot({
-                    path: "screenshot.jpg",
-                    quality: 100,
-                });
+                await pageScreenShot(page)
                 screenshot_taken = true;
                 console.log("Screenshot taken.");
             } 
