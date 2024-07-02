@@ -13,7 +13,6 @@ import {processAllFiles} from "./pdf_reader.js";
 import { checkFolderIsEmpty,  downloadEmailAttachement, imageToBase64,
     sleep, highlightLinks, waitForEvent, readPromptFromFile} from './helper_functions.js';
 
-
 // Pupeteer stealth for pupeteer plugins
 const stealth = StealthPlugin()
 stealth.enabledEvasions.delete('iframe.contentWindow')
@@ -27,9 +26,7 @@ const timeout = 8000;
 
 // Intialize workflow
 export async function main(userInput){
-    console.log("###########################################");
     console.log("# Email Automation AI Tool #");
-    console.log("###########################################\n");
 
     const browser = await puppeteer.launch({
         headless: "new",
@@ -70,6 +67,7 @@ export async function main(userInput){
     let login_status = false
     let openai_final_response = ""
     let action = ""
+    let unread_email = false
     // Get action from User input.
     if (prompt.toLowerCase()) {
         const actionMatch = prompt.match(/Action:(\S+)/);
@@ -194,9 +192,10 @@ export async function main(userInput){
                             const firstUnreadEmail = await page.$('tr.zA.zE');
                             if (firstUnreadEmail) {
                                 await firstUnreadEmail.click({ delay: 100 });
+                                unread_email = true;
                             } else {
                                 console.log('No Unread email found');
-                                download_attachement_file = false;
+                                unread_email = false;
                             }
                         } catch (error) {
                             if (error.name === 'TimeoutError') {
@@ -278,7 +277,7 @@ export async function main(userInput){
             url = null;
         }
         // LLM Text Based Response
-        if (download_attachement_file) {
+        if (unread_email) {
             const base64_image = await imageToBase64("screenshot.jpg");
             // GPT promtp to response from screenshots.
             messages.push({
@@ -310,25 +309,27 @@ export async function main(userInput){
                 "role": "assistant",
                 "content": message_text_screenshot,
             });
-          //
+          // Check if the attchement found with Email or not
           let extractedText = "";
-          // Extract content from PDF file
-          processAllFiles(folderPath)
-              .then((pdfContent) => {
-                  extractedText = pdfContent;
-                  console.log("Extracted PDF Content");
-              })
-              .catch((error) => {
-                  console.error("Error extracting PDF content:", error);
-              });
-            await sleep(3000)
+          if(download_attachement_file){
+            // Extract content from PDF file
+            processAllFiles(folderPath)
+                .then((pdfContent) => {
+                    extractedText = pdfContent;
+                    console.log("Extracted PDF Content");
+                })
+                .catch((error) => {
+                    console.error("Error extracting PDF content:", error);
+                });
+                await sleep(3000)
+            }
             // GPT prompt to reponse from PDF
             messages.push({
                 "role": "user",
                 "content": [ 
-                   {
+                {
                         "type": "text",
-                        "text": `As an helpfull assiatnt read the below context carefully and provide the Account summary from given bank statement in bullet points Only. Remember that do not include any information whihc is not relevent to context.
+                        "text": `As an helpfull assiatnt read the below context carefully and provide the Account summary from given bank statement in bullet points Only. Remember that do not include any information whihc is not relevent to context. If context not given then say Email has no attachment.
                         CONTEXT: ${extractedText}.
                         Example Response:
 
@@ -347,7 +348,6 @@ export async function main(userInput){
                 "role": "assistant",
                 "content": message_text,
             });
-
             // Format output 
             const openai_final_response = `
             **# Email Summary #**
@@ -394,7 +394,6 @@ export async function main(userInput){
           max_tokens: 1024,
           messages: messages,
       });
-
       const message = response.choices[0].message;
       const message_text = message.content;
 
