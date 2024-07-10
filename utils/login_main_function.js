@@ -11,7 +11,7 @@ dotenv.config();
 // Module Import
 import {processAllFiles} from "./pdf_reader.js";
 import { checkFolderIsEmpty,  downloadEmailAttachement, imageToBase64,
-    sleep, highlightLinks, waitForEvent, readPromptFromFile, pageScreenShot} from './helper_functions.js';
+    sleep, highlightLinks, waitForEvent, readPromptFromFile} from './helper_functions.js';
 
 // Pupeteer stealth for pupeteer plugins
 const stealth = StealthPlugin()
@@ -25,9 +25,9 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const timeout = 8000;
 
 // Intialize workflow
-export async function main(userInput){
-    console.log("# Email Automation AI Tool #");
+export async function main_login(userInput){
 
+    console.log("# Email Automation AI Tool #");
     const browser = await puppeteer.launch({
         headless: "new",
     });
@@ -173,6 +173,11 @@ export async function main(userInput){
 
                         // Change login status
                         login_status = true;
+                        await highlightLinks(page);
+                        await page.screenshot({
+                            path: "screenshot_emails.jpg",
+                            quality: 100,
+                        });
                     } catch (error) {
                         console.log("Login failed or navigation error:", error);
                     }
@@ -254,13 +259,20 @@ export async function main(userInput){
                     console.error("Error during login:", error);
                 }
             }            
+            await highlightLinks(page);
+
             await Promise.race([
                 waitForEvent(page, 'load'),
                 sleep(timeout)
             ]);
 
-            await highlightLinks(page); // Highlight tags
-            await pageScreenShot(page) // Take screenshot
+            await highlightLinks(page);
+
+            await page.screenshot({
+                path: "screenshot.jpg",
+                quality: 100,
+            });
+
             screenshot_taken = true;
             url = null;
         }
@@ -411,7 +423,10 @@ export async function main(userInput){
                 await highlightLinks(page);
 
                 // Take screenshot of navigated page
-                await pageScreenShot(page)
+                await page.screenshot({
+                    path: "screenshot.jpg",
+                    quality: 100,
+                });
                 screenshot_taken = true;
                 console.log("Screenshot taken.");
             } 
