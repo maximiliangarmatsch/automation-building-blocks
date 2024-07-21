@@ -31,7 +31,7 @@ def login_via_bitwarden():
             pyautogui.click(cords_center[0], cords_center[1]) # Click on the located image
             time.sleep(1) # Wait a bit to ensure the click action is registered
             
-            cords_image_secret = pyautogui.locateOnScreen('assest/secret.png', confidence = 0.7)
+            cords_image_secret = pyautogui.locateOnScreen('assets/secret.png', confidence = 0.7)
             cords_center_secret = pyautogui.center(cords_image_secret) # Find the center of detected icon
             pyautogui.moveTo(cords_center_secret[0], cords_center_secret[1], 1) # Move mouse to specified position
             pyautogui.click(cords_center_secret[0], cords_center_secret[1]) # Click on the located image
