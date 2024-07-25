@@ -1,0 +1,5 @@
+undetected-chromedriver # Chrome version should be 127 or greater.
+pyautogui
+python-dotenv
+PyVirtualDisplay
+xvfbwrapper

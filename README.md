@@ -15,7 +15,8 @@ OPENAI_API_KEY = "Your OpenAI API key here"
 PHONE = "Your Phone number for Google 2FA"
 EMAIL = "Google Account Gmail"
 PASSWORD = "Google Account Passowrd" 
-
+BITWARDEN_EMAIL = "Your email"
+BITWARDEN_PASSWORD = "Your bitwarden master password"
 ```
 
 ### Run Gmail Automation Bot
