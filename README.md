@@ -2,12 +2,17 @@
 
 This is a GPT4 Vision API and Puppeteer powered tool that can crawl into Persons google account  and can answer from attached PDF with new unread emails and also cananswer based on screenshot.
 
+## Pre-Setup
+Python (newest version) 3.1.0
+
 ## Setup
 
 ```code 
 git clone git clone https://github.com/maximiliangarmatsch/auto-website-ai.git
 cd auto-website-ai
 npm install
+pip install pdfminer pdfminer.six python-dotenv undetected_chromedriver python-xlib openai undetected-chromedriver discord.py
+
 ```
 ## create .env
 ```
