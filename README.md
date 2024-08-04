@@ -17,6 +17,10 @@ pip install discord.py
 create .env (ask Amir)
 ```
 
+### Create Virtual Environment ###
+python3 -m venv venv
+source venv/bin/activate
+
 ### Start "Python App"
 ```shell
 python3 app.py
