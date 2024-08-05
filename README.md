@@ -1,5 +1,4 @@
-# auto-website-ai
-
+# automation-building-blocks
 This is a GPT4 Vision API and Puppeteer powered tool that can crawl into Persons google account and can answer from attached PDF with new unread emails and also cananswer based on screenshot.
 
 ## Pre-Setup
