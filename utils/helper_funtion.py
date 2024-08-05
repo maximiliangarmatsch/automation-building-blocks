@@ -6,7 +6,6 @@ import time
 import base64
 import pyautogui
 from openai import OpenAI
-from dotenv import load_dotenv
 from pdfminer.layout import LAParams
 import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
@@ -111,7 +110,10 @@ def detect_icon(icon_path: str):
     ------
     None
     """
+    image_coordinates = None
     image_coordinates = pyautogui.locateOnScreen(icon_path, confidence = 0.7)
+    if image_coordinates is None:
+        return image_coordinates
     image_center_coordinates = pyautogui.center(image_coordinates)
     pyautogui.moveTo(image_center_coordinates[0], image_center_coordinates[1], 1)
     pyautogui.click(image_center_coordinates[0], image_center_coordinates[1])

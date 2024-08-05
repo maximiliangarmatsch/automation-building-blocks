@@ -7,7 +7,6 @@ import asyncio
 import pyautogui
 import Xlib.display
 from openai import OpenAI
-from dotenv import load_dotenv
 import undetected_chromedriver as uc
 from pyvirtualdisplay.smartdisplay import SmartDisplay
 from dotenv import load_dotenv
@@ -19,22 +18,24 @@ model.timeout = 10
 BITWARDEN_EMAIL = os.getenv("BITWARDEN_EMAIL")
 BITWARDEN_PASSWORD = os.getenv("BITWARDEN_PASSWORD")
 
-def detect_icon_with_retry(image_path, attempts=3, delay=2):
+def detect_icon_with_retry(image_path, attempts = 3, delay = 2):
     """Try to detect the icon a specified number of times."""
     for attempt in range(attempts):
         cords = detect_icon(image_path)
         if cords is not None:
             return cords
+        print(f"No of attemps: {attempt}")
         time.sleep(delay)
     return None
 
-def process_icon(image_path, operation_delay):
+async def process_icon(image_path, operation_delay):
     """Process each icon detection with error handling and custom delay."""
     cords = detect_icon_with_retry(image_path, attempts = 3, delay = operation_delay)
     if cords is not None:
         return cords
     else:
         return cords
+    
 def error_message(message, browser, display):
     """
     doc string
@@ -77,86 +78,96 @@ async def login_via_bitwarden():
         time.sleep(2)
 
         # Locate the extensions icon to click
-        cords_image = process_icon("assets/extension.png", 2)
+        cords_image = await process_icon("assets/extension.png", 2)
         if cords_image is None:
             return error_message("Error While click on Extensions Icon", browser, display)
+        time.sleep(2)
 
         # Locate the pin extension to taskbar icon to click
-        cords_image_pin = process_icon("assets/pins.png", 1)
+        cords_image_pin = await process_icon("assets/pins.png", 1)
         if cords_image_pin is None:
             return error_message("Error while Pin Bitarden extension.", browser, display)
-        
-        # # Locate the Bitwarden extension on the taskbar icon to click
-        # cords_image_before_login = process_icon("assets/bitwarden_before_login.png", 5)
-        # print(cords_image_before_login)
-        # if cords_image_before_login is None:
-        #     return error_message("Error While Click on Bitwarden.", browser, display)
         time.sleep(2)
-        image_coordinates = pyautogui.locateOnScreen("assets/bitwarden_before_login.png", confidence = 0.6)
-        image_center_coordinates = pyautogui.center(image_coordinates)
-        pyautogui.moveTo(image_center_coordinates[0], image_center_coordinates[1], 1)
-        pyautogui.click(image_center_coordinates[0], image_center_coordinates[1])
+
+        # Locate the Bitwarden extension on the taskbar icon to click
+        cords_image_before_login = await process_icon("assets/bitwarden_before_login.png", 2)
+        print(cords_image_before_login)
+        if cords_image_before_login is None:
+            return error_message("Error While Click on Bitwarden.", browser, display)
+        time.sleep(2)
 
         # Locate the Bitwarden email text field icon to click
-        cords_image_enter_gmail = process_icon("assets/enter_gmail.png", 1)
+        cords_image_enter_gmail = await process_icon("assets/enter_gmail.png", 2)
         if cords_image_enter_gmail is not None:
             pyautogui.typewrite(BITWARDEN_EMAIL)
+        time.sleep(2)
         
         # Locate the Bitwarden continue icon to click
-        cords_image_gmail_continue = process_icon("assets/gmail_continue.png", 2)
+        cords_image_gmail_continue = await process_icon("assets/gmail_continue.png", 2)
         if cords_image_gmail_continue is not None:
             pyautogui.typewrite(BITWARDEN_PASSWORD)
+        time.sleep(2)
 
         # Locate the Bitwarden master login icon to click
-        cords_image_master_password_login = process_icon("assets/master_password_login.png", 2)
+        cords_image_master_password_login = await process_icon("assets/master_password_login.png", 2)
         if cords_image_master_password_login is None:
             return error_message("Error during bitwarden login.", browser, display)
-        
+        time.sleep(2)
+
         # Locate any random position to click
-        cords_image_random = process_icon("assets/gmail_random.png", 5)
+        cords_image_random = await process_icon("assets/gmail_random.png", 5)
         if cords_image_random is None:
             return error_message("Random position icon not found.", browser, display)
-        
+        time.sleep(4)
+
         # Locate the Bitwarden icon to click
-        cords_image_bitwarden = process_icon("assets/bitwardens.png", 2)
+        cords_image_bitwarden = await process_icon("assets/bitwardens.png", 2)
         if cords_image_bitwarden is None:
             return error_message("Bitwarden icon not found.", browser, display)
-        
+        time.sleep(2)
+
         # Locate credentials in Bitwarden
-        cords_image_gmail = process_icon("assets/select_asim_gmail.png", 2)
+        cords_image_gmail = await process_icon("assets/select_asim_gmail.png", 2)
         if cords_image_gmail is None:
             return error_message("Mentioed Gmail not found.", browser, display)
-        
+        time.sleep(2)
+
         # Locate any random position to click
-        cords_image_random = process_icon("assets/signin_random.png", 1)
+        cords_image_random = await process_icon("assets/signin_random.png", 1)
         if cords_image_random is None:
             return error_message("Signin random icon not found.", browser, display)
-        
+        time.sleep(1)
+
         # Locate the login button to click on it
-        cords_center_next = process_icon("assets/gmail_next.png", 2)
+        cords_center_next = await process_icon("assets/gmail_next.png", 2)
         if cords_center_next is None:
             return error_message("Error while login to google account.", browser, display)
-        
+        time.sleep(2)
+
         # Locate the Bitwarden icon to click
-        cords_image_bitwarden = process_icon("assets/bitwardens.png", 2)
+        cords_image_bitwarden = await process_icon("assets/bitwardens.png", 2)
         if cords_image_bitwarden is None:
             return error_message("Bitwarden icon not found.", browser, display)
-        
+        time.sleep(2)
+
         # Locate credentials in Bitwarden
-        cords_image_password = process_icon("assets/select_asim_gmail.png", 2)
+        cords_image_password = await process_icon("assets/select_asim_gmail.png", 2)
         if cords_image_password is None:
             return error_message("Mentioed Gmail not found.", browser, display)
-        
+        time.sleep(2)
+
         # Locate the login button to click on it
-        cords_center_next = process_icon("assets/gmail_next.png", 5)
+        cords_center_next = await process_icon("assets/gmail_next.png", 5)
         if cords_center_next is None:
             return error_message("Error while login to Gmails account.", browser, display)
-        
+        time.sleep(5)
+
         # Locate the Gmail icon on the main page to click on it
-        cords_center_next = process_icon("assets/move_to_inbox.png", 5)
+        cords_center_next = await process_icon("assets/move_to_inbox.png", 5)
         if cords_center_next is None:
             return error_message("Erro during open gmail inbox.", browser, display)
-    
+        time.sleep(5)
+
         # Check all unread emails 
         unread_emails = check_unread_email(browser)
         if not unread_emails:
@@ -169,11 +180,11 @@ async def login_via_bitwarden():
             browser.quit ()
             display.stop()
             return unread_emails_response
-    except:
+    except Exception as e:
         # Take a screenshot after the action
         screenshot = pyautogui.screenshot()
         screenshot.save('error_screenshot.png')
-        print("Error during Crawling!")    
+        print("Error during Crawling!{e}")    
         browser.quit ()
         display.stop()     
         return "Something Went Wrong!"   

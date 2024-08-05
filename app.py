@@ -13,6 +13,8 @@ from pyautogui_gmail import login_via_bitwarden
 
 # STEP 0: LOAD OUR TOKEN FROM .env FILE
 load_dotenv()
+upload_folder = 'data'
+os.makedirs(upload_folder, exist_ok = True)
 TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')
 
 intents: Intents = Intents.default()
@@ -92,10 +94,10 @@ async def essay(interaction: discord.Interaction, query: str):
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
 
-# STEP 2: MESSAGE FUNCTIONALITY
 async def send_message(message: discord.Message, user_message: str) -> None:
     """
-    doc string
+    Send a response to the user, handling private and public messages.
+    Splits messages into chunks if they exceed Discord's character limit.
     """
     if not user_message:
         print('(Message was empty because intents were not enabled probably)')
@@ -109,9 +111,15 @@ async def send_message(message: discord.Message, user_message: str) -> None:
         # Use the typing context manager to show typing indicator
         async with message.channel.typing():
             response: str = await login_via_bitwarden()
-            await message.author.send(response) if is_private else await message.channel.send(response)
+            chunks = [response[i:i+2000] for i in range(0, len(response), 2000)]
+            for chunk in chunks:
+                if is_private:
+                    await message.author.send(chunk)
+                else:
+                    await message.channel.send(chunk)
+
     except Exception as e:
-        print(e)
+        print(f"An error occurred while sending a message: {e}")
 
 # STEP 4: HANDLING INCOMING MESSAGES
 @bot.event

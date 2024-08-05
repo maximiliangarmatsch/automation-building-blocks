@@ -6,25 +6,30 @@ This is a GPT4 Vision API and Puppeteer powered tool that can crawl into Persons
 Install Python (newest version, currently 3.11.0)
 - https://www.python.org/downloads/
 
-## Setup
+## Setupt for Python
+```shell
+git clone git clone https://github.com/maximiliangarmatsch/auto-website-ai.git
+cd auto-website-ai
+python3 -m venv venv 
+       OR
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+### Start "Python App"
+```shell
+python3 app.py
+      OR
+python app.py
+
+```
+
+## Setup for Javscript 
 
 ```shell
 git clone git clone https://github.com/maximiliangarmatsch/auto-website-ai.git
 cd auto-website-ai
 npm install
-pip install pdfminer pdfminer.six python-dotenv undetected_chromedriver python-xlib openai undetected-chromedriver
-pip install discord.py
-create .env (ask Amir)
-```
-
-### Create Virtual Environment ###
-python3 -m venv venv
-source venv/bin/activate
-
-### Start "Python App"
-```shell
-python3 app.py
-
 ```
 
 ### Start "Website automation"

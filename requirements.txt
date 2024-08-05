@@ -1,5 +1,10 @@
 undetected-chromedriver # Chrome version should be 127 or greater.
 pyautogui
-python-dotenv
 PyVirtualDisplay
 xvfbwrapper
+pdfminer
+pdfminer.six
+python-dotenv
+python-xlib
+openai
+discord.py
