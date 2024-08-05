@@ -11,11 +11,11 @@ from discord.ext import commands
 from discord import Intents, Client, Message
 from pyautogui_gmail import login_via_bitwarden
 
-# STEP 0: LOAD OUR TOKEN FROM .env FILE
+# STEP 0: LOAD OUR DISCORD_TOKEN FROM .env FILE
 load_dotenv()
 upload_folder = 'data'
 os.makedirs(upload_folder, exist_ok = True)
-TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')
+DISCORD_TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')
 
 intents: Intents = Intents.default()
 intents.message_content = True
@@ -151,7 +151,7 @@ def main() -> None:
     -------
     None
     """
-    bot.run(token=TOKEN)
+    bot.run(token=DISCORD_TOKEN)
 
 
 if __name__ == '__main__':

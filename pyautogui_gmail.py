@@ -46,7 +46,7 @@ def error_message(message, browser, display):
  
 async def login_via_bitwarden():
     """
-    login_via_bitwarden method will to the specific url and step by step perfomr action to login to make.com via bitwarden.
+    login_via_bitwarden method will to the specific url and step by step perform action to login to make.com via bitwarden.
 
     Parameters
     ----------

@@ -9,3 +9,4 @@ python-xlib
 openai
 discord.py
 requests
+opencv-python

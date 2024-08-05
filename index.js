@@ -137,4 +137,4 @@ client.on('messageCreate', async (message) => {
       console.log(`ERR: ${error}`);
     }
   });
-client.login(process.env.TOKEN);
+client.login(process.env.DISCORD_TOKEN);

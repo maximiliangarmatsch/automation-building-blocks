@@ -1,4 +1,5 @@
 # automation-building-blocks
+
 This is a GPT4 Vision API and Puppeteer powered tool that can crawl into Persons google account and can answer from attached PDF with new unread emails and also cananswer based on screenshot.
 
 ## Pre-Setup
@@ -6,6 +7,13 @@ This is a GPT4 Vision API and Puppeteer powered tool that can crawl into Persons
 Install Python (newest version, currently 3.11.0)
 
 - https://www.python.org/downloads/
+
+## Pre-Setup MacOS (Certificates)
+
+```shell
+/Applications/Python\ 3.12/Install\ Certificates.command
+pip install --upgrade certifi
+```
 
 ## Setup for Python
 
@@ -15,6 +23,10 @@ python3 -m venv venv
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
+python3 -m pip install setuptools
+      OR
+python -m pip install setuptools
+pip install Pillow
 ```
 
 ### Start "Python App"
