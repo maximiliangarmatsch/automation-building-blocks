@@ -8,3 +8,4 @@ python-dotenv
 python-xlib
 openai
 discord.py
+requests

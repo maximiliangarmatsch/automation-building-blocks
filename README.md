@@ -8,8 +8,6 @@ Install Python (newest version, currently 3.11.0)
 
 ## Setupt for Python
 ```shell
-git clone git clone https://github.com/maximiliangarmatsch/auto-website-ai.git
-cd auto-website-ai
 python3 -m venv venv 
        OR
 python -m venv venv
@@ -27,8 +25,6 @@ python app.py
 ## Setup for Javascript 
 
 ```shell
-git clone git clone https://github.com/maximiliangarmatsch/auto-website-ai.git
-cd auto-website-ai
 npm install
 ```
 
