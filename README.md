@@ -24,7 +24,7 @@ python app.py
 
 ```
 
-## Setup for Javscript 
+## Setup for Javascript 
 
 ```shell
 git clone git clone https://github.com/maximiliangarmatsch/auto-website-ai.git
