@@ -12,7 +12,7 @@ import undetected_chromedriver as uc
 from webdriver_manager.chrome import ChromeDriverManager
 from pyvirtualdisplay.smartdisplay import SmartDisplay
 from dotenv import load_dotenv
-from utils.helper_funtion import check_unread_email, process_unread_emails, process_icon, error_message
+from src.utils.helper_funtion import check_unread_email, process_unread_emails, process_icon, error_message
 
 load_dotenv()
 model = OpenAI()

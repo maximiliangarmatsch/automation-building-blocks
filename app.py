@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from discord import app_commands
 from discord.ext import commands
 from discord import Intents, Client, Message
-from utils.pyautogui_gmail import login_via_bitwarden
+from src.utils.pyautogui_gmail import login_via_bitwarden
 
 # STEP 0: LOAD OUR DISCORD_TOKEN FROM .env FILE
 load_dotenv()
