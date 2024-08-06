@@ -11,3 +11,4 @@ discord.py
 requests
 opencv-python
 webdriver_manager
+pylint
