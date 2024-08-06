@@ -102,11 +102,9 @@ async def send_message(message: discord.Message, user_message: str) -> None:
     if not user_message:
         print('(Message was empty because intents were not enabled probably)')
         return
-
     is_private = user_message[0] == '?'
     if is_private:
         user_message = user_message[1:]
-
     try:
         # Use the typing context manager to show typing indicator
         async with message.channel.typing():
@@ -117,7 +115,6 @@ async def send_message(message: discord.Message, user_message: str) -> None:
                     await message.author.send(chunk)
                 else:
                     await message.channel.send(chunk)
-
     except Exception as e:
         print(f"An error occurred while sending a message: {e}")
 
@@ -125,17 +122,18 @@ async def send_message(message: discord.Message, user_message: str) -> None:
 @bot.event
 async def on_message(message: discord.Message) -> None:
     """
-    doc string
+    Handle incoming messages and process them if they start with the correct prefix.
     """
     if message.author == bot.user:
         return
-
-    username: str = str(message.author)
     user_message: str = message.content
+    if not user_message.startswith('!crew'):
+        return
+    username: str = str(message.author)
     channel: str = str(message.channel)
     print(f'[{channel}] {username}: "{user_message}"')
-
-    await send_message(message, user_message)
+    # Remove the prefix before sending the message to the processing function
+    await send_message(message, user_message[len('!crew'):].strip())
 
 
 # STEP 5: MAIN ENTRY POINT
