@@ -12,52 +12,15 @@ import undetected_chromedriver as uc
 from webdriver_manager.chrome import ChromeDriverManager
 from pyvirtualdisplay.smartdisplay import SmartDisplay
 from dotenv import load_dotenv
-from utils.helper_funtion import detect_icon, check_unread_email, process_unread_emails
+from utils.helper_funtion import check_unread_email, process_unread_emails, process_icon, error_message
 
 load_dotenv()
 model = OpenAI()
 model.timeout = 10
 BITWARDEN_EMAIL = os.getenv("BITWARDEN_EMAIL")
 BITWARDEN_PASSWORD = os.getenv("BITWARDEN_PASSWORD")
-
-def detect_icon_with_retry(image_path, attempts = 3, delay = 2):
-    """Try to detect the icon a specified number of times."""
-    for attempt in range(attempts):
-        cords = detect_icon(image_path)
-        if cords is not None:
-            return cords
-        print(f"No of attemps: {attempt}")
-        time.sleep(delay)
-    return None
-
-async def process_icon(image_path, operation_delay):
-    """Process each icon detection with error handling and custom delay."""
-    cords = detect_icon_with_retry(image_path, attempts = 3, delay = operation_delay)
-    if cords is not None:
-        return cords
-    else:
-        return cords
-    
-def error_message(message, browser, display):
-    """
-    doc string
-    """
-    browser.quit ()
-    display.stop() 
-    return message
  
 async def login_via_bitwarden():
-    """
-    login_via_bitwarden method will to the specific url and step by step perform action to login to make.com via bitwarden.
-
-    Parameters
-    ----------
-    Nooe
-
-    Return
-    ------
-    None
-    """
     try:
         # Create a ChromeOptions object
         chrome_options = uc.ChromeOptions()

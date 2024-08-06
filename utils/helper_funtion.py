@@ -19,17 +19,31 @@ model.timeout = 10
 screenshot_path = "screenshot.jpg"
 # Create a ChromeOptions object
 chrome_options = uc.ChromeOptions()
+def detect_icon_with_retry(image_path, attempts = 3, delay = 2):
+    for attempt in range(attempts):
+        cords = detect_icon(image_path)
+        if cords is not None:
+            return cords
+        print(f"No of attemps: {attempt}")
+        time.sleep(delay)
+    return None
+
+async def process_icon(image_path, operation_delay):
+    cords = detect_icon_with_retry(image_path, attempts = 3, delay = operation_delay)
+    if cords is not None:
+        return cords
+    else:
+        return cords
+    
+def error_message(message, browser, display):
+    browser.quit ()
+    display.stop() 
+    return message
 
 def image_b64(image):
-    """
-    doc string
-    """
     with open(image, "rb") as f:
         return base64.b64encode(f.read()).decode()
 def extract_pdf_text():
-    """
-    doc string
-    """
     folder_path = "./data"
     files = os.listdir(folder_path)
     for file in files:
@@ -38,9 +52,6 @@ def extract_pdf_text():
     return text
 
 def get_email_attachment_summary(pdf_content):
-    """
-    Generate a summary of the email attachment from the given PDF content.
-    """
     response = model.chat.completions.create(
         model="gpt-4o",
         messages=[
@@ -62,9 +73,6 @@ def get_email_attachment_summary(pdf_content):
     return email_attatchment_response
 
 def get_email_body_summary(screenshot_path):
-    """
-    doc string
-    """
     base64_image = image_b64(screenshot_path)  
     response = model.chat.completions.create(
         model = "gpt-4o",
@@ -99,18 +107,6 @@ def get_email_body_summary(screenshot_path):
     return email_body_response
 
 def detect_icon(icon_path: str):
-    """
-    Method take icon image path as input and detect it on browser to get its coordinates.
-
-    Parameters
-    ----------
-    icon_path: str
-        icon image path.
-
-    Return
-    ------
-    None
-    """
     image_coordinates = None
     image_coordinates = pyautogui.locateOnScreen(icon_path, confidence = 0.7)
     if image_coordinates is None:
@@ -121,9 +117,6 @@ def detect_icon(icon_path: str):
     return image_center_coordinates
 
 def check_unread_email(browser):
-    """
-    Checks for unread emails and clicks on the second unread email if it exists.
-    """
     # Find all unread emails
     unread_emails = browser.find_elements(By.CSS_SELECTOR, 'tr.zA.zE')
     if len(unread_emails) > 1:
@@ -133,9 +126,6 @@ def check_unread_email(browser):
         return unread_emails
     
 def download_email_attachment(browser, link):
-    """
-    doc string
-    """
     browser.execute_cdp_cmd(
         'Page.setDownloadBehavior',
         {
@@ -150,9 +140,6 @@ def download_email_attachment(browser, link):
         print(f"Failed to Download File: {error}")
 
 def process_unread_emails(browser, unread_emails):
-    """
-    doc string
-    """
     final_response = ""
     global screenshot_path
     for email in unread_emails:

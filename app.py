@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from discord import app_commands
 from discord.ext import commands
 from discord import Intents, Client, Message
-from pyautogui_gmail import login_via_bitwarden
+from utils.pyautogui_gmail import login_via_bitwarden
 
 # STEP 0: LOAD OUR DISCORD_TOKEN FROM .env FILE
 load_dotenv()
@@ -23,18 +23,6 @@ bot = commands.Bot(command_prefix = "/", intents = discord.Intents.all())
 
 @bot.event
 async def on_ready():
-    """
-    This function is called automatically when the bot has successfully logged in
-    and is ready to start interacting with the Discord API.
-
-    Parameters
-    ----------
-    None
-
-    Returns
-    -------
-    None
-    """
     print("Bot is ready")
     try:
         synced = await bot.tree.sync()
@@ -45,20 +33,6 @@ async def on_ready():
 @bot.tree.command(name="email")
 @app_commands.describe(query="Type email description here")
 async def email(interaction: discord.Interaction, query: str):
-    """
-    This command takes an email query, processes it, and sends a response back to the user..
-
-    Parameters
-    ----------
-    interaction : discord.Interaction
-        The interaction object that represents the command invocation context.
-    query : str
-        user input or query.
-
-    Returns
-    -------
-    None
-    """
     await interaction.response.defer()
     try:
         response = "Hello Email"
@@ -68,37 +42,7 @@ async def email(interaction: discord.Interaction, query: str):
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
 
-@bot.tree.command(name = "linkedin")
-@app_commands.describe(query="Type essay description here")
-async def essay(interaction: discord.Interaction, query: str):
-    """
-    This command takes an essay query, processes it, and sends a response back to the user.
-
-    Parameters
-    ----------
-    interaction : discord.Interaction
-        The interaction object that represents the command invocation context.
-    query : str
-        user query or input.
-
-    Returns
-    -------
-    None
-    """
-    await interaction.response.defer()
-    try:
-        response = "Hello Linkedin"
-        await interaction.followup.send(f"{response}")
-    except discord.errors.NotFound as e:
-        print(f"Interaction error: {e}")
-    except Exception as e:
-        print(f"An unexpected error occurred: {e}")
-
 async def send_message(message: discord.Message, user_message: str) -> None:
-    """
-    Send a response to the user, handling private and public messages.
-    Splits messages into chunks if they exceed Discord's character limit.
-    """
     if not user_message:
         print('(Message was empty because intents were not enabled probably)')
         return
@@ -121,9 +65,6 @@ async def send_message(message: discord.Message, user_message: str) -> None:
 # STEP 4: HANDLING INCOMING MESSAGES
 @bot.event
 async def on_message(message: discord.Message) -> None:
-    """
-    Handle incoming messages and process them if they start with the correct prefix.
-    """
     if message.author == bot.user:
         return
     user_message: str = message.content
@@ -137,20 +78,9 @@ async def on_message(message: discord.Message) -> None:
 
 
 # STEP 5: MAIN ENTRY POINT
-def main() -> None:
-    """
-    This function initializes and runs the Discord bot using the provided token.
-
-    Parameters
-    ----------
-    None
-
-    Returns
-    -------
-    None
-    """
+def start_discord() -> None:
     bot.run(token=DISCORD_TOKEN)
 
 
 if __name__ == '__main__':
-    main()
+    start_discord()
