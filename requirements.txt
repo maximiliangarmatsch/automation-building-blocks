@@ -10,3 +10,4 @@ openai
 discord.py
 requests
 opencv-python
+webdriver_manager

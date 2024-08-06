@@ -27,6 +27,9 @@ python3 -m pip install setuptools
       OR
 python -m pip install setuptools
 pip install Pillow
+
+pip install webdriver-manager selenium
+pip install webdriver_manager
 ```
 
 ### Start "Python App"

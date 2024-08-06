@@ -8,6 +8,7 @@ import pyautogui
 import Xlib.display
 from openai import OpenAI
 import undetected_chromedriver as uc
+from webdriver_manager.chrome import ChromeDriverManager
 from pyvirtualdisplay.smartdisplay import SmartDisplay
 from dotenv import load_dotenv
 from utils.helper_funtion import detect_icon, check_unread_email, process_unread_emails
@@ -65,7 +66,7 @@ async def login_via_bitwarden():
         display = SmartDisplay(visible = 1, size=(1850, 1050))
         display.start()
 
-        browser = uc.Chrome(options=chrome_options)
+        browser = uc.Chrome(driver_executable_path=ChromeDriverManager().install(), options=chrome_options)
         browser.get('https://accounts.google.com/AccountChooser?service=mail&continue=https://google.com&hl=en')
         browser.maximize_window()
         browser.save_screenshot( '1.png' )

@@ -8,6 +8,7 @@ import Xlib.display
 from pyvirtualdisplay.smartdisplay import SmartDisplay
 from dotenv import load_dotenv
 import undetected_chromedriver as uc
+from webdriver_manager.chrome import ChromeDriverManager
 load_dotenv()
 
 BITWARDEN_EMAIL = os.getenv("BITWARDEN_EMAIL")
@@ -21,7 +22,7 @@ chrome_options.add_argument('--load-extension=./Extensions/bitwarden')
 display = SmartDisplay(visible = 0, size=(1850, 1050))
 display.start()
 
-browser = uc.Chrome(options=chrome_options)
+browser = uc.Chrome(driver_executable_path=ChromeDriverManager().install(), options=chrome_options)
 browser.get('https://accounts.google.com/AccountChooser?service=mail&continue=https://google.com&hl=en')
 browser.maximize_window()
 

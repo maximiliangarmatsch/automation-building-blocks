@@ -8,6 +8,7 @@ import pyautogui
 from openai import OpenAI
 from pdfminer.layout import LAParams
 import undetected_chromedriver as uc
+from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from pdfminer.high_level import extract_text
 from dotenv import load_dotenv
