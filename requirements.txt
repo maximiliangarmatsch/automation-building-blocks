@@ -1,0 +1,17 @@
+undetected-chromedriver # Chrome version should be 127 or greater.
+pyautogui
+PyVirtualDisplay
+xvfbwrapper
+pdfminer
+pdfminer.six
+python-dotenv
+python-xlib
+openai
+discord.py
+requests
+opencv-python
+webdriver_manager
+setuptools
+Pillow
+webdriver-manager
+selenium
