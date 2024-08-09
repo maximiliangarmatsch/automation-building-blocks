@@ -22,6 +22,7 @@ Install Python (newest version, currently 3.11.0)
 ```shell
 /Applications/Python\ 3.12/Install\ Certificates.command
 pip install --upgrade certifi
+brew install --cask xquartz
 ```
 
 ## Setup for Python
