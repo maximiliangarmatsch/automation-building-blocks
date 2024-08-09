@@ -17,11 +17,14 @@ Install Python (newest version, currently 3.11.0)
 
 - https://www.python.org/downloads/
 
-## (MacOS Only) Pre-Setup Certificates
+## (MacOS Only) Pre-Setup
 
 ```shell
+#For Certificates
 /Applications/Python\ 3.12/Install\ Certificates.command
 pip install --upgrade certifi
+
+#For pyAutoGui
 brew install --cask xquartz
 ```
 
