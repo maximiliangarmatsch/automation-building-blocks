@@ -22,6 +22,12 @@ screenshot_path = "screenshot.jpg"
 chrome_options = uc.ChromeOptions()
 
 
+def isOSX():
+    if os.uname().sysname == "Darwin":
+        return True
+    return False
+
+
 def detect_icon_with_retry(image_path, attempts=3, delay=2):
     for attempt in range(attempts):
         cords = detect_icon(image_path)
@@ -123,9 +129,10 @@ def detect_icon(icon_path: str):
         return image_coordinates
 
     image_center_coordinates = pyautogui.center(image_coordinates)
-    x = image_center_coordinates[0] / 2
-    y = image_center_coordinates[1] / 2
-    image_center_coordinates = x, y
+    if isOSX():
+        x = image_center_coordinates[0] / 2
+        y = image_center_coordinates[1] / 2
+        image_center_coordinates = x, y
 
     pyautogui.moveTo(image_center_coordinates[0], image_center_coordinates[1], 1)
     pyautogui.click(image_center_coordinates[0], image_center_coordinates[1])
