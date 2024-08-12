@@ -1,7 +1,10 @@
 {
-  "python.linting.enabled": true,
-  "python.linting.pylintEnabled": true,
-  "editor.defaultFormatter": "ms-python.black-formatter",
-  "editor.formatOnSave": true,
-  "python.linting.pylintArgs": ["--disable=C0114,C0115,C0116"]
+  "[python]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "ms-python.black-formatter"
+  },
+  "[javascript]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }

@@ -1,6 +1,7 @@
 # Python Linting
 
-- Install Pylint Extension on vscode (it is enabled by default)
+- Install [Pylint Extension](https://marketplace.visualstudio.com/items?itemName=ms-python.pylint) on vscode (it is enabled by default)
+- Install [Black Formatter Extension](https://marketplace.visualstudio.com/items?itemName=ms-python.black-formatter) to enable formatting on save
 
 ## Configuration
 
@@ -9,7 +10,7 @@
 
 # Javascript Linting
 
-- Install ESLint Extension on vscode (it is enabled by default)
+- Install [ESLint Extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) on vscode (it is enabled by default)
 
 ## Configuration
 

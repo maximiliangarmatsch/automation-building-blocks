@@ -1,82 +1,152 @@
-disable=
-    too-many-instance-attributes,
-    len-as-condition,
-    too-few-public-methods,
-    anomalous-backslash-in-string,
-    no-else-return,
-    simplifiable-if-statement,
-    too-many-arguments,
-    duplicate-code,
-    no-name-in-module,
-    no-member,
-    print-statement,
-    parameter-unpacking,
-    unpacking-in-except,
-    old-raise-syntax,
-    backtick,
-    long-suffix,
-    old-ne-operator,
-    old-octal-literal,
-    import-star-module-level,
-    raw-checker-failed,
-    bad-inline-option,
-    locally-disabled,
-    locally-enabled,
-    file-ignored,
-    suppressed-message,
-    useless-suppression,
-    deprecated-pragma,
-    apply-builtin,
-    basestring-builtin,
-    buffer-builtin,
-    cmp-builtin,
-    coerce-builtin,
-    execfile-builtin,
-    file-builtin,
-    long-builtin,
-    raw_input-builtin,
-    reduce-builtin,
-    standarderror-builtin,
-    unicode-builtin,
-    xrange-builtin,
-    coerce-method,
-    delslice-method,
-    getslice-method,
-    setslice-method,
-    no-absolute-import,
-    old-division,
-    dict-iter-method,
-    dict-view-method,
-    next-method-called,
-    metaclass-assignment,
-    indexing-exception,
-    raising-string,
-    reload-builtin,
-    oct-method,
-    hex-method,
-    nonzero-method,
-    cmp-method,
-    input-builtin,
-    round-builtin,
-    intern-builtin,
-    unichr-builtin,
-    map-builtin-not-iterating,
-    zip-builtin-not-iterating,
-    range-builtin-not-iterating,
-    filter-builtin-not-iterating,
-    using-cmp-argument,
-    eq-without-hash,
-    div-method,
-    idiv-method,
-    rdiv-method,
-    exception-message-attribute,
-    invalid-str-codec,
-    sys-max-int,
-    bad-python3-import,
-    deprecated-string-function,
-    deprecated-str-translate-call,
-    import-error,
-    missing-docstring,
-    invalid-name,
-    bad-whitespace,
-    consider-using-enumerate
+[MAIN]
+analyse-fallback-blocks=no
+clear-cache-post-run=no
+fail-under=10
+ignore=CVS
+ignore-patterns=^\.#
+jobs=1
+limit-inference-results=100
+recursive=no
+suggestion-mode=yes
+unsafe-load-any-extension=no
+
+[BASIC]
+argument-naming-style=snake_case
+attr-naming-style=snake_case
+bad-names=foo,
+          bar,
+          baz,
+          toto,
+          tutu,
+          tata
+class-attribute-naming-style=any
+class-const-naming-style=UPPER_CASE
+class-naming-style=PascalCase
+const-naming-style=UPPER_CASE
+docstring-min-length=-1
+function-naming-style=snake_case
+inlinevar-naming-style=any
+method-naming-style=snake_case
+module-naming-style=snake_case
+no-docstring-rgx=^_
+property-classes=abc.abstractproperty
+variable-naming-style=snake_case
+
+[CLASSES]
+check-protected-access-in-special-methods=no
+defining-attr-methods=__init__,
+                      __new__,
+                      setUp,
+                      asyncSetUp,
+                      __post_init__
+exclude-protected=_asdict,_fields,_replace,_source,_make,os._exit
+valid-classmethod-first-arg=cls
+valid-metaclass-classmethod-first-arg=mcs
+
+
+[DESIGN]
+max-args=5
+max-attributes=7
+max-bool-expr=5
+max-branches=20
+max-locals=15
+max-parents=7
+max-public-methods=20
+max-returns=6
+max-statements=500
+min-public-methods=2
+
+[EXCEPTIONS]
+overgeneral-exceptions=builtins.BaseException,builtins.Exception
+
+[FORMAT]
+indent-after-paren=4
+indent-string='    '
+max-line-length=500
+max-module-lines=1000
+single-line-class-stmt=no
+single-line-if-stmt=no
+
+[IMPORTS]
+allow-wildcard-with-all=no
+known-third-party=enchant
+
+[LOGGING]
+logging-format-style=old
+logging-modules=logging
+
+[MESSAGES CONTROL]
+confidence=HIGH,
+           CONTROL_FLOW,
+           INFERENCE,
+           INFERENCE_FAILURE,
+           UNDEFINED
+disable=raw-checker-failed,
+        bad-inline-option,
+        bare-except,
+        protected-access,
+        locally-disabled,
+        file-ignored,
+        suppressed-message,
+        useless-suppression,
+        deprecated-pragma,
+        use-symbolic-message-instead,
+        use-implicit-booleaness-not-comparison-to-string,
+        use-implicit-booleaness-not-comparison-to-zero
+
+[METHOD_ARGS]
+timeout-methods=requests.api.delete,requests.api.get,requests.api.head,requests.api.options,requests.api.patch,requests.api.post,requests.api.put,requests.api.request
+
+[MISCELLANEOUS]
+notes=FIXME,
+      XXX,
+      TODO
+
+[REFACTORING]
+max-nested-blocks=5
+never-returning-functions=sys.exit,argparse.parse_error
+
+[REPORTS]
+evaluation=max(0, 0 if fatal else 10.0 - ((float(5 * error + warning + refactor + convention) / statement) * 10))
+reports=no
+score=yes
+
+[SIMILARITIES]
+ignore-comments=yes
+ignore-docstrings=yes
+ignore-imports=yes
+ignore-signatures=yes
+min-similarity-lines=4
+
+[SPELLING]
+max-spelling-suggestions=4
+spelling-ignore-comment-directives=fmt: on,fmt: off,noqa:,noqa,nosec,isort:skip,mypy:
+spelling-ignore-words=
+
+[STRING]
+check-quote-consistency=no
+check-str-concat-over-line-jumps=no
+
+[TYPECHECK]
+contextmanager-decorators=contextlib.contextmanager
+generated-members=
+ignore-none=yes
+ignore-on-opaque-inference=yes
+ignored-checks-for-mixins=no-member,
+                          not-async-context-manager,
+                          not-context-manager,
+                          attribute-defined-outside-init
+ignored-classes=optparse.Values,thread._local,_thread._local,argparse.Namespace
+missing-member-hint=yes
+missing-member-hint-distance=1
+missing-member-max-choices=1
+mixin-class-rgx=.*[Mm]ixin
+
+[VARIABLES]
+allow-global-unused-variables=yes
+callbacks=cb_,
+          _cb
+dummy-variables-rgx=_+$|(_[a-zA-Z0-9_]*[a-zA-Z0-9]+?$)|dummy|^ignored_|^unused_
+ignored-argument-names=_.*|^ignored_|^unused_
+init-import=no
+redefining-builtins-modules=six.moves,past.builtins,future.builtins,builtins,io
