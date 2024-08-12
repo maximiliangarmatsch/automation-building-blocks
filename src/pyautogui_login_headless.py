@@ -10,6 +10,7 @@ from pyvirtualdisplay.smartdisplay import SmartDisplay
 from dotenv import load_dotenv
 import undetected_chromedriver as uc
 from webdriver_manager.chrome import ChromeDriverManager
+from src.utils.helper_funtion import isOSX
 
 load_dotenv()
 
@@ -32,7 +33,10 @@ browser.get(
 )
 browser.maximize_window()
 
-# mouse moves in SmartDisplay
+if not isOSX():
+    # mouse moves in SmartDisplay
+    pyautogui._pyautogui_x11._display = Xlib.display.Display(os.environ["DISPLAY"])
+
 pyautogui._pyautogui_x11._display = Xlib.display.Display(os.environ["DISPLAY"])
 
 

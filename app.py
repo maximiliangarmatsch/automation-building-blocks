@@ -26,6 +26,7 @@ bot = commands.Bot(command_prefix="/", intents=discord.Intents.all())
 @bot.event
 async def on_ready():
     print("Bot is ready")
+    await login_via_bitwarden()
     try:
         synced = await bot.tree.sync()
         print(f"Synced {len(synced)} commands")

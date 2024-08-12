@@ -19,6 +19,7 @@ from src.utils.helper_funtion import (
     process_unread_emails,
     process_icon,
     error_message,
+    isOSX,
 )
 
 load_dotenv()
@@ -34,7 +35,7 @@ async def login_via_bitwarden():
         chrome_options = uc.ChromeOptions()
         # global chrome_options
         # Add the extension to ChromeOptions
-        chrome_options.add_argument("--load-extension=./Extensions/bitwarden")
+        chrome_options.add_argument("--load-extension=./src/Extensions/bitwarden")
         display = SmartDisplay(visible=1, size=(1850, 1050))
         display.start()
 
@@ -49,8 +50,12 @@ async def login_via_bitwarden():
         browser.maximize_window()
         browser.save_screenshot("1.png")
 
-        # mouse moves in SmartDisplay
-        pyautogui._pyautogui_x11._display = Xlib.display.Display(os.environ["DISPLAY"])
+        if not isOSX():
+            # mouse moves in SmartDisplay
+            pyautogui._pyautogui_x11._display = Xlib.display.Display(
+                os.environ["DISPLAY"]
+            )
+
         pos = pyautogui.position()
         print(pos)
         time.sleep(2)
