@@ -155,4 +155,5 @@ def login_via_bitwarden():
 
 login_via_bitwarden()
 browser.quit()
+
 display.stop()
