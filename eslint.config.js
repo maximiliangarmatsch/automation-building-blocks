@@ -7,6 +7,6 @@ export default [
       "no-unused-vars": "warn",
       "no-undef": "warn",
     },
-    ignore: ["**/Extensions/"],
+    ignores: ["**/Extensions/"],
   },
 ];
