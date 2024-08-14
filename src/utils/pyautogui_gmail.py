@@ -19,8 +19,9 @@ from src.utils.helper_funtion import (
     process_unread_emails,
     process_icon,
     error_message,
-    isOSX,
 )
+
+from src.utils.helper.is_osx import is_osx
 
 load_dotenv()
 model = OpenAI()
@@ -50,7 +51,7 @@ async def login_via_bitwarden():
         browser.maximize_window()
         browser.save_screenshot("1.png")
 
-        if not isOSX():
+        if not is_osx():
             # mouse moves in SmartDisplay
             pyautogui._pyautogui_x11._display = Xlib.display.Display(
                 os.environ["DISPLAY"]

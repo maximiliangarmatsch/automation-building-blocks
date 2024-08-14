@@ -22,7 +22,6 @@ bad-names=foo,
 class-attribute-naming-style=any
 class-const-naming-style=UPPER_CASE
 class-naming-style=PascalCase
-const-naming-style=UPPER_CASE
 docstring-min-length=-1
 function-naming-style=snake_case
 inlinevar-naming-style=any
@@ -92,7 +91,9 @@ disable=raw-checker-failed,
         deprecated-pragma,
         use-symbolic-message-instead,
         use-implicit-booleaness-not-comparison-to-string,
-        use-implicit-booleaness-not-comparison-to-zero
+        use-implicit-booleaness-not-comparison-to-zero,
+        missing-module-docstring,
+        missing-function-docstring
 
 [METHOD_ARGS]
 timeout-methods=requests.api.delete,requests.api.get,requests.api.head,requests.api.options,requests.api.patch,requests.api.post,requests.api.put,requests.api.request
