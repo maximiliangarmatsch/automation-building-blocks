@@ -10,7 +10,8 @@ from pyvirtualdisplay.smartdisplay import SmartDisplay
 from dotenv import load_dotenv
 import undetected_chromedriver as uc
 from webdriver_manager.chrome import ChromeDriverManager
-from utils.helper.is_osx import is_osx
+
+from src.utils.helper.is_osx import is_osx
 
 load_dotenv()
 
