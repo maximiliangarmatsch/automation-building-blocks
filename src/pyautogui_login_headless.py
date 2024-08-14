@@ -14,7 +14,6 @@ from webdriver_manager.chrome import ChromeDriverManager
 from src.utils.helper.is_osx import is_osx
 
 load_dotenv()
-
 BITWARDEN_EMAIL = os.getenv("BITWARDEN_EMAIL")
 BITWARDEN_PASSWORD = os.getenv("BITWARDEN_PASSWORD")
 
