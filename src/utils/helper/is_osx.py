@@ -1,7 +1,3 @@
-"""
-helper funtions pyautogui_gmail.py 
-"""
-
 import os
 
 

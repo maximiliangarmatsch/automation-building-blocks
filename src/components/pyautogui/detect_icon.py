@@ -1,6 +1,6 @@
 import time
 import pyautogui
-from helper.is_osx import is_osx
+from src.utils.helper.is_osx import is_osx
 
 
 def detect_icon_with_retry(image_path, attempts=3, delay=2):

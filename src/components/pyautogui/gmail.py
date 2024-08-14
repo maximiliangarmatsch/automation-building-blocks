@@ -4,7 +4,6 @@ module to login to google account using bitwarden
 
 import os
 import time
-import asyncio
 import pyautogui
 import Xlib.display
 from openai import OpenAI
@@ -182,7 +181,7 @@ async def login_via_bitwarden():
         # Take a screenshot after the action
         screenshot = pyautogui.screenshot()
         screenshot.save("error_screenshot.png")
-        print("Error during Crawling!{e}")
+        print(f"Error during Crawling!{e}")
         browser.quit()
         display.stop()
         return "Something Went Wrong!"

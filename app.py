@@ -3,14 +3,13 @@ DBS main module
 """
 
 import os
-import discord
-import requests
 from typing import Final
+import discord
 from dotenv import load_dotenv
 from discord import app_commands
 from discord.ext import commands
-from discord import Intents, Client, Message
-from src.utils.pyautogui_gmail import login_via_bitwarden
+from discord import Intents
+from src.components.pyautogui.gmail import login_via_bitwarden
 
 # STEP 0: LOAD OUR DISCORD_TOKEN FROM .env FILE
 load_dotenv()

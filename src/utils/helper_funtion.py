@@ -1,5 +1,5 @@
 """
-helper funtions pyautogui_gmail.py 
+helper funtions
 """
 
 import os
@@ -10,8 +10,8 @@ from openai import OpenAI
 import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
 from dotenv import load_dotenv
-from helper.detect_icon import detect_icon_with_retry
-from helper.extract_pdf_text import extract_pdf_text
+from src.components.pyautogui.detect_icon import detect_icon_with_retry
+from src.components.pdfminer.extract_pdf_text import extract_pdf_text
 
 load_dotenv()
 model = OpenAI()

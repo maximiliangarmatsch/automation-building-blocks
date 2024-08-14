@@ -12,6 +12,7 @@ import undetected_chromedriver as uc
 from webdriver_manager.chrome import ChromeDriverManager
 
 from src.utils.helper.is_osx import is_osx
+from src.components.pyautogui.detect_icon import detect_icon
 
 load_dotenv()
 BITWARDEN_EMAIL = os.getenv("BITWARDEN_EMAIL")
@@ -38,26 +39,6 @@ if not is_osx():
     pyautogui._pyautogui_x11._display = Xlib.display.Display(os.environ["DISPLAY"])
 
 pyautogui._pyautogui_x11._display = Xlib.display.Display(os.environ["DISPLAY"])
-
-
-def detect_icon(icon_path: str):
-    """
-    Method take icon image path as input and detect it on browser to get its coordinates.
-
-    Parameters
-    ----------
-    icon_path: str
-        icon image path.
-
-    Return
-    ------
-    None
-    """
-    image_coordinates = pyautogui.locateOnScreen(icon_path, confidence=0.7)
-    image_center_coordinates = pyautogui.center(image_coordinates)
-    pyautogui.moveTo(image_center_coordinates[0], image_center_coordinates[1], 1)
-    pyautogui.click(image_center_coordinates[0], image_center_coordinates[1])
-    return image_coordinates
 
 
 def login_via_bitwarden():
