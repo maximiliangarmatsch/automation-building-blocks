@@ -1,7 +1,6 @@
 """
 module to login to google account using bitwarden 
 """
-
 import os
 import time
 import asyncio
@@ -44,6 +43,7 @@ async def login_via_bitwarden():
             driver_executable_path=ChromeDriverManager().install(),
             options=chrome_options,
         )
+        # browser = uc.Chrome(options=chrome_options)
         browser.get(
             "https://accounts.google.com/AccountChooser?service=mail&continue=https://google.com&hl=en"
         )
@@ -80,7 +80,7 @@ async def login_via_bitwarden():
         cords_image_before_login = await process_icon(
             "src/assets/bitwarden_before_login.png", 2
         )
-        print(cords_image_before_login)
+
         if cords_image_before_login is None:
             return error_message("Error While Click on Bitwarden.", browser, display)
         time.sleep(2)

@@ -37,7 +37,23 @@ python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
+### create .env
+Create two .envs in main project folder and inside financial_crew
 
+In project main folder
+```
+In project main folder
+OPENAI_API_KEY = ""
+CHANNEL_ID = ""
+BITWARDEN_EMAIL = ""
+BITWARDEN_PASSWORD = ""
+DISCORD_TOKEN = ""
+```
+In financial crew folder
+```
+OPENAI_API_KEY = ""
+SERPAPI_API_KEY = ""
+```
 ### Start "Python App"
 
 ```shell
