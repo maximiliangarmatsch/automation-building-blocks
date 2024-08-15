@@ -1,6 +1,3 @@
-"""
-finance crew main module
-"""
 import os
 import sys
 from financial_crew.crew import FinnaceCrew

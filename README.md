@@ -42,7 +42,6 @@ Create two .envs in main project folder and inside financial_crew
 
 In project main folder
 ```
-In project main folder
 OPENAI_API_KEY = ""
 CHANNEL_ID = ""
 BITWARDEN_EMAIL = ""

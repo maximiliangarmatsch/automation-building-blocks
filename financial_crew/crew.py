@@ -19,12 +19,11 @@ pdf_search_tool = PDFSearchTool(
 
 @CrewBase
 class FinnaceCrew():
-	"""Finance crew"""
 	agents_config = './config/agents.yaml'
 	tasks_config = './config/tasks.yaml'
 
 	@agent
-	def admin_assistant_managr(self) -> Agent:
+	def admin_research_manager(self) -> Agent:
 		return Agent(
 			config=self.agents_config['admin_research_assistant'],
 			tools=[SerperDevTool(), ScrapeWebsiteTool(), pdf_search_tool],
@@ -56,7 +55,7 @@ class FinnaceCrew():
 	def research_task(self) -> Task:
 		return Task(
 			config=self.tasks_config['admin_research_assistant_task'],
-			agent=self.admin_assistant_managr()
+			agent=self.admin_research_manager()
 		)
 
 	@task
@@ -74,7 +73,6 @@ class FinnaceCrew():
 		)
 	@crew
 	def crew(self) -> Crew:
-		"""Creates the Finance crew"""
 		return Crew(
 			agents=self.agents, # Automatically created by the @agent decorator
 			tasks=self.tasks, # Automatically created by the @task decorator
