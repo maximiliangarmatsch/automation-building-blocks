@@ -1,5 +1,5 @@
 """
-helper funtions pyautogui_gmail.py 
+helper funtions
 """
 
 import os
@@ -7,35 +7,19 @@ import time
 import base64
 import pyautogui
 from openai import OpenAI
-from pdfminer.layout import LAParams
 import undetected_chromedriver as uc
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
-from pdfminer.high_level import extract_text
 from dotenv import load_dotenv
+from src.components.pyautogui.detect_icon import detect_icon_with_retry
+from src.components.pdfminer.extract_pdf_text import extract_pdf_text
 
 load_dotenv()
 model = OpenAI()
 model.timeout = 10
 screenshot_path = "screenshot.jpg"
-# Create a ChromeOptions object
+
+
 chrome_options = uc.ChromeOptions()
-
-
-def isOSX():
-    if os.uname().sysname == "Darwin":
-        return True
-    return False
-
-
-def detect_icon_with_retry(image_path, attempts=3, delay=2):
-    for attempt in range(attempts):
-        cords = detect_icon(image_path)
-        if cords is not None:
-            return cords
-        print(f"No of attemps: {attempt}")
-        time.sleep(delay)
-    return None
 
 
 async def process_icon(image_path, operation_delay):
@@ -55,15 +39,6 @@ def error_message(message, browser, display):
 def image_b64(image):
     with open(image, "rb") as f:
         return base64.b64encode(f.read()).decode()
-
-
-def extract_pdf_text():
-    folder_path = "./data"
-    files = os.listdir(folder_path)
-    for file in files:
-        file_path = os.path.join(folder_path, file)
-    text = extract_text(file_path, laparams=LAParams())
-    return text
 
 
 def get_email_attachment_summary(pdf_content):
@@ -122,23 +97,6 @@ def get_email_body_summary(screenshot_path):
     return email_body_response
 
 
-def detect_icon(icon_path: str):
-    image_coordinates = None
-    image_coordinates = pyautogui.locateOnScreen(icon_path, confidence=0.7)
-    if image_coordinates is None:
-        return image_coordinates
-
-    image_center_coordinates = pyautogui.center(image_coordinates)
-    if isOSX():
-        x = image_center_coordinates[0] / 2
-        y = image_center_coordinates[1] / 2
-        image_center_coordinates = x, y
-
-    pyautogui.moveTo(image_center_coordinates[0], image_center_coordinates[1], 1)
-    pyautogui.click(image_center_coordinates[0], image_center_coordinates[1])
-    return image_center_coordinates
-
-
 def check_unread_email(browser):
     # Find all unread emails
     unread_emails = browser.find_elements(By.CSS_SELECTOR, "tr.zA.zE")
@@ -162,7 +120,7 @@ def download_email_attachment(browser, link):
 
 def process_unread_emails(browser, unread_emails):
     final_response = ""
-    global screenshot_path
+    global screenshot_path  # pylint: disable=global-variable-not-assigned
     for email in unread_emails:
         email.click()  # Open the email
         time.sleep(3)  # Wait for the email to load
@@ -199,7 +157,7 @@ Attachment Summary:
 {attachment_email_response}
 """
         final_response += email_response
-        # Delete downlaod file
+        # Delete downloaded file
         folder_path = "./data"
         files = os.listdir(folder_path)
         for file in files:
