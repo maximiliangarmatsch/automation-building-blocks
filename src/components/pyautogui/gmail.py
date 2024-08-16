@@ -1,7 +1,6 @@
 """
 module to login to google account using bitwarden 
 """
-
 import os
 import time
 import pyautogui
@@ -44,11 +43,12 @@ async def login_via_bitwarden():
             driver_executable_path=ChromeDriverManager().install(),
             options=chrome_options,
         )
+        # browser = uc.Chrome(options=chrome_options)
         browser.get(
             "https://accounts.google.com/AccountChooser?service=mail&continue=https://google.com&hl=en"
         )
         browser.maximize_window()
-        browser.save_screenshot("1.png")
+        browser.save_screenshot("./screenshots/1.png")
 
         if not is_osx():
             # mouse moves in SmartDisplay
@@ -80,7 +80,7 @@ async def login_via_bitwarden():
         cords_image_before_login = await process_icon(
             "src/assets/bitwarden_before_login.png", 2
         )
-        print(cords_image_before_login)
+
         if cords_image_before_login is None:
             return error_message("Error While Click on Bitwarden.", browser, display)
         time.sleep(2)
@@ -129,7 +129,7 @@ async def login_via_bitwarden():
         cords_image_random = await process_icon("src/assets/signin_random.png", 1)
         if cords_image_random is None:
             return error_message("Signin random icon not found.", browser, display)
-        time.sleep(1)
+        time.sleep(2)
 
         # Locate the login button to click on it
         cords_center_next = await process_icon("src/assets/gmail_next.png", 2)
@@ -157,13 +157,13 @@ async def login_via_bitwarden():
             return error_message(
                 "Error while login to Gmails account.", browser, display
             )
-        time.sleep(5)
+        time.sleep(4)
 
         # Locate the Gmail icon on the main page to click on it
         cords_center_next = await process_icon("src/assets/move_to_inbox.png", 5)
         if cords_center_next is None:
             return error_message("Erro during open gmail inbox.", browser, display)
-        time.sleep(5)
+        time.sleep(4)
 
         # Check all unread emails
         unread_emails = check_unread_email(browser)
@@ -180,7 +180,7 @@ async def login_via_bitwarden():
     except Exception as e:
         # Take a screenshot after the action
         screenshot = pyautogui.screenshot()
-        screenshot.save("error_screenshot.png")
+        screenshot.save("./screenshots/error_screenshot.png")
         print(f"Error during Crawling!{e}")
         browser.quit()
         display.stop()

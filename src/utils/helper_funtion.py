@@ -4,6 +4,7 @@ helper funtions
 
 import os
 import time
+import shutil
 import base64
 import pyautogui
 from openai import OpenAI
@@ -21,6 +22,15 @@ screenshot_path = "screenshot.jpg"
 
 chrome_options = uc.ChromeOptions()
 
+def move_pdf_to_finance_assets():
+    source_dir = "./data"
+    destination_dir = "./financial_crew/assets"
+    files = os.listdir(source_dir)
+    for file_name in files:
+        source_file = os.path.join(source_dir, file_name)
+        destination_file = os.path.join(destination_dir, file_name)
+        shutil.copy(source_file, destination_file)
+        print(f"Copied {file_name} to {destination_dir}")
 
 async def process_icon(image_path, operation_delay):
     cords = detect_icon_with_retry(image_path, attempts=3, delay=operation_delay)
@@ -157,6 +167,7 @@ Attachment Summary:
 {attachment_email_response}
 """
         final_response += email_response
+        move_pdf_to_finance_assets()
         # Delete downloaded file
         folder_path = "./data"
         files = os.listdir(folder_path)

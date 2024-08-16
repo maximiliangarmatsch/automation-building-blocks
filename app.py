@@ -10,7 +10,7 @@ from discord import app_commands
 from discord.ext import commands
 from discord import Intents
 from src.components.pyautogui.gmail import login_via_bitwarden
-
+from financial_crew.run_crew import run_crew
 # STEP 0: LOAD OUR DISCORD_TOKEN FROM .env FILE
 load_dotenv()
 upload_folder = "data"
@@ -24,8 +24,8 @@ bot = commands.Bot(command_prefix="/", intents=discord.Intents.all())
 
 @bot.event
 async def on_ready():
-    print("Bot is ready")
-    await login_via_bitwarden()
+    # print("Bot is ready")
+    # await login_via_bitwarden()
     try:
         synced = await bot.tree.sync()
         print(f"Synced {len(synced)} commands")
@@ -57,12 +57,22 @@ async def send_message(message: discord.Message, user_message: str) -> None:
         # Use the typing context manager to show typing indicator
         async with message.channel.typing():
             response: str = await login_via_bitwarden()
-            chunks = [response[i : i + 2000] for i in range(0, len(response), 2000)]
-            for chunk in chunks:
-                if is_private:
-                    await message.author.send(chunk)
-                else:
-                    await message.channel.send(chunk)
+            if "No unread emails" in response or "No Attachment" in response:
+                chunks = [response[i : i + 2000] for i in range(0, len(response), 2000)]
+                for chunk in chunks:
+                    if is_private:
+                        await message.author.send(chunk)
+                    else:
+                        await message.channel.send(chunk)
+            else:
+                crew_response = run_crew()
+                response = response + "\n\n" + "------------------------" + "\n" + crew_response
+                chunks = [response[i : i + 2000] for i in range(0, len(response), 2000)]
+                for chunk in chunks:
+                    if is_private:
+                        await message.author.send(chunk)
+                    else:
+                        await message.channel.send(chunk)
     except Exception as e:
         print(f"An error occurred while sending a message: {e}")
 
