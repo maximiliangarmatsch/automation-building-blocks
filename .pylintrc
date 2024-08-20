@@ -100,7 +100,8 @@ disable=raw-checker-failed,
         too-many-locals,
         too-many-return-statements,
         redefined-outer-name,
-        no-else-return
+        no-else-return,
+        missing-class-docstring
 
 [METHOD_ARGS]
 timeout-methods=requests.api.delete,requests.api.get,requests.api.head,requests.api.options,requests.api.patch,requests.api.post,requests.api.put,requests.api.request
