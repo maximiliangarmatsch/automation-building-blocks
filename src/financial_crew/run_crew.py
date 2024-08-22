@@ -1,14 +1,15 @@
 import os
 import sys
-from financial_crew.crew import FinnaceCrew
+from src.financial_crew.crew import FinnaceCrew
 
 def run_crew():
     final_response = FinnaceCrew().crew().kickoff()
-    folder_path = "./financial_crew/assets"
+    folder_path = "./src/financial_crew/assets"
     files = os.listdir(folder_path)
     for file in files:
         file_path = os.path.join(folder_path, file)
         os.remove(file_path)
+    print(final_response)
     return final_response
 
 async def train_crew():

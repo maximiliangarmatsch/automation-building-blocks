@@ -4,20 +4,23 @@ from crewai import Agent, Crew, Process, Task
 from langchain_openai import ChatOpenAI
 from crewai.project import CrewBase, agent, crew, task
 from crewai_tools import SerperDevTool, ScrapeWebsiteTool, PDFSearchTool
+from src.components.pyautogui.gmail import openai_key, serp_api_key
 load_dotenv()
-os.environ['OPENAI_API_KEY'] = os.getenv("OPENAI_API_KEY")
-os.environ['SERPAPI_API_KEY'] = os.getenv("SERPAPI_API_KEY")
+os.environ['OPENAI_API_KEY'] = openai_key
+os.environ['SERPAPI_API_KEY'] = serp_api_key
 
+file_path = None
 llm = ChatOpenAI(model="gpt-4o-mini")
-folder_path = "./financial_crew/assets"
+folder_path = "./src/financial_crew/assets"
 files = os.listdir(folder_path)
 for file in files:
 	file_path = os.path.join(folder_path, file)
+
 pdf_search_tool = PDFSearchTool(
 	pdf = file_path,
 )
 
-@CrewBase
+@CrewBase 
 class FinnaceCrew():
 	agents_config = './config/agents.yaml'
 	tasks_config = './config/tasks.yaml'
@@ -74,9 +77,9 @@ class FinnaceCrew():
 	@crew
 	def crew(self) -> Crew:
 		return Crew(
-			agents=self.agents, # Automatically created by the @agent decorator
-			tasks=self.tasks, # Automatically created by the @task decorator
+			agents=self.agents,
+			tasks=self.tasks,
 			process=Process.sequential,
-			verbose=2,
+			verbose=True,
 			# process=Process.hierarchical, # In case you wanna use that instead https://docs.crewai.com/how-to/Hierarchical/
 		)

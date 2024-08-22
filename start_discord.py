@@ -10,7 +10,7 @@ from discord import app_commands
 from discord.ext import commands
 from discord import Intents
 from src.components.pyautogui.gmail import login_via_bitwarden
-from financial_crew.run_crew import run_crew
+from src.financial_crew.run_crew import run_crew
 # STEP 0: LOAD OUR DISCORD_TOKEN FROM .env FILE
 load_dotenv()
 upload_folder = "data"
@@ -65,7 +65,7 @@ async def send_message(message: discord.Message, user_message: str) -> None:
                     else:
                         await message.channel.send(chunk)
             else:
-                crew_response = run_crew()
+                crew_response = str(run_crew())
                 response = response + "\n\n" + "------------------------" + "\n" + crew_response
                 chunks = [response[i : i + 2000] for i in range(0, len(response), 2000)]
                 for chunk in chunks:

@@ -16,3 +16,5 @@ Pillow
 webdriver-manager
 selenium
 crewai
+hnswlib
+crewai_tools
