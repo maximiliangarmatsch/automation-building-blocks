@@ -159,13 +159,13 @@ async def login_via_bitwarden():
             return error_message(
                 "Error while login to Gmails account.", browser, display
             )
-        time.sleep(20)
+        time.sleep(5)
 
         # Locate the Gmail icon on the main page to click on it
         cords_center_next = await process_icon("src/assets/move_to_inbox.png", 5)
         if cords_center_next is None:
             return error_message("Erro during open gmail inbox.", browser, display)
-        time.sleep(20)
+        time.sleep(5)
 
         # Check all unread emails
         unread_emails = check_unread_email(browser)
