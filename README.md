@@ -17,6 +17,7 @@ Install Python (newest version, currently 3.11.0)
 
 - https://www.python.org/downloads/
 
+
 ## (MacOS Only) Pre-Setup
 
 ```shell
@@ -38,27 +39,22 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 ### create .env
-Create two .envs in main project folder and inside financial_crew
+Create .env in main project.
 
-In project main folder
 ```
 OPENAI_API_KEY = ""
+SERPAPI_API_KEY = ""
 CHANNEL_ID = ""
 BITWARDEN_EMAIL = ""
 BITWARDEN_PASSWORD = ""
 DISCORD_TOKEN = ""
 ```
-In financial crew folder
-```
-OPENAI_API_KEY = ""
-SERPAPI_API_KEY = ""
-```
 ### Start "Python App"
 
 ```shell
-python3 app.py
+python3 start_discord.py
       OR
-python app.py
+python start_discord.py
 
 ```
 
@@ -74,4 +70,12 @@ npm install
 $ node ./utils/vision_crew_ai.js
 ```
 
-### See /docs for more
+## Other
+
+### Stop "venv"
+
+```shell
+$ deactivate
+```
+
+## See /docs for more
