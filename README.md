@@ -17,10 +17,12 @@ Install Python (newest version, currently 3.11.0)
 
 - https://www.python.org/downloads/
 
-
 ## (MacOS Only) Pre-Setup
 
 ```shell
+#General Fixes:
+export HNSWLIB_NO_NATIVE=1
+
 #For Certificates
 /Applications/Python\ 3.12/Install\ Certificates.command
 pip install --upgrade certifi
@@ -38,8 +40,8 @@ python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
-### create .env
-Create .env in main project.
+
+### Create ./.env file
 
 ```
 OPENAI_API_KEY = ""
@@ -49,6 +51,7 @@ BITWARDEN_EMAIL = ""
 BITWARDEN_PASSWORD = ""
 DISCORD_TOKEN = ""
 ```
+
 ### Start "Python App"
 
 ```shell
