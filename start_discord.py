@@ -11,6 +11,7 @@ from discord.ext import commands
 from discord import Intents
 from src.components.pyautogui.gmail import login_via_bitwarden
 from src.financial_crew.run_crew import run_crew
+
 # STEP 0: LOAD OUR DISCORD_TOKEN FROM .env FILE
 load_dotenv()
 upload_folder = "data"
@@ -35,7 +36,7 @@ async def on_ready():
 
 @bot.tree.command(name="email")
 @app_commands.describe(query="Type email description here")
-async def email(interaction: discord.Interaction):
+async def email(interaction: discord.Interaction, query: str):
     await interaction.response.defer()
     try:
         response = "Hello Email"
@@ -66,7 +67,13 @@ async def send_message(message: discord.Message, user_message: str) -> None:
                         await message.channel.send(chunk)
             else:
                 crew_response = str(run_crew())
-                response = response + "\n\n" + "------------------------" + "\n" + crew_response
+                response = (
+                    response
+                    + "\n\n"
+                    + "------------------------"
+                    + "\n"
+                    + crew_response
+                )
                 chunks = [response[i : i + 2000] for i in range(0, len(response), 2000)]
                 for chunk in chunks:
                     if is_private:
