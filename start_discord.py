@@ -35,7 +35,7 @@ async def on_ready():
 
 @bot.tree.command(name="email")
 @app_commands.describe(query="Type email description here")
-async def email(interaction: discord.Interaction, query: str):
+async def email(interaction: discord.Interaction):
     await interaction.response.defer()
     try:
         response = "Hello Email"

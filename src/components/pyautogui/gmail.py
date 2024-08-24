@@ -1,6 +1,7 @@
 """
 module to login to google account using bitwarden 
 """
+
 import os
 import time
 import pyautogui
@@ -30,10 +31,14 @@ BITWARDEN_EMAIL = os.getenv("BITWARDEN_EMAIL")
 BITWARDEN_PASSWORD = os.getenv("BITWARDEN_PASSWORD")
 
 
+# pylint: disable=fixme
+# TODO code cleanup please
+# pylint: disable=too-many-branches
 async def login_via_bitwarden():
     try:
         # Create a ChromeOptions object
         chrome_options = uc.ChromeOptions()
+
         # global chrome_options
         # Add the extension to ChromeOptions
         chrome_options.add_argument("--load-extension=./src/Extensions/bitwarden")
@@ -49,6 +54,7 @@ async def login_via_bitwarden():
         browser.get(
             "https://accounts.google.com/AccountChooser?service=mail&continue=https://google.com&hl=en"
         )
+        time.sleep(5)
         browser.maximize_window()
         browser.save_screenshot("./screenshots/1.png")
 
@@ -60,10 +66,14 @@ async def login_via_bitwarden():
 
         pos = pyautogui.position()
         print(pos)
-        time.sleep(2)
+        time.sleep(5)
 
         # Locate the extensions icon to click
-        cords_image = await process_icon("src/assets/extension.png", 2)
+        if not is_osx():
+            cords_image_path = "src/assets/extension_win.png"
+        else:
+            cords_image_path = "src/assets/extension_mac.png"
+        cords_image = await process_icon(cords_image_path, 2)
         if cords_image is None:
             return error_message(
                 "Error While click on Extensions Icon", browser, display
