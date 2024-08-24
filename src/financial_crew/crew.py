@@ -10,6 +10,7 @@ load_dotenv()
 os.environ["OPENAI_API_KEY"] = openai_key
 os.environ["SERPAPI_API_KEY"] = serp_api_key
 
+
 file_path = None
 llm = ChatOpenAI(model="gpt-4o-mini")
 folder_path = "./src/financial_crew/assets"
