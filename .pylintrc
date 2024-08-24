@@ -101,7 +101,8 @@ disable=raw-checker-failed,
         too-many-return-statements,
         redefined-outer-name,
         no-else-return,
-        missing-class-docstring
+        missing-class-docstring,
+        invalid-sequence-index
 
 [METHOD_ARGS]
 timeout-methods=requests.api.delete,requests.api.get,requests.api.head,requests.api.options,requests.api.patch,requests.api.post,requests.api.put,requests.api.request

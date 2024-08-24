@@ -61,15 +61,21 @@ python start_discord.py
 
 ```
 
-## Setup for Javascript
+
+### Start "Financial Crew only"
+#### Requires ./src/fincancial_crew/assets/Bank-of-America-Bank-Statement-TemplateLab.com_.pdf to exist
 
 ```shell
-npm install
+python3 ./src/financial_crew/run_crew.py
+      OR
+python ./src/financial_crew/run_crew.py
+
 ```
 
-### Start "Website automation"
+### Start "Website automation" with Puppetee
 
 ```shell
+$ npm install
 $ node ./utils/vision_crew_ai.js
 ```
 
