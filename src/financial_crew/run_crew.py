@@ -2,6 +2,7 @@ import os
 import sys
 from src.financial_crew.crew import FinnaceCrew
 
+
 def run_crew():
     final_response = FinnaceCrew().crew().kickoff()
     folder_path = "./src/financial_crew/assets"
@@ -11,6 +12,7 @@ def run_crew():
         os.remove(file_path)
     print(final_response)
     return final_response
+
 
 async def train_crew():
     try:
