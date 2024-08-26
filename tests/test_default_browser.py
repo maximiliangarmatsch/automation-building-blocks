@@ -12,6 +12,8 @@ import undetected_chromedriver as uc
 options = uc.ChromeOptions()
 user_data_dir = '/home/aamir/.config/google-chrome/Default'
 options.add_argument('--no-default-browser-check')
+options.add_argument('--profile-directory=Default')
+options.add_argument("--load-extension=/home/aamir/.config/google-chrome/Default/Extensions/nngceckbapebfimnlniiiahkandclblb/2024.7.1_6")
 
 browser = uc.Chrome(
     driver_executable_path=ChromeDriverManager(driver_version = "127.0.6533.72").install(),
