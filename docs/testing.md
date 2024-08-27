@@ -10,7 +10,7 @@
 python -m unittest discover -s tests -p "*.test.py"
 ```
 
-## Setup for Running pyautogui in a Virtual Dispplay on Docker
+## Setup for Running pyautogui in a Virtual Display on Docker
 
 ### Steps
 
