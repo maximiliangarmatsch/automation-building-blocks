@@ -28,7 +28,7 @@ python -m unittest discover -s tests -p "*.test.py"
 
 - start a virtual display (with given arbitary display number)
 
-  - `source ./start_vd.sh 8`
+  - `source ./start_virtual_display.sh 8`
 
 - Run the virtual environment
 
@@ -36,7 +36,7 @@ python -m unittest discover -s tests -p "*.test.py"
 
 - Stop the virtual display (started with the number chosen above)
 
-  - `./stop_vd.sh 8`
+  - `./stop_virtual_display.sh 8`
 
 - Exit the shell by `Ctrl + C`
 

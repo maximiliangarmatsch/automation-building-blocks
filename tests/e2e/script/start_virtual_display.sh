@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# https://github.com/dec1/Virtual-Display-in-Docker/blob/master/script/start_vd.sh
+
 if [ $# -eq 0 ]; then
     echo "Usage: $0 new_display_number"
     exit 1

@@ -7,7 +7,7 @@ from selenium.webdriver.chrome.options import Options
 options = Options()
 
 # normally most chrome chrome functionality would work fine, even without a display,
-# as long as we start it with the "headless" option. But to confirm the virtual display works, 
+# as long as we start it with the "headless" option. But to confirm the virtual display works,
 # we'll omit the headless option
 #
 # options.add_argument("--headless")
@@ -27,7 +27,7 @@ try:
     # Perform PyAutoGUI actions
     pyautogui.moveTo(100, 100)
     pos = pyautogui.position()
-    print("POSITION ", pos )
+    print("POSITION ", pos)
     pyautogui.click()
 
     # Take a screenshot

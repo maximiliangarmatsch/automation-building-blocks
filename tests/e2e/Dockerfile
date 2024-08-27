@@ -52,12 +52,12 @@ RUN wget -q https://chromedriver.storage.googleapis.com/126.0.6478.126/chromedri
 
 WORKDIR /home
 
-COPY script/start_vd.sh /home/start_vd.sh
-COPY script/stop_vd.sh /home/stop_vd.sh
-COPY virt_docker.py /home/virt_docker.py
+COPY script/start_virtual_display.sh /home/start_virtual_display.sh
+COPY script/stop_virtual_display.sh /home/stop_virtual_display.sh
+COPY virtual_display_pyautogui.py /home/virtual_display_pyautogui.py
 
-RUN chmod +x /home/start_vd.sh && \
-    chmod +x /home/stop_vd.sh
+RUN chmod +x /home/start_virtual_display.sh && \
+    chmod +x /home/stop_virtual_display.sh
 
 RUN mkdir /home/screenshots
 
