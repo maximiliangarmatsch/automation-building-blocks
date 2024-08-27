@@ -10,7 +10,7 @@
 python -m unittest discover -s tests -p "*.test.py"
 ```
 
-## Setup for Running pyautogui in a Virtual Dispplay on Docker
+## Setup for Running pyautogui in a Virtual Display on Docker
 
 ### Steps
 
@@ -26,7 +26,7 @@ python -m unittest discover -s tests -p "*.test.py"
 
   - `docker run -it --name <CONTAINER_NAME> <IMAGE_NAME>`
 
-- start a virtual display (with given arbitary display number)
+- Start a virtual display (with given arbitary display number)
 
   - `source ./start_virtual_display.sh 8`
 
