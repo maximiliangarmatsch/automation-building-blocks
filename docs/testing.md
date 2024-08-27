@@ -26,7 +26,7 @@ python -m unittest discover -s tests -p "*.test.py"
 
   - `docker run -it --name <CONTAINER_NAME> <IMAGE_NAME>`
 
-- start a virtual display (with given arbitary display number)
+- Start a virtual display (with given arbitary display number)
 
   - `source ./start_vd.sh 8`
 
