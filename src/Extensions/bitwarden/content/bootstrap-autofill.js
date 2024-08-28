@@ -1,8 +1,7 @@
 /******/ (function() { // webpackBootstrap
 /******/ 	"use strict";
-var __webpack_exports__ = {};
 
-;// CONCATENATED MODULE: ./src/autofill/enums/autofill-port.enums.ts
+;// CONCATENATED MODULE: ./src/autofill/enums/autofill-port.enum.ts
 const AutofillPort = {
     InjectedScript: "autofill-injected-script-port",
 };
@@ -20,20 +19,48 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 };
 
 /**
+ * Generates a random string of characters.
+ *
+ * @param length - The length of the random string to generate.
+ */
+function generateRandomChars(length) {
+    const chars = "abcdefghijklmnopqrstuvwxyz";
+    const randomChars = [];
+    const randomBytes = new Uint8Array(length);
+    globalThis.crypto.getRandomValues(randomBytes);
+    for (let byteIndex = 0; byteIndex < randomBytes.length; byteIndex++) {
+        const byte = randomBytes[byteIndex];
+        randomChars.push(chars[byte % chars.length]);
+    }
+    return randomChars.join("");
+}
+/**
+ * Polyfills the requestIdleCallback API with a setTimeout fallback.
+ *
+ * @param callback - The callback function to run when the browser is idle.
+ * @param options - The options to pass to the requestIdleCallback function.
+ */
+function requestIdleCallbackPolyfill(callback, options) {
+    if ("requestIdleCallback" in globalThis) {
+        return globalThis.requestIdleCallback(() => callback(), options);
+    }
+    return globalThis.setTimeout(() => callback(), 1);
+}
+/**
+ * Polyfills the cancelIdleCallback API with a clearTimeout fallback.
+ *
+ * @param id - The ID of the idle callback to cancel.
+ */
+function cancelIdleCallbackPolyfill(id) {
+    if ("cancelIdleCallback" in globalThis) {
+        return globalThis.cancelIdleCallback(id);
+    }
+    return globalThis.clearTimeout(id);
+}
+/**
  * Generates a random string of characters that formatted as a custom element name.
  */
 function generateRandomCustomElementName() {
-    const generateRandomChars = (length) => {
-        const chars = "abcdefghijklmnopqrstuvwxyz";
-        const randomChars = [];
-        const randomBytes = new Uint8Array(length);
-        globalThis.crypto.getRandomValues(randomBytes);
-        for (let byteIndex = 0; byteIndex < randomBytes.length; byteIndex++) {
-            const byte = randomBytes[byteIndex];
-            randomChars.push(chars[byte % chars.length]);
-        }
-        return randomChars.join("");
-    };
     const length = Math.floor(Math.random() * 5) + 8; // Between 8 and 12 characters
     const numHyphens = Math.min(Math.max(Math.floor(Math.random() * 4), 1), length - 1); // At least 1, maximum of 3 hyphens
     const hyphenIndices = [];
@@ -75,14 +102,15 @@ function buildSvgDomElement(svgString, ariaHidden = true) {
  */
 function sendExtensionMessage(command, options = {}) {
     return __awaiter(this, void 0, void 0, function* () {
-        return new Promise((resolve) => {
-            chrome.runtime.sendMessage(Object.assign({ command }, options), (response) => {
-                if (chrome.runtime.lastError) {
-                    return;
-                }
-                resolve(response);
-            });
-        });
+        if (typeof browser !== "undefined") {
+            return browser.runtime.sendMessage(Object.assign({ command }, options));
+        }
+        return new Promise((resolve) => chrome.runtime.sendMessage(Object.assign({ command }, options), (response) => {
+            if (chrome.runtime.lastError) {
+                resolve(null);
+            }
+            resolve(response);
+        }));
     });
 }
 /**
@@ -106,7 +134,7 @@ function setElementStyles(element, styles, priority) {
  * and triggers an onDisconnect event if the extension context
  * is invalidated.
  *
- * @param callback - Callback function to run when the extension disconnects
+ * @param callback - Callback export function to run when the extension disconnects
  */
 function setupExtensionDisconnectAction(callback) {
     const port = chrome.runtime.connect({ name: AutofillPort.InjectedScript });
@@ -139,7 +167,7 @@ function setupAutofillInitDisconnectAction(windowContext) {
  * @param formFieldElement - The form field element to check.
  */
 function elementIsFillableFormField(formFieldElement) {
-    return (formFieldElement === null || formFieldElement === void 0 ? void 0 : formFieldElement.tagName.toLowerCase()) !== "span";
+    return !elementIsSpanElement(formFieldElement);
 }
 /**
  * Identifies whether an element is an instance of a specific tag name.
@@ -148,7 +176,7 @@ function elementIsFillableFormField(formFieldElement) {
  * @param tagName -  The tag name to check against.
  */
 function elementIsInstanceOf(element, tagName) {
-    return (element === null || element === void 0 ? void 0 : element.tagName.toLowerCase()) === tagName;
+    return nodeIsElement(element) && element.tagName.toLowerCase() === tagName;
 }
 /**
  * Identifies whether an element is a span element.
@@ -223,7 +251,7 @@ function nodeIsElement(node) {
     if (!node) {
         return false;
     }
-    return node.nodeType === Node.ELEMENT_NODE;
+    return (node === null || node === void 0 ? void 0 : node.nodeType) === Node.ELEMENT_NODE;
 }
 /**
  * Identifies whether a node is an input element.
@@ -241,7 +269,138 @@ function nodeIsInputElement(node) {
 function nodeIsFormElement(node) {
     return nodeIsElement(node) && elementIsFormElement(node);
 }
+/**
+ * Returns a boolean representing the attribute value of an element.
+ *
+ * @param element
+ * @param attributeName
+ * @param checkString
+ */
+function getAttributeBoolean(element, attributeName, checkString = false) {
+    if (checkString) {
+        return getPropertyOrAttribute(element, attributeName) === "true";
+    }
+    return Boolean(getPropertyOrAttribute(element, attributeName));
+}
+/**
+ * Get the value of a property or attribute from a FormFieldElement.
+ *
+ * @param element
+ * @param attributeName
+ */
+function getPropertyOrAttribute(element, attributeName) {
+    if (attributeName in element) {
+        return element[attributeName];
+    }
+    return element.getAttribute(attributeName);
+}
+/**
+ * Throttles a callback function to run at most once every `limit` milliseconds.
+ *
+ * @param callback - The callback function to throttle.
+ * @param limit - The time in milliseconds to throttle the callback.
+ */
+function throttle(callback, limit) {
+    let waitingDelay = false;
+    return function (...args) {
+        if (!waitingDelay) {
+            callback.apply(this, args);
+            waitingDelay = true;
+            globalThis.setTimeout(() => (waitingDelay = false), limit);
+        }
+    };
+}
 
+;// CONCATENATED MODULE: ../../libs/common/src/autofill/constants/index.ts
+const TYPE_CHECK = {
+    FUNCTION: "function",
+    NUMBER: "number",
+    STRING: "string",
+};
+const EVENTS = {
+    CHANGE: "change",
+    INPUT: "input",
+    KEYDOWN: "keydown",
+    KEYPRESS: "keypress",
+    KEYUP: "keyup",
+    BLUR: "blur",
+    CLICK: "click",
+    FOCUS: "focus",
+    FOCUSIN: "focusin",
+    FOCUSOUT: "focusout",
+    SCROLL: "scroll",
+    RESIZE: "resize",
+    DOMCONTENTLOADED: "DOMContentLoaded",
+    LOAD: "load",
+    MESSAGE: "message",
+    VISIBILITYCHANGE: "visibilitychange",
+    MOUSEENTER: "mouseenter",
+    MOUSELEAVE: "mouseleave",
+};
+const ClearClipboardDelay = {
+    Never: null,
+    TenSeconds: 10,
+    TwentySeconds: 20,
+    ThirtySeconds: 30,
+    OneMinute: 60,
+    TwoMinutes: 120,
+    FiveMinutes: 300,
+};
+/* Context Menu item Ids */
+const AUTOFILL_CARD_ID = "autofill-card";
+const AUTOFILL_ID = "autofill";
+const SHOW_AUTOFILL_BUTTON = "show-autofill-button";
+const AUTOFILL_IDENTITY_ID = "autofill-identity";
+const COPY_IDENTIFIER_ID = "copy-identifier";
+const COPY_PASSWORD_ID = "copy-password";
+const COPY_USERNAME_ID = "copy-username";
+const COPY_VERIFICATION_CODE_ID = "copy-totp";
+const CREATE_CARD_ID = "create-card";
+const CREATE_IDENTITY_ID = "create-identity";
+const CREATE_LOGIN_ID = "create-login";
+const GENERATE_PASSWORD_ID = "generate-password";
+const NOOP_COMMAND_SUFFIX = "noop";
+const ROOT_ID = "root";
+const SEPARATOR_ID = "separator";
+const NOTIFICATION_BAR_LIFESPAN_MS = 150000; // 150 seconds
+const AUTOFILL_OVERLAY_HANDLE_REPOSITION = "autofill-overlay-handle-reposition-event";
+const AutofillOverlayVisibility = {
+    Off: 0,
+    OnButtonClick: 1,
+    OnFieldFocus: 2,
+};
+const BrowserClientVendors = {
+    Chrome: "Chrome",
+    Opera: "Opera",
+    Edge: "Edge",
+    Vivaldi: "Vivaldi",
+    Unknown: "Unknown",
+};
+const BrowserShortcutsUris = {
+    Chrome: "chrome://extensions/shortcuts",
+    Opera: "opera://extensions/shortcuts",
+    Edge: "edge://extensions/shortcuts",
+    Vivaldi: "vivaldi://extensions/shortcuts",
+    Unknown: "https://bitwarden.com/help/keyboard-shortcuts",
+};
+const DisablePasswordManagerUris = {
+    Chrome: "chrome://settings/autofill",
+    Opera: "opera://settings/autofill",
+    Edge: "edge://settings/passwords",
+    Vivaldi: "vivaldi://settings/autofill",
+    Unknown: "https://bitwarden.com/help/disable-browser-autofill/",
+};
+const ExtensionCommand = {
+    AutofillCommand: "autofill_cmd",
+    AutofillCard: "autofill_card",
+    AutofillIdentity: "autofill_identity",
+    AutofillLogin: "autofill_login",
+    OpenAutofillOverlay: "open_autofill_overlay",
+    GeneratePassword: "generate_password",
+    OpenPopup: "open_popup",
+    LockVault: "lock_vault",
+    NoopCommand: "noop",
+};
 
 ;// CONCATENATED MODULE: ./src/autofill/services/collect-autofill-content.service.ts
 var collect_autofill_content_service_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -256,6 +415,9 @@ var collect_autofill_content_service_awaiter = (undefined && undefined.__awaiter
 
 class CollectAutofillContentService {
     constructor(domElementVisibilityService, autofillOverlayContentService) {
+        this.sendExtensionMessage = sendExtensionMessage;
+        this.getAttributeBoolean = getAttributeBoolean;
+        this.getPropertyOrAttribute = getPropertyOrAttribute;
         this.noFieldsFound = false;
         this.domRecentlyMutated = true;
         this.autofillFormElements = new Map();
@@ -263,7 +425,7 @@ class CollectAutofillContentService {
         this.currentLocationHref = "";
         this.elementInitializingIntersectionObserver = new Set();
         this.mutationsQueue = [];
-        this.updateAfterMutationTimeoutDelay = 1000;
+        this.updateAfterMutationTimeout = 1000;
         this.nonInputFormFieldTags = new Set(["textarea", "select"]);
         this.ignoredInputTypes = new Set([
             "hidden",
@@ -283,7 +445,7 @@ class CollectAutofillContentService {
          * @param index - The index of the form field element
          */
         this.buildAutofillFieldItem = (element, index) => collect_autofill_content_service_awaiter(this, void 0, void 0, function* () {
-            var _a, _b, _c;
+            var _a;
             if (element.closest("button[type='submit']")) {
                 return null;
             }
@@ -313,7 +475,6 @@ class CollectAutofillContentService {
             }
             if (elementIsSpanElement(element)) {
                 this.cacheAutofillFieldElement(index, element, autofillFieldBase);
-                void ((_b = this.autofillOverlayContentService) === null || _b === void 0 ? void 0 : _b.setupAutofillOverlayListenerOnField(element, autofillFieldBase));
                 return autofillFieldBase;
             }
             let autofillFieldLabels = {};
@@ -334,7 +495,6 @@ class CollectAutofillContentService {
                     ? this.getSelectElementOptions(element)
                     : null, form: fieldFormElement ? this.getPropertyOrAttribute(fieldFormElement, "opid") : null, "aria-hidden": this.getAttributeBoolean(element, "aria-hidden", true), "aria-disabled": this.getAttributeBoolean(element, "aria-disabled", true), "aria-haspopup": this.getAttributeBoolean(element, "aria-haspopup", true), "data-stripe": this.getPropertyOrAttribute(element, "data-stripe") });
             this.cacheAutofillFieldElement(index, element, autofillField);
-            void ((_c = this.autofillOverlayContentService) === null || _c === void 0 ? void 0 : _c.setupAutofillOverlayListenerOnField(element, autofillField));
             return autofillField;
         });
         /**
@@ -366,7 +526,7 @@ class CollectAutofillContentService {
                 return;
             }
             if (!this.mutationsQueue.length) {
-                globalThis.requestIdleCallback(this.processMutations, { timeout: 500 });
+                requestIdleCallbackPolyfill(this.processMutations, { timeout: 500 });
             }
             this.mutationsQueue.push(mutations);
         };
@@ -391,7 +551,7 @@ class CollectAutofillContentService {
          * @param entries - The entries observed by the IntersectionObserver
          */
         this.handleFormElementIntersection = (entries) => collect_autofill_content_service_awaiter(this, void 0, void 0, function* () {
-            var _d, _e;
+            var _b;
             for (let entryIndex = 0; entryIndex < entries.length; entryIndex++) {
                 const entry = entries[entryIndex];
                 const formFieldElement = entry.target;
@@ -399,17 +559,18 @@ class CollectAutofillContentService {
                     this.elementInitializingIntersectionObserver.delete(formFieldElement);
                     continue;
                 }
+                const cachedAutofillFieldElement = this.autofillFieldElements.get(formFieldElement);
+                if (!cachedAutofillFieldElement) {
+                    this.intersectionObserver.unobserve(entry.target);
+                    continue;
+                }
                 const isViewable = yield this.domElementVisibilityService.isFormFieldViewable(formFieldElement);
                 if (!isViewable) {
                     continue;
                 }
-                const cachedAutofillFieldElement = this.autofillFieldElements.get(formFieldElement);
-                if (!cachedAutofillFieldElement) {
-                    continue;
-                }
                 cachedAutofillFieldElement.viewable = true;
-                void ((_d = this.autofillOverlayContentService) === null || _d === void 0 ? void 0 : _d.setupAutofillOverlayListenerOnField(formFieldElement, cachedAutofillFieldElement));
-                (_e = this.intersectionObserver) === null || _e === void 0 ? void 0 : _e.unobserve(entry.target);
+                this.setupInlineMenu(formFieldElement, cachedAutofillFieldElement);
+                (_b = this.intersectionObserver) === null || _b === void 0 ? void 0 : _b.unobserve(entry.target);
             }
         });
         this.domElementVisibilityService = domElementVisibilityService;
@@ -454,7 +615,9 @@ class CollectAutofillContentService {
                 this.noFieldsFound = true;
             }
             this.domRecentlyMutated = false;
-            return this.getFormattedPageDetails(autofillFormsData, autofillFieldsData);
+            const pageDetails = this.getFormattedPageDetails(autofillFormsData, autofillFieldsData);
+            this.setupInlineMenuListeners(pageDetails);
+            return pageDetails;
         });
     }
     /**
@@ -582,8 +745,11 @@ class CollectAutofillContentService {
      */
     updateCachedAutofillFieldVisibility() {
         this.autofillFieldElements.forEach((autofillField, element) => collect_autofill_content_service_awaiter(this, void 0, void 0, function* () {
-            return (autofillField.viewable =
-                yield this.domElementVisibilityService.isFormFieldViewable(element));
+            const previouslyViewable = autofillField.viewable;
+            autofillField.viewable = yield this.domElementVisibilityService.isFormFieldViewable(element);
+            if (!previouslyViewable && autofillField.viewable) {
+                this.setupInlineMenu(element, autofillField);
+            }
         }));
     }
     /**
@@ -712,24 +878,9 @@ class CollectAutofillContentService {
      * @private
      */
     getAutoCompleteAttribute(element) {
-        const autoCompleteType = this.getPropertyOrAttribute(element, "x-autocompletetype") ||
+        return (this.getPropertyOrAttribute(element, "x-autocompletetype") ||
             this.getPropertyOrAttribute(element, "autocompletetype") ||
-            this.getPropertyOrAttribute(element, "autocomplete");
-        return autoCompleteType !== "off" ? autoCompleteType : null;
-    }
-    /**
-     * Returns a boolean representing the attribute value of an element.
-     * @param {ElementWithOpId<FormFieldElement>} element
-     * @param {string} attributeName
-     * @param {boolean} checkString
-     * @returns {boolean}
-     * @private
-     */
-    getAttributeBoolean(element, attributeName, checkString = false) {
-        if (checkString) {
-            return this.getPropertyOrAttribute(element, attributeName) === "true";
-        }
-        return Boolean(this.getPropertyOrAttribute(element, attributeName));
+            this.getPropertyOrAttribute(element, "autocomplete"));
     }
     /**
      * Returns the attribute of an element as a lowercase value.
@@ -975,19 +1126,6 @@ class CollectAutofillContentService {
         return this.recursivelyGetTextFromPreviousSiblings(siblingElement);
     }
     /**
-     * Get the value of a property or attribute from a FormFieldElement.
-     * @param {HTMLElement} element
-     * @param {string} attributeName
-     * @returns {string | null}
-     * @private
-     */
-    getPropertyOrAttribute(element, attributeName) {
-        if (attributeName in element) {
-            return element[attributeName];
-        }
-        return element.getAttribute(attributeName);
-    }
-    /**
      * Gets the value of the element. If the element is a checkbox, returns a checkmark if the
      * checkbox is checked, or an empty string if it is not checked. If the element is a hidden
      * input, returns the value of the input if it is less than 254 characters, or a truncated
@@ -1128,6 +1266,7 @@ class CollectAutofillContentService {
         this.domRecentlyMutated = true;
         if (this.autofillOverlayContentService) {
             this.autofillOverlayContentService.pageDetailsUpdateRequired = true;
+            void this.sendExtensionMessage("closeAutofillInlineMenu", { forceCloseInlineMenu: true });
         }
         this.noFieldsFound = false;
         this.autofillFormElements.clear();
@@ -1213,7 +1352,7 @@ class CollectAutofillContentService {
                 this.autofillFieldElements.get(node)) {
                 continue;
             }
-            globalThis.requestIdleCallback(
+            requestIdleCallbackPolyfill(
             // We are setting this item to a -1 index because we do not know its position in the DOM.
             // This value should be updated with the next call to collect page details.
             () => void this.buildAutofillFieldItem(node, -1), { timeout: 1000 });
@@ -1240,10 +1379,10 @@ class CollectAutofillContentService {
      * @private
      */
     updateAutofillElementsAfterMutation() {
-        if (this.updateAutofillElementsAfterMutationTimeout) {
-            clearTimeout(this.updateAutofillElementsAfterMutationTimeout);
+        if (this.updateAfterMutationIdleCallback) {
+            cancelIdleCallbackPolyfill(this.updateAfterMutationIdleCallback);
         }
-        this.updateAutofillElementsAfterMutationTimeout = setTimeout(this.getPageDetails.bind(this), this.updateAfterMutationTimeoutDelay);
+        this.updateAfterMutationIdleCallback = requestIdleCallbackPolyfill(this.getPageDetails.bind(this), { timeout: this.updateAfterMutationTimeout });
     }
     /**
      * Handles observed DOM mutations related to an autofill element attribute.
@@ -1360,13 +1499,41 @@ class CollectAutofillContentService {
         });
     }
     /**
+     * Iterates over all cached field elements and sets up the inline menu listeners on each field.
+     *
+     * @param pageDetails - The page details to use for the inline menu listeners
+     */
+    setupInlineMenuListeners(pageDetails) {
+        if (!this.autofillOverlayContentService) {
+            return;
+        }
+        this.autofillFieldElements.forEach((autofillField, formFieldElement) => {
+            this.setupInlineMenu(formFieldElement, autofillField, pageDetails);
+        });
+    }
+    /**
+     * Sets up the inline menu listener on the passed field element.
+     *
+     * @param formFieldElement - The form field element to set up the inline menu listener on
+     * @param autofillField - The metadata for the form field
+     * @param pageDetails - The page details to use for the inline menu listeners
+     */
+    setupInlineMenu(formFieldElement, autofillField, pageDetails) {
+        if (!this.autofillOverlayContentService) {
+            return;
+        }
+        const autofillPageDetails = pageDetails ||
+            this.getFormattedPageDetails(this.getFormattedAutofillFormsData(), this.getFormattedAutofillFieldsData());
+        void this.autofillOverlayContentService.setupInlineMenu(formFieldElement, autofillField, autofillPageDetails);
+    }
+    /**
      * Destroys the CollectAutofillContentService. Clears all
      * timeouts and disconnects the mutation observer.
      */
     destroy() {
         var _a, _b;
-        if (this.updateAutofillElementsAfterMutationTimeout) {
-            clearTimeout(this.updateAutofillElementsAfterMutationTimeout);
+        if (this.updateAfterMutationIdleCallback) {
+            cancelIdleCallbackPolyfill(this.updateAfterMutationIdleCallback);
         }
         (_a = this.mutationObserver) === null || _a === void 0 ? void 0 : _a.disconnect();
         (_b = this.intersectionObserver) === null || _b === void 0 ? void 0 : _b.disconnect();
@@ -1481,7 +1648,8 @@ var dom_element_visibility_service_awaiter = (undefined && undefined.__awaiter) 
     });
 };
 class DomElementVisibilityService {
-    constructor() {
+    constructor(inlineMenuElements) {
+        this.inlineMenuElements = inlineMenuElements;
         this.cachedComputedStyle = null;
     }
     /**
@@ -1620,7 +1788,7 @@ class DomElementVisibilityService {
      * @private
      */
     formFieldIsNotHiddenBehindAnotherElement(targetElement, targetElementBoundingClientRect = null) {
-        var _a;
+        var _a, _b;
         const elementBoundingClientRect = targetElementBoundingClientRect || targetElement.getBoundingClientRect();
         const elementRootNode = targetElement.getRootNode();
         const rootElement = elementRootNode instanceof ShadowRoot ? elementRootNode : targetElement.ownerDocument;
@@ -1628,70 +1796,18 @@ class DomElementVisibilityService {
         if (elementAtCenterPoint === targetElement) {
             return true;
         }
+        if ((_a = this.inlineMenuElements) === null || _a === void 0 ? void 0 : _a.isElementInlineMenu(elementAtCenterPoint)) {
+            return true;
+        }
         const targetElementLabelsSet = new Set(targetElement.labels);
         if (targetElementLabelsSet.has(elementAtCenterPoint)) {
             return true;
         }
-        const closestParentLabel = (_a = elementAtCenterPoint === null || elementAtCenterPoint === void 0 ? void 0 : elementAtCenterPoint.parentElement) === null || _a === void 0 ? void 0 : _a.closest("label");
+        const closestParentLabel = (_b = elementAtCenterPoint === null || elementAtCenterPoint === void 0 ? void 0 : elementAtCenterPoint.parentElement) === null || _b === void 0 ? void 0 : _b.closest("label");
         return targetElementLabelsSet.has(closestParentLabel);
     }
 }
 /* harmony default export */ var dom_element_visibility_service = (DomElementVisibilityService);
-
-;// CONCATENATED MODULE: ../../libs/common/src/autofill/constants/index.ts
-const TYPE_CHECK = {
-    FUNCTION: "function",
-    NUMBER: "number",
-    STRING: "string",
-};
-const EVENTS = {
-    CHANGE: "change",
-    INPUT: "input",
-    KEYDOWN: "keydown",
-    KEYPRESS: "keypress",
-    KEYUP: "keyup",
-    BLUR: "blur",
-    CLICK: "click",
-    FOCUS: "focus",
-    SCROLL: "scroll",
-    RESIZE: "resize",
-    DOMCONTENTLOADED: "DOMContentLoaded",
-    LOAD: "load",
-    MESSAGE: "message",
-    VISIBILITYCHANGE: "visibilitychange",
-    FOCUSOUT: "focusout",
-};
-const ClearClipboardDelay = {
-    Never: null,
-    TenSeconds: 10,
-    TwentySeconds: 20,
-    ThirtySeconds: 30,
-    OneMinute: 60,
-    TwoMinutes: 120,
-    FiveMinutes: 300,
-};
-/* Context Menu item Ids */
-const AUTOFILL_CARD_ID = "autofill-card";
-const AUTOFILL_ID = "autofill";
-const SHOW_AUTOFILL_BUTTON = "show-autofill-button";
-const AUTOFILL_IDENTITY_ID = "autofill-identity";
-const COPY_IDENTIFIER_ID = "copy-identifier";
-const COPY_PASSWORD_ID = "copy-password";
-const COPY_USERNAME_ID = "copy-username";
-const COPY_VERIFICATION_CODE_ID = "copy-totp";
-const CREATE_CARD_ID = "create-card";
-const CREATE_IDENTITY_ID = "create-identity";
-const CREATE_LOGIN_ID = "create-login";
-const GENERATE_PASSWORD_ID = "generate-password";
-const NOOP_COMMAND_SUFFIX = "noop";
-const ROOT_ID = "root";
-const SEPARATOR_ID = "separator";
-const NOTIFICATION_BAR_LIFESPAN_MS = 150000; // 150 seconds
-const AutofillOverlayVisibility = {
-    Off: 0,
-    OnButtonClick: 1,
-    OnFieldFocus: 2,
-};
 
 ;// CONCATENATED MODULE: ./src/autofill/services/insert-autofill-content.service.ts
 var insert_autofill_content_service_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -2022,26 +2138,21 @@ var autofill_init_awaiter = (undefined && undefined.__awaiter) || function (this
 
 
 
+
 class AutofillInit {
     /**
      * AutofillInit constructor. Initializes the DomElementVisibilityService,
      * CollectAutofillContentService and InsertAutofillContentService classes.
      *
      * @param autofillOverlayContentService - The autofill overlay content service, potentially undefined.
+     * @param inlineMenuElements - The inline menu elements, potentially undefined.
      */
-    constructor(autofillOverlayContentService) {
+    constructor(autofillOverlayContentService, inlineMenuElements) {
+        this.sendExtensionMessage = sendExtensionMessage;
         this.extensionMessageHandlers = {
             collectPageDetails: ({ message }) => this.collectPageDetails(message),
             collectPageDetailsImmediately: ({ message }) => this.collectPageDetails(message, true),
             fillForm: ({ message }) => this.fillForm(message),
-            openAutofillOverlay: ({ message }) => this.openAutofillOverlay(message),
-            closeAutofillOverlay: ({ message }) => this.removeAutofillOverlay(message),
-            addNewVaultItemFromOverlay: () => this.addNewVaultItemFromOverlay(),
-            redirectOverlayFocusOut: ({ message }) => this.redirectOverlayFocusOut(message),
-            updateIsOverlayCiphersPopulated: ({ message }) => this.updateIsOverlayCiphersPopulated(message),
-            bgUnlockPopoutOpened: () => this.blurAndRemoveOverlay(),
-            bgVaultItemRepromptPopoutOpened: () => this.blurAndRemoveOverlay(),
-            updateAutofillOverlayVisibility: ({ message }) => this.updateAutofillOverlayVisibility(message),
         };
         /**
          * Handles the extension messages sent to the content script.
@@ -2052,21 +2163,20 @@ class AutofillInit {
          */
         this.handleExtensionMessage = (message, sender, sendResponse) => {
             const command = message.command;
-            const handler = this.extensionMessageHandlers[command];
+            const handler = this.getExtensionMessageHandler(command);
             if (!handler) {
-                return;
+                return null;
             }
             const messageResponse = handler({ message, sender });
-            if (!messageResponse) {
-                return;
+            if (typeof messageResponse === "undefined") {
+                return null;
             }
-            // FIXME: Verify that this floating promise is intentional. If it is, add an explanatory comment and ensure there is proper error handling.
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            Promise.resolve(messageResponse).then((response) => sendResponse(response));
+            void Promise.resolve(messageResponse).then((response) => sendResponse(response));
             return true;
         };
         this.autofillOverlayContentService = autofillOverlayContentService;
-        this.domElementVisibilityService = new dom_element_visibility_service();
+        this.autofillInlineMenuContentService = inlineMenuElements;
+        this.domElementVisibilityService = new dom_element_visibility_service(this.autofillInlineMenuContentService);
         this.collectAutofillContentService = new collect_autofill_content_service(this.domElementVisibilityService, this.autofillOverlayContentService);
         this.insertAutofillContentService = new insert_autofill_content_service(this.domElementVisibilityService, this.collectAutofillContentService);
     }
@@ -2089,12 +2199,12 @@ class AutofillInit {
     collectPageDetailsOnLoad() {
         const sendCollectDetailsMessage = () => {
             this.clearCollectPageDetailsOnLoadTimeout();
-            this.collectPageDetailsOnLoadTimeout = setTimeout(() => sendExtensionMessage("bgCollectPageDetails", { sender: "autofillInit" }), 250);
+            this.collectPageDetailsOnLoadTimeout = setTimeout(() => this.sendExtensionMessage("bgCollectPageDetails", { sender: "autofillInit" }), 250);
         };
         if (globalThis.document.readyState === "complete") {
             sendCollectDetailsMessage();
         }
-        globalThis.addEventListener("load", sendCollectDetailsMessage);
+        globalThis.addEventListener(EVENTS.LOAD, sendCollectDetailsMessage);
     }
     /**
      * Collects the page details and sends them to the
@@ -2112,8 +2222,7 @@ class AutofillInit {
             if (sendDetailsInResponse) {
                 return pageDetails;
             }
-            void chrome.runtime.sendMessage({
-                command: "collectPageDetailsResponse",
+            void this.sendExtensionMessage("collectPageDetailsResponse", {
                 tab: message.tab,
                 details: pageDetails,
                 sender: message.sender,
@@ -2130,112 +2239,24 @@ class AutofillInit {
             if ((document.defaultView || window).location.href !== pageDetailsUrl) {
                 return;
             }
-            this.blurAndRemoveOverlay();
-            this.updateOverlayIsCurrentlyFilling(true);
+            this.blurFocusedFieldAndCloseInlineMenu();
+            yield this.sendExtensionMessage("updateIsFieldCurrentlyFilling", {
+                isFieldCurrentlyFilling: true,
+            });
             yield this.insertAutofillContentService.fillForm(fillScript);
-            if (!this.autofillOverlayContentService) {
-                return;
-            }
-            setTimeout(() => this.updateOverlayIsCurrentlyFilling(false), 250);
+            setTimeout(() => this.sendExtensionMessage("updateIsFieldCurrentlyFilling", {
+                isFieldCurrentlyFilling: false,
+            }), 250);
         });
     }
     /**
-     * Handles updating the overlay is currently filling value.
-     *
-     * @param isCurrentlyFilling - Indicates if the overlay is currently filling
-     */
-    updateOverlayIsCurrentlyFilling(isCurrentlyFilling) {
-        if (!this.autofillOverlayContentService) {
-            return;
-        }
-        this.autofillOverlayContentService.isCurrentlyFilling = isCurrentlyFilling;
-    }
-    /**
-     * Opens the autofill overlay.
-     *
-     * @param data - The extension message data.
-     */
-    openAutofillOverlay({ data }) {
-        if (!this.autofillOverlayContentService) {
-            return;
-        }
-        this.autofillOverlayContentService.openAutofillOverlay(data);
-    }
-    /**
-     * Blurs the most recent overlay field and removes the overlay. Used
+     * Blurs the most recently focused field and removes the inline menu. Used
      * in cases where the background unlock or vault item reprompt popout
      * is opened.
      */
-    blurAndRemoveOverlay() {
-        if (!this.autofillOverlayContentService) {
-            return;
-        }
-        this.autofillOverlayContentService.blurMostRecentOverlayField();
-        this.removeAutofillOverlay();
-    }
-    /**
-     * Removes the autofill overlay if the field is not currently focused.
-     * If the autofill is currently filling, only the overlay list will be
-     * removed.
-     */
-    removeAutofillOverlay(message) {
-        var _a, _b;
-        if ((_a = message === null || message === void 0 ? void 0 : message.data) === null || _a === void 0 ? void 0 : _a.forceCloseOverlay) {
-            (_b = this.autofillOverlayContentService) === null || _b === void 0 ? void 0 : _b.removeAutofillOverlay();
-            return;
-        }
-        if (!this.autofillOverlayContentService ||
-            this.autofillOverlayContentService.isFieldCurrentlyFocused) {
-            return;
-        }
-        if (this.autofillOverlayContentService.isCurrentlyFilling) {
-            this.autofillOverlayContentService.removeAutofillOverlayList();
-            return;
-        }
-        this.autofillOverlayContentService.removeAutofillOverlay();
-    }
-    /**
-     * Adds a new vault item from the overlay.
-     */
-    addNewVaultItemFromOverlay() {
-        if (!this.autofillOverlayContentService) {
-            return;
-        }
-        this.autofillOverlayContentService.addNewVaultItem();
-    }
-    /**
-     * Redirects the overlay focus out of an overlay iframe.
-     *
-     * @param data - Contains the direction to redirect the focus.
-     */
-    redirectOverlayFocusOut({ data }) {
-        if (!this.autofillOverlayContentService) {
-            return;
-        }
-        this.autofillOverlayContentService.redirectOverlayFocusOut(data === null || data === void 0 ? void 0 : data.direction);
-    }
-    /**
-     * Updates whether the current tab has ciphers that can populate the overlay list
-     *
-     * @param data - Contains the isOverlayCiphersPopulated value
-     *
-     */
-    updateIsOverlayCiphersPopulated({ data }) {
-        if (!this.autofillOverlayContentService) {
-            return;
-        }
-        this.autofillOverlayContentService.isOverlayCiphersPopulated = Boolean(data === null || data === void 0 ? void 0 : data.isOverlayCiphersPopulated);
-    }
-    /**
-     * Updates the autofill overlay visibility.
-     *
-     * @param data - Contains the autoFillOverlayVisibility value
-     */
-    updateAutofillOverlayVisibility({ data }) {
-        if (!this.autofillOverlayContentService || isNaN(data === null || data === void 0 ? void 0 : data.autofillOverlayVisibility)) {
-            return;
-        }
-        this.autofillOverlayContentService.autofillOverlayVisibility = data === null || data === void 0 ? void 0 : data.autofillOverlayVisibility;
+    blurFocusedFieldAndCloseInlineMenu() {
+        var _a;
+        (_a = this.autofillOverlayContentService) === null || _a === void 0 ? void 0 : _a.blurMostRecentlyFocusedField(true);
     }
     /**
      * Clears the send collect details message timeout.
@@ -2252,15 +2273,31 @@ class AutofillInit {
         chrome.runtime.onMessage.addListener(this.handleExtensionMessage);
     }
     /**
+     * Gets the extension message handler for the given command.
+     *
+     * @param command - The extension message command.
+     */
+    getExtensionMessageHandler(command) {
+        var _a, _b, _c, _d;
+        if ((_b = (_a = this.autofillOverlayContentService) === null || _a === void 0 ? void 0 : _a.messageHandlers) === null || _b === void 0 ? void 0 : _b[command]) {
+            return this.autofillOverlayContentService.messageHandlers[command];
+        }
+        if ((_d = (_c = this.autofillInlineMenuContentService) === null || _c === void 0 ? void 0 : _c.messageHandlers) === null || _d === void 0 ? void 0 : _d[command]) {
+            return this.autofillInlineMenuContentService.messageHandlers[command];
+        }
+        return this.extensionMessageHandlers[command];
+    }
+    /**
      * Handles destroying the autofill init content script. Removes all
      * listeners, timeouts, and object instances to prevent memory leaks.
      */
     destroy() {
-        var _a;
+        var _a, _b;
         this.clearCollectPageDetailsOnLoadTimeout();
         chrome.runtime.onMessage.removeListener(this.handleExtensionMessage);
         this.collectAutofillContentService.destroy();
         (_a = this.autofillOverlayContentService) === null || _a === void 0 ? void 0 : _a.destroy();
+        (_b = this.autofillInlineMenuContentService) === null || _b === void 0 ? void 0 : _b.destroy();
     }
 }
 /* harmony default export */ var autofill_init = (AutofillInit);

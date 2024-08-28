@@ -13,7 +13,7 @@ options = uc.ChromeOptions()
 user_data_dir = '/home/aamir/.config/google-chrome/Default'
 options.add_argument('--no-default-browser-check')
 options.add_argument('--profile-directory=Default')
-options.add_argument("--load-extension=/home/aamir/.config/google-chrome/Default/Extensions/nngceckbapebfimnlniiiahkandclblb/2024.7.1_6")
+options.add_argument("--load-extension=./src/Extensions/bitwarden")
 
 browser = uc.Chrome(
     driver_executable_path=ChromeDriverManager(driver_version = "127.0.6533.72").install(),
@@ -23,4 +23,4 @@ browser = uc.Chrome(
     )
 time.sleep(6)
 browser.get("https://mail.google.com/mail/u/0/?tab=rm&ogbl#inbox")
-time.sleep(30)
+time.sleep(60)

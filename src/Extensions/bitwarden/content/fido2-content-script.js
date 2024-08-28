@@ -1,9 +1,8 @@
 /******/ (function() { // webpackBootstrap
 /******/ 	"use strict";
-var __webpack_exports__ = {};
 
-;// CONCATENATED MODULE: ./src/autofill/enums/autofill-port.enums.ts
-const autofill_port_enums_AutofillPort = {
+;// CONCATENATED MODULE: ./src/autofill/enums/autofill-port.enum.ts
+const autofill_port_enum_AutofillPort = {
     InjectedScript: "autofill-injected-script-port",
 };
 
@@ -20,20 +19,48 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 };
 
 /**
+ * Generates a random string of characters.
+ *
+ * @param length - The length of the random string to generate.
+ */
+function generateRandomChars(length) {
+    const chars = "abcdefghijklmnopqrstuvwxyz";
+    const randomChars = [];
+    const randomBytes = new Uint8Array(length);
+    globalThis.crypto.getRandomValues(randomBytes);
+    for (let byteIndex = 0; byteIndex < randomBytes.length; byteIndex++) {
+        const byte = randomBytes[byteIndex];
+        randomChars.push(chars[byte % chars.length]);
+    }
+    return randomChars.join("");
+}
+/**
+ * Polyfills the requestIdleCallback API with a setTimeout fallback.
+ *
+ * @param callback - The callback function to run when the browser is idle.
+ * @param options - The options to pass to the requestIdleCallback function.
+ */
+function requestIdleCallbackPolyfill(callback, options) {
+    if ("requestIdleCallback" in globalThis) {
+        return globalThis.requestIdleCallback(() => callback(), options);
+    }
+    return globalThis.setTimeout(() => callback(), 1);
+}
+/**
+ * Polyfills the cancelIdleCallback API with a clearTimeout fallback.
+ *
+ * @param id - The ID of the idle callback to cancel.
+ */
+function cancelIdleCallbackPolyfill(id) {
+    if ("cancelIdleCallback" in globalThis) {
+        return globalThis.cancelIdleCallback(id);
+    }
+    return globalThis.clearTimeout(id);
+}
+/**
  * Generates a random string of characters that formatted as a custom element name.
  */
 function generateRandomCustomElementName() {
-    const generateRandomChars = (length) => {
-        const chars = "abcdefghijklmnopqrstuvwxyz";
-        const randomChars = [];
-        const randomBytes = new Uint8Array(length);
-        globalThis.crypto.getRandomValues(randomBytes);
-        for (let byteIndex = 0; byteIndex < randomBytes.length; byteIndex++) {
-            const byte = randomBytes[byteIndex];
-            randomChars.push(chars[byte % chars.length]);
-        }
-        return randomChars.join("");
-    };
     const length = Math.floor(Math.random() * 5) + 8; // Between 8 and 12 characters
     const numHyphens = Math.min(Math.max(Math.floor(Math.random() * 4), 1), length - 1); // At least 1, maximum of 3 hyphens
     const hyphenIndices = [];
@@ -75,14 +102,15 @@ function buildSvgDomElement(svgString, ariaHidden = true) {
  */
 function sendExtensionMessage(command, options = {}) {
     return __awaiter(this, void 0, void 0, function* () {
-        return new Promise((resolve) => {
-            chrome.runtime.sendMessage(Object.assign({ command }, options), (response) => {
-                if (chrome.runtime.lastError) {
-                    return;
-                }
-                resolve(response);
-            });
-        });
+        if (typeof browser !== "undefined") {
+            return browser.runtime.sendMessage(Object.assign({ command }, options));
+        }
+        return new Promise((resolve) => chrome.runtime.sendMessage(Object.assign({ command }, options), (response) => {
+            if (chrome.runtime.lastError) {
+                resolve(null);
+            }
+            resolve(response);
+        }));
     });
 }
 /**
@@ -106,7 +134,7 @@ function setElementStyles(element, styles, priority) {
  * and triggers an onDisconnect event if the extension context
  * is invalidated.
  *
- * @param callback - Callback function to run when the extension disconnects
+ * @param callback - Callback export function to run when the extension disconnects
  */
 function setupExtensionDisconnectAction(callback) {
     const port = chrome.runtime.connect({ name: AutofillPort.InjectedScript });
@@ -139,7 +167,7 @@ function setupAutofillInitDisconnectAction(windowContext) {
  * @param formFieldElement - The form field element to check.
  */
 function elementIsFillableFormField(formFieldElement) {
-    return (formFieldElement === null || formFieldElement === void 0 ? void 0 : formFieldElement.tagName.toLowerCase()) !== "span";
+    return !elementIsSpanElement(formFieldElement);
 }
 /**
  * Identifies whether an element is an instance of a specific tag name.
@@ -148,7 +176,7 @@ function elementIsFillableFormField(formFieldElement) {
  * @param tagName -  The tag name to check against.
  */
 function elementIsInstanceOf(element, tagName) {
-    return (element === null || element === void 0 ? void 0 : element.tagName.toLowerCase()) === tagName;
+    return nodeIsElement(element) && element.tagName.toLowerCase() === tagName;
 }
 /**
  * Identifies whether an element is a span element.
@@ -223,7 +251,7 @@ function nodeIsElement(node) {
     if (!node) {
         return false;
     }
-    return node.nodeType === Node.ELEMENT_NODE;
+    return (node === null || node === void 0 ? void 0 : node.nodeType) === Node.ELEMENT_NODE;
 }
 /**
  * Identifies whether a node is an input element.
@@ -241,14 +269,54 @@ function nodeIsInputElement(node) {
 function nodeIsFormElement(node) {
     return nodeIsElement(node) && elementIsFormElement(node);
 }
+/**
+ * Returns a boolean representing the attribute value of an element.
+ *
+ * @param element
+ * @param attributeName
+ * @param checkString
+ */
+function getAttributeBoolean(element, attributeName, checkString = false) {
+    if (checkString) {
+        return getPropertyOrAttribute(element, attributeName) === "true";
+    }
+    return Boolean(getPropertyOrAttribute(element, attributeName));
+}
+/**
+ * Get the value of a property or attribute from a FormFieldElement.
+ *
+ * @param element
+ * @param attributeName
+ */
+function getPropertyOrAttribute(element, attributeName) {
+    if (attributeName in element) {
+        return element[attributeName];
+    }
+    return element.getAttribute(attributeName);
+}
+/**
+ * Throttles a callback function to run at most once every `limit` milliseconds.
+ *
+ * @param callback - The callback function to throttle.
+ * @param limit - The time in milliseconds to throttle the callback.
+ */
+function throttle(callback, limit) {
+    let waitingDelay = false;
+    return function (...args) {
+        if (!waitingDelay) {
+            callback.apply(this, args);
+            waitingDelay = true;
+            globalThis.setTimeout(() => (waitingDelay = false), limit);
+        }
+    };
+}
 
-
-;// CONCATENATED MODULE: ./src/vault/fido2/enums/fido2-port-name.enum.ts
+;// CONCATENATED MODULE: ./src/autofill/fido2/enums/fido2-port-name.enum.ts
 const Fido2PortName = {
     InjectedScript: "fido2-injected-content-script-port",
 };
 
-;// CONCATENATED MODULE: ./src/vault/fido2/content/messaging/message.ts
+;// CONCATENATED MODULE: ./src/autofill/fido2/content/messaging/message.ts
 var MessageType;
 (function (MessageType) {
     MessageType[MessageType["CredentialCreationRequest"] = 0] = "CredentialCreationRequest";
@@ -287,7 +355,7 @@ class FallbackRequestedError extends Error {
     }
 }
 
-;// CONCATENATED MODULE: ./src/vault/fido2/content/messaging/messenger.ts
+;// CONCATENATED MODULE: ./src/autofill/fido2/content/messaging/messenger.ts
 var messenger_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -432,8 +500,8 @@ class Messenger {
     }
 }
 
-;// CONCATENATED MODULE: ./src/vault/fido2/content/content-script.ts
-var content_script_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+;// CONCATENATED MODULE: ./src/autofill/fido2/content/fido2-content-script.ts
+var fido2_content_script_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -448,7 +516,9 @@ var content_script_awaiter = (undefined && undefined.__awaiter) || function (thi
 
 (function (globalContext) {
     const shouldExecuteContentScript = globalContext.document.contentType === "text/html" &&
-        globalContext.document.location.protocol === "https:";
+        (globalContext.document.location.protocol === "https:" ||
+            (globalContext.document.location.protocol === "http:" &&
+                globalContext.document.location.hostname === "localhost"));
     if (!shouldExecuteContentScript) {
         return;
     }
@@ -464,7 +534,7 @@ var content_script_awaiter = (undefined && undefined.__awaiter) || function (thi
      * @param abortController - The abort controller used to handle exit conditions from the FIDO2 request.
      */
     function handleFido2Message(message, abortController) {
-        return content_script_awaiter(this, void 0, void 0, function* () {
+        return fido2_content_script_awaiter(this, void 0, void 0, function* () {
             const requestId = Date.now().toString();
             const abortHandler = () => sendExtensionMessage("fido2AbortRequest", { abortedRequestId: requestId });
             abortController.signal.addEventListener("abort", abortHandler);
@@ -488,7 +558,7 @@ var content_script_awaiter = (undefined && undefined.__awaiter) || function (thi
      * @param data - Data associated with the credential request.
      */
     function handleCredentialCreationRequestMessage(requestId, data) {
-        return content_script_awaiter(this, void 0, void 0, function* () {
+        return fido2_content_script_awaiter(this, void 0, void 0, function* () {
             return respondToCredentialRequest("fido2RegisterCredentialRequest", MessageType.CredentialCreationResponse, requestId, data);
         });
     }
@@ -499,7 +569,7 @@ var content_script_awaiter = (undefined && undefined.__awaiter) || function (thi
      * @param data - Data associated with the credential request.
      */
     function handleCredentialGetRequestMessage(requestId, data) {
-        return content_script_awaiter(this, void 0, void 0, function* () {
+        return fido2_content_script_awaiter(this, void 0, void 0, function* () {
             return respondToCredentialRequest("fido2GetCredentialRequest", MessageType.CredentialGetResponse, requestId, data);
         });
     }
@@ -513,7 +583,7 @@ var content_script_awaiter = (undefined && undefined.__awaiter) || function (thi
      * @param messageData - Data associated with the credential request.
      */
     function respondToCredentialRequest(command, type, requestId, messageData) {
-        return content_script_awaiter(this, void 0, void 0, function* () {
+        return fido2_content_script_awaiter(this, void 0, void 0, function* () {
             const data = Object.assign(Object.assign({}, messageData), { origin: globalContext.location.origin, sameOriginWithAncestors: globalContext.self === globalContext.top });
             const result = yield sendExtensionMessage(command, { data, requestId });
             if (result && result.error !== undefined) {

@@ -11,12 +11,14 @@ import undetected_chromedriver as uc
 # from selenium.webdriver.chrome.service import Service # For Linux
 from webdriver_manager.chrome import ChromeDriverManager
 from pyvirtualdisplay.smartdisplay import SmartDisplay
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from dotenv import load_dotenv
 from src.utils.helper_funtion import (
     check_unread_email,
     process_unread_emails,
     process_icon,
-    error_message,
+    show_custom_message,
+    get_chrome_profile_path
 )
 
 from src.utils.helper.is_osx import is_osx
@@ -35,19 +37,26 @@ async def login_via_bitwarden():
         # Create a ChromeOptions object
         chrome_options = uc.ChromeOptions()
         # Add the extension to ChromeOptions
-        chrome_options.add_argument("--load-extension=./src/Extensions/bitwarden")
+        profile_path = get_chrome_profile_path()
+        print(profile_path)
+        if profile_path:
+            user_profile_path = profile_path
+        else:
+            show_custom_message("Error Message", "Could not find the Chrome profile path.", duration = 3)
+            return "Chrome Profile Path Error"
+        chrome_options.add_argument('--no-default-browser-check')
+        chrome_options.add_argument('--profile-directory=Default')
+        # chrome_options.add_argument("--load-extension=./src/Extensions/bitwarden")
         display = SmartDisplay(visible=1, size=(1850, 1050))
         display.start()
 
         #  For Linux add service=Service(ChromeDriverManager().install())
         browser = uc.Chrome(
-            driver_executable_path=ChromeDriverManager().install(),
-            options=chrome_options,
-        )
-        # browser = uc.Chrome(options=chrome_options)
-        browser.get(
-            "https://accounts.google.com/AccountChooser?service=mail&continue=https://google.com&hl=en"
-        )
+            driver_executable_path=ChromeDriverManager(driver_version = "127.0.6533.72").install(),
+            user_data_dir = user_profile_path,
+            options= chrome_options,
+            desired_capabilities=DesiredCapabilities.CHROME
+            )
         browser.maximize_window()
         browser.save_screenshot("./screenshots/1.png")
 
@@ -64,17 +73,13 @@ async def login_via_bitwarden():
         # Locate the extensions icon to click
         cords_image = await process_icon("src/assets/extension.png", 2)
         if cords_image is None:
-            return error_message(
-                "Error While click on Extensions Icon", browser, display
-            )
+            show_custom_message("Error Message", "Extensions Icon Not Found", duration = 2)
         time.sleep(2)
 
         # Locate the pin extension to taskbar icon to click
         cords_image_pin = await process_icon("src/assets/pins.png", 1)
         if cords_image_pin is None:
-            return error_message(
-                "Error while Pin Bitarden extension.", browser, display
-            )
+            show_custom_message("Error Message", "Pin Icon Not Found", duration = 2)
         time.sleep(2)
 
         # Locate the Bitwarden extension on the taskbar icon to click
@@ -83,7 +88,7 @@ async def login_via_bitwarden():
         )
 
         if cords_image_before_login is None:
-            return error_message("Error While Click on Bitwarden.", browser, display)
+            show_custom_message("Error Message", "Bitwarden Icon Not Found", duration = 2)
         time.sleep(2)
 
         # Locate the Bitwarden email text field icon to click
@@ -98,72 +103,67 @@ async def login_via_bitwarden():
         )
         if cords_image_gmail_continue is not None:
             pyautogui.typewrite(BITWARDEN_PASSWORD)
-        time.sleep(2)
 
         # Locate the Bitwarden master login icon to click
         cords_image_master_password_login = await process_icon(
             "src/assets/master_password_login.png", 2
         )
         if cords_image_master_password_login is None:
-            return error_message("Error during bitwarden login.", browser, display)
+            show_custom_message("Error Message", "Bitwarden Login Error", duration = 2)
         time.sleep(2)
 
-        # Locate any random position to click
-        cords_image_random = await process_icon("src/assets/gmail_random.png", 5)
-        if cords_image_random is None:
-            return error_message("Random position icon not found.", browser, display)
-        time.sleep(4)
+        # # Locate any random position to click
+        # cords_image_random = await process_icon("src/assets/gmail_random.png", 5)
+        # if cords_image_random is None:
+        #     show_custom_message("Error Message", "Bitwarden Login Error", duration = 2)
+        # time.sleep(4)
 
-        # Locate the Bitwarden icon to click
-        cords_image_bitwarden = await process_icon("src/assets/bitwardens.png", 2)
-        if cords_image_bitwarden is None:
-            return error_message("Bitwarden icon not found.", browser, display)
-        time.sleep(2)
+        # # Locate the Bitwarden icon to click
+        # cords_image_bitwarden = await process_icon("src/assets/bitwardens.png", 2)
+        # if cords_image_bitwarden is None:
+        #     show_custom_message("Error Message", "Bitwarden Icon Not Found", duration = 2)
+        # time.sleep(2)
 
-        # Locate credentials in Bitwarden
-        cords_image_gmail = await process_icon("src/assets/select_asim_gmail.png", 2)
-        if cords_image_gmail is None:
-            return error_message("Mentioed Gmail not found.", browser, display)
-        time.sleep(2)
+        # # Locate credentials in Bitwarden
+        # cords_image_gmail = await process_icon("src/assets/select_asim_gmail.png", 2)
+        # if cords_image_gmail is None:
+        #     show_custom_message("Error Message", "Credentilas Not Found", duration = 2)
+        # time.sleep(2)
 
         # Locate any random position to click
         cords_image_random = await process_icon("src/assets/signin_random.png", 1)
         if cords_image_random is None:
-            return error_message("Signin random icon not found.", browser, display)
+            show_custom_message("Error Message", "Account Login Error ", duration = 2)
         time.sleep(2)
 
-        # Locate the login button to click on it
-        cords_center_next = await process_icon("src/assets/gmail_next.png", 2)
-        if cords_center_next is None:
-            return error_message(
-                "Error while login to google account.", browser, display
-            )
-        time.sleep(2)
+        # # Locate the login button to click on it
+        # cords_center_next = await process_icon("src/assets/gmail_next.png", 2)
+        # if cords_center_next is None:
+        #     show_custom_message("Error Message", "Account Login Error", duration = 2)
+        # time.sleep(2)
 
-        # Locate the Bitwarden icon to click
-        cords_image_bitwarden = await process_icon("src/assets/bitwardens.png", 2)
-        if cords_image_bitwarden is None:
-            return error_message("Bitwarden icon not found.", browser, display)
-        time.sleep(2)
+        # # Locate the Bitwarden icon to click
+        # cords_image_bitwarden = await process_icon("src/assets/bitwardens.png", 2)
+        # if cords_image_bitwarden is None:
+        #     show_custom_message("Error Message", "Bitwarden Icon Not Found", duration = 2)
+        # time.sleep(2)
 
-        # Locate credentials in Bitwarden
-        cords_image_password = await process_icon("src/assets/select_asim_gmail.png", 2)
-        if cords_image_password is None:
-            return error_message("Mentioed Gmail not found.", browser, display)
-        time.sleep(2)
+        # # Locate credentials in Bitwarden
+        # cords_image_password = await process_icon("src/assets/select_asim_gmail.png", 2)
+        # if cords_image_password is None:
+        #     show_custom_message("Error Message", "Credentilas Not Found", duration = 2)
+        # time.sleep(2)
 
-        # Locate the login button to click on it
-        cords_center_next = await process_icon("src/assets/gmail_next.png", 5)
-        if cords_center_next is None:
-            return error_message(
-                "Error while login to Gmails account.", browser, display
-            )
-        time.sleep(5)
+        # # Locate the login button to click on it
+        # cords_center_next = await process_icon("src/assets/gmail_next.png", 5)
+        # if cords_center_next is None:
+        #     show_custom_message("Error Message", "Account Login Error", duration = 2)
+        # time.sleep(5)
 
         # Locate the Gmail icon on the main page to click on it
         cords_center_next = await process_icon("src/assets/move_to_inbox.png", 5)
         if cords_center_next is None:
-            return error_message("Erro during open gmail inbox.", browser, display)
+            show_custom_message("Error Message", "Error during opening inbox.", duration = 2)
         time.sleep(5)
 
         # Check all unread emails
@@ -182,7 +182,7 @@ async def login_via_bitwarden():
         # Take a screenshot after the action
         screenshot = pyautogui.screenshot()
         screenshot.save("./screenshots/error_screenshot.png")
-        print(f"Error during Crawling!{e}")
+        show_custom_message("Error Message", "Something Went Wrong!", duration = 2)
         browser.quit()
         display.stop()
         return "Something Went Wrong!"

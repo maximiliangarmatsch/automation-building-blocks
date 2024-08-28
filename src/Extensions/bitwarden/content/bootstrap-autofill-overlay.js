@@ -1,7 +1,7 @@
 /******/ (function() { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 12801:
+/***/ 70526:
 /***/ (function() {
 
 (function () {
@@ -821,13 +821,1414 @@
 /******/ 	}
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be in strict mode.
 !function() {
 "use strict";
 
+;// CONCATENATED MODULE: ./src/autofill/enums/autofill-overlay.enum.ts
+const AutofillOverlayElement = {
+    Button: "autofill-inline-menu-button",
+    List: "autofill-inline-menu-list",
+};
+const AutofillOverlayPort = {
+    Button: "autofill-inline-menu-button-port",
+    ButtonMessageConnector: "autofill-inline-menu-button-message-connector",
+    List: "autofill-inline-menu-list-port",
+    ListMessageConnector: "autofill-inline-menu-list-message-connector",
+};
+const RedirectFocusDirection = {
+    Current: "current",
+    Previous: "previous",
+    Next: "next",
+};
+const MAX_SUB_FRAME_DEPTH = 8;
+
+;// CONCATENATED MODULE: ./src/autofill/enums/autofill-port.enum.ts
+const AutofillPort = {
+    InjectedScript: "autofill-injected-script-port",
+};
+
+
+;// CONCATENATED MODULE: ./src/autofill/utils/index.ts
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+/**
+ * Generates a random string of characters.
+ *
+ * @param length - The length of the random string to generate.
+ */
+function generateRandomChars(length) {
+    const chars = "abcdefghijklmnopqrstuvwxyz";
+    const randomChars = [];
+    const randomBytes = new Uint8Array(length);
+    globalThis.crypto.getRandomValues(randomBytes);
+    for (let byteIndex = 0; byteIndex < randomBytes.length; byteIndex++) {
+        const byte = randomBytes[byteIndex];
+        randomChars.push(chars[byte % chars.length]);
+    }
+    return randomChars.join("");
+}
+/**
+ * Polyfills the requestIdleCallback API with a setTimeout fallback.
+ *
+ * @param callback - The callback function to run when the browser is idle.
+ * @param options - The options to pass to the requestIdleCallback function.
+ */
+function requestIdleCallbackPolyfill(callback, options) {
+    if ("requestIdleCallback" in globalThis) {
+        return globalThis.requestIdleCallback(() => callback(), options);
+    }
+    return globalThis.setTimeout(() => callback(), 1);
+}
+/**
+ * Polyfills the cancelIdleCallback API with a clearTimeout fallback.
+ *
+ * @param id - The ID of the idle callback to cancel.
+ */
+function cancelIdleCallbackPolyfill(id) {
+    if ("cancelIdleCallback" in globalThis) {
+        return globalThis.cancelIdleCallback(id);
+    }
+    return globalThis.clearTimeout(id);
+}
+/**
+ * Generates a random string of characters that formatted as a custom element name.
+ */
+function generateRandomCustomElementName() {
+    const length = Math.floor(Math.random() * 5) + 8; // Between 8 and 12 characters
+    const numHyphens = Math.min(Math.max(Math.floor(Math.random() * 4), 1), length - 1); // At least 1, maximum of 3 hyphens
+    const hyphenIndices = [];
+    while (hyphenIndices.length < numHyphens) {
+        const index = Math.floor(Math.random() * (length - 1)) + 1;
+        if (!hyphenIndices.includes(index)) {
+            hyphenIndices.push(index);
+        }
+    }
+    hyphenIndices.sort((a, b) => a - b);
+    let randomString = "";
+    let prevIndex = 0;
+    for (let index = 0; index < hyphenIndices.length; index++) {
+        const hyphenIndex = hyphenIndices[index];
+        randomString = randomString + generateRandomChars(hyphenIndex - prevIndex) + "-";
+        prevIndex = hyphenIndex;
+    }
+    randomString += generateRandomChars(length - prevIndex);
+    return randomString;
+}
+/**
+ * Builds a DOM element from an SVG string.
+ *
+ * @param svgString - The SVG string to build the DOM element from.
+ * @param ariaHidden - Determines whether the SVG should be hidden from screen readers.
+ */
+function buildSvgDomElement(svgString, ariaHidden = true) {
+    const domParser = new DOMParser();
+    const svgDom = domParser.parseFromString(svgString, "image/svg+xml");
+    const domElement = svgDom.documentElement;
+    domElement.setAttribute("aria-hidden", `${ariaHidden}`);
+    return domElement;
+}
+/**
+ * Sends a message to the extension.
+ *
+ * @param command - The command to send.
+ * @param options - The options to send with the command.
+ */
+function sendExtensionMessage(command, options = {}) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (typeof browser !== "undefined") {
+            return browser.runtime.sendMessage(Object.assign({ command }, options));
+        }
+        return new Promise((resolve) => chrome.runtime.sendMessage(Object.assign({ command }, options), (response) => {
+            if (chrome.runtime.lastError) {
+                resolve(null);
+            }
+            resolve(response);
+        }));
+    });
+}
+/**
+ * Sets CSS styles on an element.
+ *
+ * @param element - The element to set the styles on.
+ * @param styles - The styles to set on the element.
+ * @param priority - Determines whether the styles should be set as important.
+ */
+function setElementStyles(element, styles, priority) {
+    if (!element || !styles || !Object.keys(styles).length) {
+        return;
+    }
+    for (const styleProperty in styles) {
+        element.style.setProperty(styleProperty.replace(/([a-z])([A-Z])/g, "$1-$2"), // Convert camelCase to kebab-case
+        styles[styleProperty], priority ? "important" : undefined);
+    }
+}
+/**
+ * Sets up a long-lived connection with the extension background
+ * and triggers an onDisconnect event if the extension context
+ * is invalidated.
+ *
+ * @param callback - Callback export function to run when the extension disconnects
+ */
+function setupExtensionDisconnectAction(callback) {
+    const port = chrome.runtime.connect({ name: AutofillPort.InjectedScript });
+    const onDisconnectCallback = (disconnectedPort) => {
+        callback(disconnectedPort);
+        port.onDisconnect.removeListener(onDisconnectCallback);
+    };
+    port.onDisconnect.addListener(onDisconnectCallback);
+}
+/**
+ * Handles setup of the extension disconnect action for the autofill init class
+ * in both instances where the overlay might or might not be initialized.
+ *
+ * @param windowContext - The global window context
+ */
+function setupAutofillInitDisconnectAction(windowContext) {
+    if (!windowContext.bitwardenAutofillInit) {
+        return;
+    }
+    const onDisconnectCallback = () => {
+        windowContext.bitwardenAutofillInit.destroy();
+        delete windowContext.bitwardenAutofillInit;
+    };
+    setupExtensionDisconnectAction(onDisconnectCallback);
+}
+/**
+ * Identifies whether an element is a fillable form field.
+ * This is determined by whether the element is a form field and not a span.
+ *
+ * @param formFieldElement - The form field element to check.
+ */
+function elementIsFillableFormField(formFieldElement) {
+    return !elementIsSpanElement(formFieldElement);
+}
+/**
+ * Identifies whether an element is an instance of a specific tag name.
+ *
+ * @param element - The element to check.
+ * @param tagName -  The tag name to check against.
+ */
+function elementIsInstanceOf(element, tagName) {
+    return nodeIsElement(element) && element.tagName.toLowerCase() === tagName;
+}
+/**
+ * Identifies whether an element is a span element.
+ *
+ * @param element - The element to check.
+ */
+function elementIsSpanElement(element) {
+    return elementIsInstanceOf(element, "span");
+}
+/**
+ * Identifies whether an element is an input field.
+ *
+ * @param element - The element to check.
+ */
+function elementIsInputElement(element) {
+    return elementIsInstanceOf(element, "input");
+}
+/**
+ * Identifies whether an element is a select field.
+ *
+ * @param element - The element to check.
+ */
+function elementIsSelectElement(element) {
+    return elementIsInstanceOf(element, "select");
+}
+/**
+ * Identifies whether an element is a textarea field.
+ *
+ * @param element - The element to check.
+ */
+function elementIsTextAreaElement(element) {
+    return elementIsInstanceOf(element, "textarea");
+}
+/**
+ * Identifies whether an element is a form element.
+ *
+ * @param element - The element to check.
+ */
+function elementIsFormElement(element) {
+    return elementIsInstanceOf(element, "form");
+}
+/**
+ * Identifies whether an element is a label element.
+ *
+ * @param element - The element to check.
+ */
+function elementIsLabelElement(element) {
+    return elementIsInstanceOf(element, "label");
+}
+/**
+ * Identifies whether an element is a description details `dd` element.
+ *
+ * @param element - The element to check.
+ */
+function elementIsDescriptionDetailsElement(element) {
+    return elementIsInstanceOf(element, "dd");
+}
+/**
+ * Identifies whether an element is a description term `dt` element.
+ *
+ * @param element - The element to check.
+ */
+function elementIsDescriptionTermElement(element) {
+    return elementIsInstanceOf(element, "dt");
+}
+/**
+ * Identifies whether a node is an HTML element.
+ *
+ * @param node - The node to check.
+ */
+function nodeIsElement(node) {
+    if (!node) {
+        return false;
+    }
+    return (node === null || node === void 0 ? void 0 : node.nodeType) === Node.ELEMENT_NODE;
+}
+/**
+ * Identifies whether a node is an input element.
+ *
+ * @param node - The node to check.
+ */
+function nodeIsInputElement(node) {
+    return nodeIsElement(node) && elementIsInputElement(node);
+}
+/**
+ * Identifies whether a node is a form element.
+ *
+ * @param node - The node to check.
+ */
+function nodeIsFormElement(node) {
+    return nodeIsElement(node) && elementIsFormElement(node);
+}
+/**
+ * Returns a boolean representing the attribute value of an element.
+ *
+ * @param element
+ * @param attributeName
+ * @param checkString
+ */
+function getAttributeBoolean(element, attributeName, checkString = false) {
+    if (checkString) {
+        return getPropertyOrAttribute(element, attributeName) === "true";
+    }
+    return Boolean(getPropertyOrAttribute(element, attributeName));
+}
+/**
+ * Get the value of a property or attribute from a FormFieldElement.
+ *
+ * @param element
+ * @param attributeName
+ */
+function getPropertyOrAttribute(element, attributeName) {
+    if (attributeName in element) {
+        return element[attributeName];
+    }
+    return element.getAttribute(attributeName);
+}
+/**
+ * Throttles a callback function to run at most once every `limit` milliseconds.
+ *
+ * @param callback - The callback function to throttle.
+ * @param limit - The time in milliseconds to throttle the callback.
+ */
+function throttle(callback, limit) {
+    let waitingDelay = false;
+    return function (...args) {
+        if (!waitingDelay) {
+            callback.apply(this, args);
+            waitingDelay = true;
+            globalThis.setTimeout(() => (waitingDelay = false), limit);
+        }
+    };
+}
+
+;// CONCATENATED MODULE: ../../libs/common/src/autofill/constants/index.ts
+const TYPE_CHECK = {
+    FUNCTION: "function",
+    NUMBER: "number",
+    STRING: "string",
+};
+const EVENTS = {
+    CHANGE: "change",
+    INPUT: "input",
+    KEYDOWN: "keydown",
+    KEYPRESS: "keypress",
+    KEYUP: "keyup",
+    BLUR: "blur",
+    CLICK: "click",
+    FOCUS: "focus",
+    FOCUSIN: "focusin",
+    FOCUSOUT: "focusout",
+    SCROLL: "scroll",
+    RESIZE: "resize",
+    DOMCONTENTLOADED: "DOMContentLoaded",
+    LOAD: "load",
+    MESSAGE: "message",
+    VISIBILITYCHANGE: "visibilitychange",
+    MOUSEENTER: "mouseenter",
+    MOUSELEAVE: "mouseleave",
+};
+const ClearClipboardDelay = {
+    Never: null,
+    TenSeconds: 10,
+    TwentySeconds: 20,
+    ThirtySeconds: 30,
+    OneMinute: 60,
+    TwoMinutes: 120,
+    FiveMinutes: 300,
+};
+/* Context Menu item Ids */
+const AUTOFILL_CARD_ID = "autofill-card";
+const AUTOFILL_ID = "autofill";
+const SHOW_AUTOFILL_BUTTON = "show-autofill-button";
+const AUTOFILL_IDENTITY_ID = "autofill-identity";
+const COPY_IDENTIFIER_ID = "copy-identifier";
+const COPY_PASSWORD_ID = "copy-password";
+const COPY_USERNAME_ID = "copy-username";
+const COPY_VERIFICATION_CODE_ID = "copy-totp";
+const CREATE_CARD_ID = "create-card";
+const CREATE_IDENTITY_ID = "create-identity";
+const CREATE_LOGIN_ID = "create-login";
+const GENERATE_PASSWORD_ID = "generate-password";
+const NOOP_COMMAND_SUFFIX = "noop";
+const ROOT_ID = "root";
+const SEPARATOR_ID = "separator";
+const NOTIFICATION_BAR_LIFESPAN_MS = 150000; // 150 seconds
+const AUTOFILL_OVERLAY_HANDLE_REPOSITION = "autofill-overlay-handle-reposition-event";
+const AutofillOverlayVisibility = {
+    Off: 0,
+    OnButtonClick: 1,
+    OnFieldFocus: 2,
+};
+const BrowserClientVendors = {
+    Chrome: "Chrome",
+    Opera: "Opera",
+    Edge: "Edge",
+    Vivaldi: "Vivaldi",
+    Unknown: "Unknown",
+};
+const BrowserShortcutsUris = {
+    Chrome: "chrome://extensions/shortcuts",
+    Opera: "opera://extensions/shortcuts",
+    Edge: "edge://extensions/shortcuts",
+    Vivaldi: "vivaldi://extensions/shortcuts",
+    Unknown: "https://bitwarden.com/help/keyboard-shortcuts",
+};
+const DisablePasswordManagerUris = {
+    Chrome: "chrome://settings/autofill",
+    Opera: "opera://settings/autofill",
+    Edge: "edge://settings/passwords",
+    Vivaldi: "vivaldi://settings/autofill",
+    Unknown: "https://bitwarden.com/help/disable-browser-autofill/",
+};
+const ExtensionCommand = {
+    AutofillCommand: "autofill_cmd",
+    AutofillCard: "autofill_card",
+    AutofillIdentity: "autofill_identity",
+    AutofillLogin: "autofill_login",
+    OpenAutofillOverlay: "open_autofill_overlay",
+    GeneratePassword: "generate_password",
+    OpenPopup: "open_popup",
+    LockVault: "lock_vault",
+    NoopCommand: "noop",
+};
+
+;// CONCATENATED MODULE: ../../libs/common/src/platform/enums/encryption-type.enum.ts
+var EncryptionType;
+(function (EncryptionType) {
+    EncryptionType[EncryptionType["AesCbc256_B64"] = 0] = "AesCbc256_B64";
+    EncryptionType[EncryptionType["AesCbc128_HmacSha256_B64"] = 1] = "AesCbc128_HmacSha256_B64";
+    EncryptionType[EncryptionType["AesCbc256_HmacSha256_B64"] = 2] = "AesCbc256_HmacSha256_B64";
+    EncryptionType[EncryptionType["Rsa2048_OaepSha256_B64"] = 3] = "Rsa2048_OaepSha256_B64";
+    EncryptionType[EncryptionType["Rsa2048_OaepSha1_B64"] = 4] = "Rsa2048_OaepSha1_B64";
+    EncryptionType[EncryptionType["Rsa2048_OaepSha256_HmacSha256_B64"] = 5] = "Rsa2048_OaepSha256_HmacSha256_B64";
+    EncryptionType[EncryptionType["Rsa2048_OaepSha1_HmacSha256_B64"] = 6] = "Rsa2048_OaepSha1_HmacSha256_B64";
+})(EncryptionType || (EncryptionType = {}));
+/** The expected number of parts to a serialized EncString of the given encryption type.
+ * For example, an EncString of type AesCbc256_B64 will have 2 parts, and an EncString of type
+ * AesCbc128_HmacSha256_B64 will have 3 parts.
+ *
+ * Example of annotated serialized EncStrings:
+ * 0.iv|data
+ * 1.iv|data|mac
+ * 2.iv|data|mac
+ * 3.data
+ * 4.data
+ *
+ * @see EncString
+ * @see EncryptionType
+ * @see EncString.parseEncryptedString
+ */
+const EXPECTED_NUM_PARTS_BY_ENCRYPTION_TYPE = {
+    [EncryptionType.AesCbc256_B64]: 2,
+    [EncryptionType.AesCbc128_HmacSha256_B64]: 3,
+    [EncryptionType.AesCbc256_HmacSha256_B64]: 3,
+    [EncryptionType.Rsa2048_OaepSha256_B64]: 1,
+    [EncryptionType.Rsa2048_OaepSha1_B64]: 1,
+    [EncryptionType.Rsa2048_OaepSha256_HmacSha256_B64]: 2,
+    [EncryptionType.Rsa2048_OaepSha1_HmacSha256_B64]: 2,
+};
+
+;// CONCATENATED MODULE: ../../libs/common/src/platform/enums/file-upload-type.enum.ts
+var FileUploadType;
+(function (FileUploadType) {
+    FileUploadType[FileUploadType["Direct"] = 0] = "Direct";
+    FileUploadType[FileUploadType["Azure"] = 1] = "Azure";
+})(FileUploadType || (FileUploadType = {}));
+
+;// CONCATENATED MODULE: ../../libs/common/src/platform/enums/hash-purpose.enum.ts
+var HashPurpose;
+(function (HashPurpose) {
+    HashPurpose[HashPurpose["ServerAuthorization"] = 1] = "ServerAuthorization";
+    HashPurpose[HashPurpose["LocalAuthorization"] = 2] = "LocalAuthorization";
+})(HashPurpose || (HashPurpose = {}));
+
+;// CONCATENATED MODULE: ../../libs/common/src/platform/enums/html-storage-location.enum.ts
+var HtmlStorageLocation;
+(function (HtmlStorageLocation) {
+    HtmlStorageLocation["Local"] = "local";
+    HtmlStorageLocation["Memory"] = "memory";
+    HtmlStorageLocation["Session"] = "session";
+})(HtmlStorageLocation || (HtmlStorageLocation = {}));
+
+;// CONCATENATED MODULE: ../../libs/common/src/platform/enums/kdf-type.enum.ts
+var KdfType;
+(function (KdfType) {
+    KdfType[KdfType["PBKDF2_SHA256"] = 0] = "PBKDF2_SHA256";
+    KdfType[KdfType["Argon2id"] = 1] = "Argon2id";
+})(KdfType || (KdfType = {}));
+
+;// CONCATENATED MODULE: ../../libs/common/src/platform/enums/key-suffix-options.enum.ts
+var KeySuffixOptions;
+(function (KeySuffixOptions) {
+    KeySuffixOptions["Auto"] = "auto";
+    KeySuffixOptions["Biometric"] = "biometric";
+    KeySuffixOptions["Pin"] = "pin";
+})(KeySuffixOptions || (KeySuffixOptions = {}));
+
+;// CONCATENATED MODULE: ../../libs/common/src/platform/enums/log-level-type.enum.ts
+var LogLevelType;
+(function (LogLevelType) {
+    LogLevelType[LogLevelType["Debug"] = 0] = "Debug";
+    LogLevelType[LogLevelType["Info"] = 1] = "Info";
+    LogLevelType[LogLevelType["Warning"] = 2] = "Warning";
+    LogLevelType[LogLevelType["Error"] = 3] = "Error";
+})(LogLevelType || (LogLevelType = {}));
+
+;// CONCATENATED MODULE: ../../libs/common/src/platform/enums/storage-location.enum.ts
+var StorageLocation;
+(function (StorageLocation) {
+    StorageLocation["Both"] = "both";
+    StorageLocation["Disk"] = "disk";
+    StorageLocation["Memory"] = "memory";
+})(StorageLocation || (StorageLocation = {}));
+
+;// CONCATENATED MODULE: ../../libs/common/src/platform/enums/theme-type.enum.ts
+var ThemeType;
+(function (ThemeType) {
+    ThemeType["System"] = "system";
+    ThemeType["Light"] = "light";
+    ThemeType["Dark"] = "dark";
+    ThemeType["Nord"] = "nord";
+    ThemeType["SolarizedDark"] = "solarizedDark";
+})(ThemeType || (ThemeType = {}));
+
+;// CONCATENATED MODULE: ../../libs/common/src/platform/enums/index.ts
+
+
+
+
+
+
+
+
+
+
+;// CONCATENATED MODULE: ./src/autofill/overlay/inline-menu/iframe-content/autofill-inline-menu-iframe.service.ts
+
+
+
+class AutofillInlineMenuIframeService {
+    constructor(shadow, portName, initStyles, iframeTitle, ariaAlert) {
+        this.shadow = shadow;
+        this.portName = portName;
+        this.initStyles = initStyles;
+        this.iframeTitle = iframeTitle;
+        this.ariaAlert = ariaAlert;
+        this.setElementStyles = setElementStyles;
+        this.sendExtensionMessage = sendExtensionMessage;
+        this.port = null;
+        this.fadeInOpacityTransition = "opacity 125ms ease-out 0s";
+        this.fadeOutOpacityTransition = "opacity 65ms ease-out 0s";
+        this.iframeStyles = {
+            all: "initial",
+            position: "fixed",
+            display: "block",
+            zIndex: "2147483647",
+            lineHeight: "0",
+            overflow: "hidden",
+            transition: this.fadeInOpacityTransition,
+            visibility: "visible",
+            clipPath: "none",
+            pointerEvents: "auto",
+            margin: "0",
+            padding: "0",
+            colorScheme: "normal",
+            opacity: "0",
+        };
+        this.defaultIframeAttributes = {
+            src: "",
+            title: "",
+            allowtransparency: "true",
+            tabIndex: "-1",
+        };
+        this.foreignMutationsCount = 0;
+        this.mutationObserverIterations = 0;
+        this.backgroundPortMessageHandlers = {
+            initAutofillInlineMenuButton: ({ message }) => this.initAutofillInlineMenu(message),
+            initAutofillInlineMenuList: ({ message }) => this.initAutofillInlineMenu(message),
+            updateAutofillInlineMenuPosition: ({ message }) => this.updateIframePosition(message.styles),
+            toggleAutofillInlineMenuHidden: ({ message }) => this.updateElementStyles(this.iframe, message.styles),
+            updateAutofillInlineMenuColorScheme: () => this.updateAutofillInlineMenuColorScheme(),
+            triggerDelayedAutofillInlineMenuClosure: () => this.handleDelayedAutofillInlineMenuClosure(),
+            fadeInAutofillInlineMenuIframe: () => this.handleFadeInInlineMenuIframe(),
+        };
+        /**
+         * Sets up the port message listener to the extension background script. This
+         * listener is used to communicate between the iframe and the background script.
+         * This also facilitates announcing to screen readers when the iframe is loaded.
+         */
+        this.setupPortMessageListener = () => {
+            this.port = chrome.runtime.connect({ name: this.portName });
+            this.port.onDisconnect.addListener(this.handlePortDisconnect);
+            this.port.onMessage.addListener(this.handlePortMessage);
+            this.announceAriaAlert();
+        };
+        /**
+         * Handles disconnecting the port message listener from the extension background
+         * script. This also removes the listener that facilitates announcing to screen
+         * readers when the iframe is loaded.
+         *
+         * @param port - The port that is disconnected
+         */
+        this.handlePortDisconnect = (port) => {
+            var _a, _b, _c;
+            if (port.name !== this.portName) {
+                return;
+            }
+            this.updateElementStyles(this.iframe, { opacity: "0", height: "0px" });
+            this.unobserveIframe();
+            (_a = this.port) === null || _a === void 0 ? void 0 : _a.onMessage.removeListener(this.handlePortMessage);
+            (_b = this.port) === null || _b === void 0 ? void 0 : _b.onDisconnect.removeListener(this.handlePortDisconnect);
+            (_c = this.port) === null || _c === void 0 ? void 0 : _c.disconnect();
+            this.port = null;
+        };
+        /**
+         * Handles messages sent from the extension background script to the iframe.
+         * Triggers behavior within the iframe as well as on the custom element that
+         * contains the iframe element.
+         *
+         * @param message
+         * @param port
+         */
+        this.handlePortMessage = (message, port) => {
+            if (port.name !== this.portName) {
+                return;
+            }
+            if (this.backgroundPortMessageHandlers[message.command]) {
+                this.backgroundPortMessageHandlers[message.command]({ message, port });
+                return;
+            }
+            this.postMessageToIFrame(message);
+        };
+        /**
+         * Handles mutations to the iframe element. The ensures that the iframe
+         * element's styles are not modified by a third party source.
+         *
+         * @param mutations - The mutations to the iframe element
+         */
+        this.handleMutations = (mutations) => {
+            if (this.isTriggeringExcessiveMutationObserverIterations()) {
+                return;
+            }
+            for (let index = 0; index < mutations.length; index++) {
+                const mutation = mutations[index];
+                if (mutation.type !== "attributes") {
+                    continue;
+                }
+                const element = mutation.target;
+                if (mutation.attributeName !== "style") {
+                    this.handleElementAttributeMutation(element);
+                    continue;
+                }
+                this.iframe.removeAttribute("style");
+                this.updateElementStyles(this.iframe, this.iframeStyles);
+            }
+        };
+        this.iframeMutationObserver = new MutationObserver(this.handleMutations);
+    }
+    /**
+     * Handles initialization of the iframe which includes applying initial styles
+     * to the iframe, setting the source, and adding listener that connects the
+     * iframe to the background script each time it loads. Can conditionally
+     * create an aria alert element to announce to screen readers when the iframe
+     * is loaded. The end result is append to the shadowDOM of the custom element
+     * that is declared.
+     */
+    initMenuIframe() {
+        this.defaultIframeAttributes.src = chrome.runtime.getURL("overlay/menu.html");
+        this.defaultIframeAttributes.title = this.iframeTitle;
+        this.iframe = globalThis.document.createElement("iframe");
+        for (const [attribute, value] of Object.entries(this.defaultIframeAttributes)) {
+            this.iframe.setAttribute(attribute, value);
+        }
+        this.iframeStyles = Object.assign(Object.assign({}, this.iframeStyles), this.initStyles);
+        this.setElementStyles(this.iframe, this.iframeStyles, true);
+        this.iframe.addEventListener(EVENTS.LOAD, this.setupPortMessageListener);
+        if (this.ariaAlert) {
+            this.createAriaAlertElement(this.ariaAlert);
+        }
+        this.shadow.appendChild(this.iframe);
+        this.observeIframe();
+    }
+    /**
+     * Creates an aria alert element that is used to announce to screen readers
+     * when the iframe is loaded.
+     *
+     * @param ariaAlertText - Text to announce to screen readers when the iframe is loaded
+     */
+    createAriaAlertElement(ariaAlertText) {
+        this.ariaAlertElement = globalThis.document.createElement("div");
+        this.ariaAlertElement.setAttribute("role", "alert");
+        this.ariaAlertElement.setAttribute("aria-live", "polite");
+        this.ariaAlertElement.setAttribute("aria-atomic", "true");
+        this.updateElementStyles(this.ariaAlertElement, {
+            position: "absolute",
+            top: "-9999px",
+            left: "-9999px",
+            width: "1px",
+            height: "1px",
+            overflow: "hidden",
+            opacity: "0",
+            pointerEvents: "none",
+        });
+        this.ariaAlertElement.textContent = ariaAlertText;
+    }
+    /**
+     * Announces the aria alert element to screen readers when the iframe is loaded.
+     */
+    announceAriaAlert() {
+        if (!this.ariaAlertElement) {
+            return;
+        }
+        this.ariaAlertElement.remove();
+        if (this.ariaAlertTimeout) {
+            clearTimeout(this.ariaAlertTimeout);
+        }
+        this.ariaAlertTimeout = globalThis.setTimeout(() => this.shadow.appendChild(this.ariaAlertElement), 2000);
+    }
+    /**
+     * Handles the initialization of the autofill inline menu. This includes setting
+     * the port key and sending a message to the iframe to initialize the inline menu.
+     *
+     * @param message
+     * @private
+     */
+    initAutofillInlineMenu(message) {
+        this.portKey = message.portKey;
+        if (message.command === "initAutofillInlineMenuList") {
+            this.initAutofillInlineMenuList(message);
+            return;
+        }
+        this.postMessageToIFrame(message);
+    }
+    /**
+     * Handles initialization of the autofill inline menu list. This includes setting
+     * the theme and sending a message to the iframe to initialize the inline menu.
+     *
+     * @param message - The message sent from the iframe
+     */
+    initAutofillInlineMenuList(message) {
+        const { theme } = message;
+        let borderColor;
+        let verifiedTheme = theme;
+        if (verifiedTheme === ThemeType.System) {
+            verifiedTheme = globalThis.matchMedia("(prefers-color-scheme: dark)").matches
+                ? ThemeType.Dark
+                : ThemeType.Light;
+        }
+        if (verifiedTheme === ThemeType.Dark) {
+            borderColor = "#4c525f";
+        }
+        if (theme === ThemeType.Nord) {
+            borderColor = "#2E3440";
+        }
+        if (theme === ThemeType.SolarizedDark) {
+            borderColor = "#073642";
+        }
+        if (borderColor) {
+            this.updateElementStyles(this.iframe, { borderColor });
+        }
+        message.theme = verifiedTheme;
+        this.postMessageToIFrame(message);
+    }
+    postMessageToIFrame(message) {
+        var _a;
+        (_a = this.iframe.contentWindow) === null || _a === void 0 ? void 0 : _a.postMessage(Object.assign({ portKey: this.portKey }, message), "*");
+    }
+    /**
+     * Updates the position of the iframe element. Will also announce
+     * to screen readers that the iframe is open.
+     *
+     * @param position - The position styles to apply to the iframe
+     */
+    updateIframePosition(position) {
+        if (!globalThis.document.hasFocus()) {
+            return;
+        }
+        const styles = this.fadeInTimeout ? Object.assign(position, { opacity: "0" }) : position;
+        this.updateElementStyles(this.iframe, styles);
+        if (this.fadeInTimeout) {
+            this.handleFadeInInlineMenuIframe();
+        }
+        this.announceAriaAlert();
+    }
+    /**
+     * Gets the page color scheme meta tag and sends a message to the iframe
+     * to update its color scheme. Will default to "normal" if the meta tag
+     * does not exist.
+     */
+    updateAutofillInlineMenuColorScheme() {
+        var _a;
+        const colorSchemeValue = (_a = globalThis.document
+            .querySelector("meta[name='color-scheme']")) === null || _a === void 0 ? void 0 : _a.getAttribute("content");
+        this.postMessageToIFrame({
+            command: "updateAutofillInlineMenuColorScheme",
+            colorScheme: colorSchemeValue || "normal",
+        });
+    }
+    /**
+     * Accepts an element and updates the styles for that element. This method
+     * will also unobserve the element if it is the iframe element. This is
+     * done to ensure that we do not trigger the mutation observer when we
+     * update the styles for the iframe.
+     *
+     * @param customElement - The element to update the styles for
+     * @param styles - The styles to apply to the element
+     */
+    updateElementStyles(customElement, styles) {
+        if (!customElement) {
+            return;
+        }
+        this.unobserveIframe();
+        this.setElementStyles(customElement, styles, true);
+        if (customElement === this.iframe) {
+            this.iframeStyles = Object.assign(Object.assign({}, this.iframeStyles), styles);
+        }
+        this.observeIframe();
+    }
+    /**
+     * Triggers a forced closure of the autofill inline menu. This is used when the
+     * mutation observer is triggered excessively.
+     */
+    forceCloseInlineMenu() {
+        void this.sendExtensionMessage("closeAutofillInlineMenu", { forceCloseInlineMenu: true });
+    }
+    /**
+     * Triggers a fade in effect for the inline menu iframe. Initialized by the background context.
+     */
+    handleFadeInInlineMenuIframe() {
+        this.clearFadeInTimeout();
+        this.fadeInTimeout = globalThis.setTimeout(() => {
+            this.updateElementStyles(this.iframe, { display: "block", opacity: "1" });
+            this.clearFadeInTimeout();
+        }, 10);
+    }
+    /**
+     * Clears the fade in timeout for the inline menu iframe.
+     */
+    clearFadeInTimeout() {
+        if (this.fadeInTimeout) {
+            clearTimeout(this.fadeInTimeout);
+            this.fadeInTimeout = null;
+        }
+    }
+    /**
+     * Triggers a delayed closure of the inline menu to ensure that click events are
+     * caught if focus is programmatically redirected away from the inline menu.
+     */
+    handleDelayedAutofillInlineMenuClosure() {
+        if (this.delayedCloseTimeout) {
+            clearTimeout(this.delayedCloseTimeout);
+        }
+        this.updateElementStyles(this.iframe, {
+            transition: this.fadeOutOpacityTransition,
+            opacity: "0",
+        });
+        this.delayedCloseTimeout = globalThis.setTimeout(() => {
+            this.updateElementStyles(this.iframe, { transition: this.fadeInOpacityTransition });
+            this.forceCloseInlineMenu();
+        }, 100);
+    }
+    /**
+     * Handles mutations to the iframe element's attributes. This ensures that
+     * the iframe element's attributes are not modified by a third party source.
+     *
+     * @param element - The element to handle attribute mutations for
+     */
+    handleElementAttributeMutation(element) {
+        const attributes = Array.from(element.attributes);
+        for (let attributeIndex = 0; attributeIndex < attributes.length; attributeIndex++) {
+            const attribute = attributes[attributeIndex];
+            if (attribute.name === "style") {
+                continue;
+            }
+            if (this.foreignMutationsCount >= 10) {
+                this.forceCloseInlineMenu();
+                break;
+            }
+            const defaultIframeAttribute = this.defaultIframeAttributes[attribute.name];
+            if (!defaultIframeAttribute) {
+                this.iframe.removeAttribute(attribute.name);
+                this.foreignMutationsCount++;
+                continue;
+            }
+            if (attribute.value === defaultIframeAttribute) {
+                continue;
+            }
+            this.iframe.setAttribute(attribute.name, defaultIframeAttribute);
+            this.foreignMutationsCount++;
+        }
+    }
+    /**
+     * Observes the iframe element for mutations to its style attribute.
+     */
+    observeIframe() {
+        this.iframeMutationObserver.observe(this.iframe, { attributes: true });
+    }
+    /**
+     * Unobserves the iframe element for mutations to its style attribute.
+     */
+    unobserveIframe() {
+        var _a;
+        (_a = this.iframeMutationObserver) === null || _a === void 0 ? void 0 : _a.disconnect();
+    }
+    /**
+     * Identifies if the mutation observer is triggering excessive iterations.
+     * Will remove the autofill inline menu if any set mutation observer is
+     * triggering excessive iterations.
+     */
+    isTriggeringExcessiveMutationObserverIterations() {
+        const resetCounters = () => {
+            this.mutationObserverIterations = 0;
+            this.foreignMutationsCount = 0;
+        };
+        if (this.mutationObserverIterationsResetTimeout) {
+            clearTimeout(this.mutationObserverIterationsResetTimeout);
+        }
+        this.mutationObserverIterations++;
+        this.mutationObserverIterationsResetTimeout = globalThis.setTimeout(() => resetCounters(), 2000);
+        if (this.mutationObserverIterations > 20) {
+            clearTimeout(this.mutationObserverIterationsResetTimeout);
+            resetCounters();
+            this.forceCloseInlineMenu();
+            return true;
+        }
+        return false;
+    }
+}
+
+;// CONCATENATED MODULE: ./src/autofill/overlay/inline-menu/iframe-content/autofill-inline-menu-iframe-element.ts
+
+class AutofillInlineMenuIframeElement {
+    constructor(element, portName, initStyles, iframeTitle, ariaAlert) {
+        const shadow = element.attachShadow({ mode: "closed" });
+        const autofillInlineMenuIframeService = new AutofillInlineMenuIframeService(shadow, portName, initStyles, iframeTitle, ariaAlert);
+        autofillInlineMenuIframeService.initMenuIframe();
+    }
+}
+
+;// CONCATENATED MODULE: ./src/autofill/overlay/inline-menu/iframe-content/autofill-inline-menu-button-iframe.ts
+
+
+class AutofillInlineMenuButtonIframe extends AutofillInlineMenuIframeElement {
+    constructor(element) {
+        super(element, AutofillOverlayPort.Button, {
+            background: "transparent",
+            border: "none",
+        }, chrome.i18n.getMessage("bitwardenOverlayButton"), chrome.i18n.getMessage("bitwardenOverlayMenuAvailable"));
+    }
+}
+
+;// CONCATENATED MODULE: ./src/autofill/overlay/inline-menu/iframe-content/autofill-inline-menu-list-iframe.ts
+
+
+class AutofillInlineMenuListIframe extends AutofillInlineMenuIframeElement {
+    constructor(element) {
+        super(element, AutofillOverlayPort.List, {
+            height: "0px",
+            minWidth: "250px",
+            maxHeight: "180px",
+            boxShadow: "rgba(0, 0, 0, 0.1) 2px 4px 6px 0px",
+            borderRadius: "4px",
+            borderWidth: "1px",
+            borderStyle: "solid",
+            borderColor: "rgb(206, 212, 220)",
+        }, chrome.i18n.getMessage("bitwardenVault"));
+    }
+}
+
+;// CONCATENATED MODULE: ./src/autofill/overlay/inline-menu/content/autofill-inline-menu-content.service.ts
+var autofill_inline_menu_content_service_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+
+
+class AutofillInlineMenuContentService {
+    constructor() {
+        this.sendExtensionMessage = sendExtensionMessage;
+        this.generateRandomCustomElementName = generateRandomCustomElementName;
+        this.setElementStyles = setElementStyles;
+        this.isFirefoxBrowser = globalThis.navigator.userAgent.indexOf(" Firefox/") !== -1 ||
+            globalThis.navigator.userAgent.indexOf(" Gecko/") !== -1;
+        this.mutationObserverIterations = 0;
+        this.lastElementOverrides = new WeakMap();
+        this.customElementDefaultStyles = {
+            all: "initial",
+            position: "fixed",
+            display: "block",
+            zIndex: "2147483647",
+        };
+        this.extensionMessageHandlers = {
+            closeAutofillInlineMenu: ({ message }) => this.closeInlineMenu(message),
+            appendAutofillInlineMenuToDom: ({ message }) => this.appendInlineMenuElements(message),
+        };
+        /**
+         * Removes the autofill inline menu from the page. This will initially
+         * unobserve the body element to ensure the mutation observer no
+         * longer triggers.
+         */
+        this.closeInlineMenu = (message) => {
+            if ((message === null || message === void 0 ? void 0 : message.overlayElement) === AutofillOverlayElement.Button) {
+                this.closeInlineMenuButton();
+                return;
+            }
+            if ((message === null || message === void 0 ? void 0 : message.overlayElement) === AutofillOverlayElement.List) {
+                this.closeInlineMenuList();
+                return;
+            }
+            this.unobserveBodyElement();
+            this.closeInlineMenuButton();
+            this.closeInlineMenuList();
+        };
+        /**
+         * Sets up mutation observers for the inline menu elements, the body element, and
+         * the document element. The mutation observers are used to remove any styles that
+         * are added to the inline menu elements by the website. They are also used to ensure
+         * that the inline menu elements are always present at the bottom of the body element.
+         */
+        this.setupMutationObserver = () => {
+            this.inlineMenuElementsMutationObserver = new MutationObserver(this.handleInlineMenuElementMutationObserverUpdate);
+            this.bodyElementMutationObserver = new MutationObserver(this.handleBodyElementMutationObserverUpdate);
+        };
+        /**
+         * Handles the mutation observer update for the inline menu elements. This method will
+         * remove any attributes or styles that might be added to the inline menu elements by
+         * a separate process within the website where this script is injected.
+         *
+         * @param mutationRecord - The mutation record that triggered the update.
+         */
+        this.handleInlineMenuElementMutationObserverUpdate = (mutationRecord) => {
+            if (this.isTriggeringExcessiveMutationObserverIterations()) {
+                return;
+            }
+            for (let recordIndex = 0; recordIndex < mutationRecord.length; recordIndex++) {
+                const record = mutationRecord[recordIndex];
+                if (record.type !== "attributes") {
+                    continue;
+                }
+                const element = record.target;
+                if (record.attributeName !== "style") {
+                    this.removeModifiedElementAttributes(element);
+                    continue;
+                }
+                element.removeAttribute("style");
+                this.updateCustomElementDefaultStyles(element);
+            }
+        };
+        /**
+         * Handles the mutation observer update for the body element. This method will
+         * ensure that the inline menu elements are always present at the bottom of the
+         * body element.
+         */
+        this.handleBodyElementMutationObserverUpdate = () => {
+            if ((!this.buttonElement && !this.listElement) ||
+                this.isTriggeringExcessiveMutationObserverIterations()) {
+                return;
+            }
+            requestIdleCallbackPolyfill(this.processBodyElementMutation, { timeout: 500 });
+        };
+        /**
+         * Processes the mutation of the body element. Will trigger when an
+         * idle moment in the execution of the main thread is detected.
+         */
+        this.processBodyElementMutation = () => autofill_inline_menu_content_service_awaiter(this, void 0, void 0, function* () {
+            const lastChild = globalThis.document.body.lastElementChild;
+            const secondToLastChild = lastChild === null || lastChild === void 0 ? void 0 : lastChild.previousElementSibling;
+            const lastChildIsInlineMenuList = lastChild === this.listElement;
+            const lastChildIsInlineMenuButton = lastChild === this.buttonElement;
+            const secondToLastChildIsInlineMenuButton = secondToLastChild === this.buttonElement;
+            if (!lastChild) {
+                return;
+            }
+            const lastChildEncounterCount = this.lastElementOverrides.get(lastChild) || 0;
+            if (!lastChildIsInlineMenuList && !lastChildIsInlineMenuButton && lastChildEncounterCount < 3) {
+                this.lastElementOverrides.set(lastChild, lastChildEncounterCount + 1);
+            }
+            if (this.lastElementOverrides.get(lastChild) >= 3) {
+                this.handlePersistentLastChildOverride(lastChild);
+                return;
+            }
+            const isInlineMenuListVisible = yield this.isInlineMenuListVisible();
+            if (!lastChild ||
+                (lastChildIsInlineMenuList && secondToLastChildIsInlineMenuButton) ||
+                (lastChildIsInlineMenuButton && !isInlineMenuListVisible)) {
+                return;
+            }
+            if ((lastChildIsInlineMenuList && !secondToLastChildIsInlineMenuButton) ||
+                (lastChildIsInlineMenuButton && isInlineMenuListVisible)) {
+                globalThis.document.body.insertBefore(this.buttonElement, this.listElement);
+                return;
+            }
+            globalThis.document.body.insertBefore(lastChild, this.buttonElement);
+        });
+        /**
+         * Verifies if the last child of the body element is overlaying the inline menu elements.
+         * This is triggered when the last child of the body is being forced by some script to
+         * be an element other than the inline menu elements.
+         *
+         * @param lastChild - The last child of the body element.
+         */
+        this.verifyInlineMenuIsNotObscured = (lastChild) => autofill_inline_menu_content_service_awaiter(this, void 0, void 0, function* () {
+            const inlineMenuPosition = yield this.sendExtensionMessage("getAutofillInlineMenuPosition");
+            const { button, list } = inlineMenuPosition;
+            if (!!button && this.elementAtCenterOfInlineMenuPosition(button) === lastChild) {
+                this.closeInlineMenu();
+                return;
+            }
+            if (!!list && this.elementAtCenterOfInlineMenuPosition(list) === lastChild) {
+                this.closeInlineMenu();
+            }
+        });
+        this.setupMutationObserver();
+    }
+    /**
+     * Returns the message handlers for the autofill inline menu content service.
+     */
+    get messageHandlers() {
+        return this.extensionMessageHandlers;
+    }
+    /**
+     * Identifies if the passed element corresponds to the inline menu button or list.
+     *
+     * @param element  - The element being checked
+     */
+    isElementInlineMenu(element) {
+        return element === this.buttonElement || element === this.listElement;
+    }
+    /**
+     * Checks if the inline menu button is visible at the top frame.
+     */
+    isInlineMenuButtonVisible() {
+        return autofill_inline_menu_content_service_awaiter(this, void 0, void 0, function* () {
+            return (!!this.buttonElement &&
+                (yield this.sendExtensionMessage("checkIsAutofillInlineMenuButtonVisible")) === true);
+        });
+    }
+    /**
+     * Checks if the inline menu list if visible at the top frame.
+     */
+    isInlineMenuListVisible() {
+        return autofill_inline_menu_content_service_awaiter(this, void 0, void 0, function* () {
+            return (!!this.listElement &&
+                (yield this.sendExtensionMessage("checkIsAutofillInlineMenuListVisible")) === true);
+        });
+    }
+    /**
+     * Removes the inline menu button from the DOM if it is currently present. Will
+     * also remove the inline menu reposition event listeners.
+     */
+    closeInlineMenuButton() {
+        if (this.buttonElement) {
+            this.buttonElement.remove();
+            void this.sendExtensionMessage("autofillOverlayElementClosed", {
+                overlayElement: AutofillOverlayElement.Button,
+            });
+        }
+    }
+    /**
+     * Removes the inline menu list from the DOM if it is currently present.
+     */
+    closeInlineMenuList() {
+        if (this.listElement) {
+            this.listElement.remove();
+            void this.sendExtensionMessage("autofillOverlayElementClosed", {
+                overlayElement: AutofillOverlayElement.List,
+            });
+        }
+    }
+    /**
+     * Updates the position of both the inline menu button and inline menu list.
+     */
+    appendInlineMenuElements({ overlayElement }) {
+        return autofill_inline_menu_content_service_awaiter(this, void 0, void 0, function* () {
+            if (overlayElement === AutofillOverlayElement.Button) {
+                return this.appendButtonElement();
+            }
+            return this.appendListElement();
+        });
+    }
+    /**
+     * Updates the position of the inline menu button.
+     */
+    appendButtonElement() {
+        return autofill_inline_menu_content_service_awaiter(this, void 0, void 0, function* () {
+            if (!this.buttonElement) {
+                this.createButtonElement();
+                this.updateCustomElementDefaultStyles(this.buttonElement);
+            }
+            if (!(yield this.isInlineMenuButtonVisible())) {
+                this.appendInlineMenuElementToBody(this.buttonElement);
+                this.updateInlineMenuElementIsVisibleStatus(AutofillOverlayElement.Button, true);
+            }
+        });
+    }
+    /**
+     * Updates the position of the inline menu list.
+     */
+    appendListElement() {
+        return autofill_inline_menu_content_service_awaiter(this, void 0, void 0, function* () {
+            if (!this.listElement) {
+                this.createListElement();
+                this.updateCustomElementDefaultStyles(this.listElement);
+            }
+            if (!(yield this.isInlineMenuListVisible())) {
+                this.appendInlineMenuElementToBody(this.listElement);
+                this.updateInlineMenuElementIsVisibleStatus(AutofillOverlayElement.List, true);
+            }
+        });
+    }
+    /**
+     * Updates the visibility status of the inline menu element within the background script.
+     *
+     * @param overlayElement - The inline menu element to update the visibility status for.
+     * @param isVisible - The visibility status to update the inline menu element to.
+     */
+    updateInlineMenuElementIsVisibleStatus(overlayElement, isVisible) {
+        void this.sendExtensionMessage("updateAutofillInlineMenuElementIsVisibleStatus", {
+            overlayElement,
+            isVisible,
+        });
+    }
+    /**
+     * Appends the inline menu element to the body element. This method will also
+     * observe the body element to ensure that the inline menu element is not
+     * interfered with by any DOM changes.
+     *
+     * @param element - The inline menu element to append to the body element.
+     */
+    appendInlineMenuElementToBody(element) {
+        this.observeBodyElement();
+        globalThis.document.body.appendChild(element);
+    }
+    /**
+     * Creates the autofill inline menu button element. Will not attempt
+     * to create the element if it already exists in the DOM.
+     */
+    createButtonElement() {
+        var _a;
+        if (this.isFirefoxBrowser) {
+            this.buttonElement = globalThis.document.createElement("div");
+            new AutofillInlineMenuButtonIframe(this.buttonElement);
+            return;
+        }
+        const customElementName = this.generateRandomCustomElementName();
+        (_a = globalThis.customElements) === null || _a === void 0 ? void 0 : _a.define(customElementName, class extends HTMLElement {
+            constructor() {
+                super();
+                new AutofillInlineMenuButtonIframe(this);
+            }
+        });
+        this.buttonElement = globalThis.document.createElement(customElementName);
+    }
+    /**
+     * Creates the autofill inline menu list element. Will not attempt
+     * to create the element if it already exists in the DOM.
+     */
+    createListElement() {
+        var _a;
+        if (this.isFirefoxBrowser) {
+            this.listElement = globalThis.document.createElement("div");
+            new AutofillInlineMenuListIframe(this.listElement);
+            return;
+        }
+        const customElementName = this.generateRandomCustomElementName();
+        (_a = globalThis.customElements) === null || _a === void 0 ? void 0 : _a.define(customElementName, class extends HTMLElement {
+            constructor() {
+                super();
+                new AutofillInlineMenuListIframe(this);
+            }
+        });
+        this.listElement = globalThis.document.createElement(customElementName);
+    }
+    /**
+     * Updates the default styles for the custom element. This method will
+     * remove any styles that are added to the custom element by other methods.
+     *
+     * @param element - The custom element to update the default styles for.
+     */
+    updateCustomElementDefaultStyles(element) {
+        this.unobserveCustomElements();
+        this.setElementStyles(element, this.customElementDefaultStyles, true);
+        this.observeCustomElements();
+    }
+    /**
+     * Sets up mutation observers to verify that the inline menu
+     * elements are not modified by the website.
+     */
+    observeCustomElements() {
+        var _a, _b;
+        if (this.buttonElement) {
+            (_a = this.inlineMenuElementsMutationObserver) === null || _a === void 0 ? void 0 : _a.observe(this.buttonElement, {
+                attributes: true,
+            });
+        }
+        if (this.listElement) {
+            (_b = this.inlineMenuElementsMutationObserver) === null || _b === void 0 ? void 0 : _b.observe(this.listElement, { attributes: true });
+        }
+    }
+    /**
+     * Disconnects the mutation observers that are used to verify that the inline menu
+     * elements are not modified by the website.
+     */
+    unobserveCustomElements() {
+        var _a;
+        (_a = this.inlineMenuElementsMutationObserver) === null || _a === void 0 ? void 0 : _a.disconnect();
+    }
+    /**
+     * Sets up a mutation observer for the body element. The mutation observer is used
+     * to ensure that the inline menu elements are always present at the bottom of the
+     * body element.
+     */
+    observeBodyElement() {
+        var _a;
+        (_a = this.bodyElementMutationObserver) === null || _a === void 0 ? void 0 : _a.observe(globalThis.document.body, { childList: true });
+    }
+    /**
+     * Disconnects the mutation observer for the body element.
+     */
+    unobserveBodyElement() {
+        var _a;
+        (_a = this.bodyElementMutationObserver) === null || _a === void 0 ? void 0 : _a.disconnect();
+    }
+    /**
+     * Removes all elements from a passed inline menu
+     * element except for the style attribute.
+     *
+     * @param element - The element to remove the attributes from.
+     */
+    removeModifiedElementAttributes(element) {
+        const attributes = Array.from(element.attributes);
+        for (let attributeIndex = 0; attributeIndex < attributes.length; attributeIndex++) {
+            const attribute = attributes[attributeIndex];
+            if (attribute.name === "style") {
+                continue;
+            }
+            element.removeAttribute(attribute.name);
+        }
+    }
+    /**
+     * Handles the behavior of a persistent child element that is forcing itself to
+     * the bottom of the body element. This method will ensure that the inline menu
+     * elements are not obscured by the persistent child element.
+     *
+     * @param lastChild - The last child of the body element.
+     */
+    handlePersistentLastChildOverride(lastChild) {
+        const lastChildZIndex = parseInt(lastChild.style.zIndex);
+        if (lastChildZIndex >= 2147483647) {
+            lastChild.style.zIndex = "2147483646";
+        }
+        this.clearPersistentLastChildOverrideTimeout();
+        this.handlePersistentLastChildOverrideTimeout = globalThis.setTimeout(() => this.verifyInlineMenuIsNotObscured(lastChild), 500);
+    }
+    /**
+     * Returns the element present at the center of the inline menu position.
+     *
+     * @param position - The position of the inline menu element.
+     */
+    elementAtCenterOfInlineMenuPosition(position) {
+        return globalThis.document.elementFromPoint(position.left + position.width / 2, position.top + position.height / 2);
+    }
+    /**
+     * Clears the timeout that is used to verify that the last child of the body element
+     * is not overlaying the inline menu elements.
+     */
+    clearPersistentLastChildOverrideTimeout() {
+        if (this.handlePersistentLastChildOverrideTimeout) {
+            globalThis.clearTimeout(this.handlePersistentLastChildOverrideTimeout);
+        }
+    }
+    /**
+     * Identifies if the mutation observer is triggering excessive iterations.
+     * Will trigger a blur of the most recently focused field and remove the
+     * autofill inline menu if any set mutation observer is triggering
+     * excessive iterations.
+     */
+    isTriggeringExcessiveMutationObserverIterations() {
+        if (this.mutationObserverIterationsResetTimeout) {
+            clearTimeout(this.mutationObserverIterationsResetTimeout);
+        }
+        this.mutationObserverIterations++;
+        this.mutationObserverIterationsResetTimeout = setTimeout(() => (this.mutationObserverIterations = 0), 2000);
+        if (this.mutationObserverIterations > 100) {
+            clearTimeout(this.mutationObserverIterationsResetTimeout);
+            this.mutationObserverIterations = 0;
+            this.closeInlineMenu();
+            return true;
+        }
+        return false;
+    }
+    /**
+     * Disconnects the mutation observers and removes the inline menu elements from the DOM.
+     */
+    destroy() {
+        this.closeInlineMenu();
+        this.clearPersistentLastChildOverrideTimeout();
+    }
+}
+
 // EXTERNAL MODULE: ../../node_modules/@webcomponents/custom-elements/custom-elements.min.js
-var custom_elements_min = __webpack_require__(12801);
+var custom_elements_min = __webpack_require__(70526);
 ;// CONCATENATED MODULE: ../../node_modules/lit/polyfill-support.js
 !function (i) {
   "function" == typeof define && define.amd ? define(i) : i();
@@ -1526,929 +2927,130 @@ var AuthenticationStatus;
     AuthenticationStatus[AuthenticationStatus["Unlocked"] = 2] = "Unlocked";
 })(AuthenticationStatus || (AuthenticationStatus = {}));
 
-;// CONCATENATED MODULE: ../../libs/common/src/autofill/constants/index.ts
-const TYPE_CHECK = {
-    FUNCTION: "function",
-    NUMBER: "number",
-    STRING: "string",
+;// CONCATENATED MODULE: ../../libs/common/src/vault/enums/cipher-reprompt-type.ts
+var CipherRepromptType;
+(function (CipherRepromptType) {
+    CipherRepromptType[CipherRepromptType["None"] = 0] = "None";
+    CipherRepromptType[CipherRepromptType["Password"] = 1] = "Password";
+})(CipherRepromptType || (CipherRepromptType = {}));
+
+;// CONCATENATED MODULE: ../../libs/common/src/vault/enums/cipher-type.ts
+var CipherType;
+(function (CipherType) {
+    CipherType[CipherType["Login"] = 1] = "Login";
+    CipherType[CipherType["SecureNote"] = 2] = "SecureNote";
+    CipherType[CipherType["Card"] = 3] = "Card";
+    CipherType[CipherType["Identity"] = 4] = "Identity";
+})(CipherType || (CipherType = {}));
+
+;// CONCATENATED MODULE: ../../libs/common/src/vault/enums/field-type.enum.ts
+var FieldType;
+(function (FieldType) {
+    FieldType[FieldType["Text"] = 0] = "Text";
+    FieldType[FieldType["Hidden"] = 1] = "Hidden";
+    FieldType[FieldType["Boolean"] = 2] = "Boolean";
+    FieldType[FieldType["Linked"] = 3] = "Linked";
+})(FieldType || (FieldType = {}));
+
+;// CONCATENATED MODULE: ../../libs/common/src/vault/enums/linked-id-type.enum.ts
+// LoginView
+var LoginLinkedId;
+(function (LoginLinkedId) {
+    LoginLinkedId[LoginLinkedId["Username"] = 100] = "Username";
+    LoginLinkedId[LoginLinkedId["Password"] = 101] = "Password";
+})(LoginLinkedId || (LoginLinkedId = {}));
+// CardView
+var CardLinkedId;
+(function (CardLinkedId) {
+    CardLinkedId[CardLinkedId["CardholderName"] = 300] = "CardholderName";
+    CardLinkedId[CardLinkedId["ExpMonth"] = 301] = "ExpMonth";
+    CardLinkedId[CardLinkedId["ExpYear"] = 302] = "ExpYear";
+    CardLinkedId[CardLinkedId["Code"] = 303] = "Code";
+    CardLinkedId[CardLinkedId["Brand"] = 304] = "Brand";
+    CardLinkedId[CardLinkedId["Number"] = 305] = "Number";
+})(CardLinkedId || (CardLinkedId = {}));
+// IdentityView
+var IdentityLinkedId;
+(function (IdentityLinkedId) {
+    IdentityLinkedId[IdentityLinkedId["Title"] = 400] = "Title";
+    IdentityLinkedId[IdentityLinkedId["MiddleName"] = 401] = "MiddleName";
+    IdentityLinkedId[IdentityLinkedId["Address1"] = 402] = "Address1";
+    IdentityLinkedId[IdentityLinkedId["Address2"] = 403] = "Address2";
+    IdentityLinkedId[IdentityLinkedId["Address3"] = 404] = "Address3";
+    IdentityLinkedId[IdentityLinkedId["City"] = 405] = "City";
+    IdentityLinkedId[IdentityLinkedId["State"] = 406] = "State";
+    IdentityLinkedId[IdentityLinkedId["PostalCode"] = 407] = "PostalCode";
+    IdentityLinkedId[IdentityLinkedId["Country"] = 408] = "Country";
+    IdentityLinkedId[IdentityLinkedId["Company"] = 409] = "Company";
+    IdentityLinkedId[IdentityLinkedId["Email"] = 410] = "Email";
+    IdentityLinkedId[IdentityLinkedId["Phone"] = 411] = "Phone";
+    IdentityLinkedId[IdentityLinkedId["Ssn"] = 412] = "Ssn";
+    IdentityLinkedId[IdentityLinkedId["Username"] = 413] = "Username";
+    IdentityLinkedId[IdentityLinkedId["PassportNumber"] = 414] = "PassportNumber";
+    IdentityLinkedId[IdentityLinkedId["LicenseNumber"] = 415] = "LicenseNumber";
+    IdentityLinkedId[IdentityLinkedId["FirstName"] = 416] = "FirstName";
+    IdentityLinkedId[IdentityLinkedId["LastName"] = 417] = "LastName";
+    IdentityLinkedId[IdentityLinkedId["FullName"] = 418] = "FullName";
+})(IdentityLinkedId || (IdentityLinkedId = {}));
+
+;// CONCATENATED MODULE: ../../libs/common/src/vault/enums/secure-note-type.enum.ts
+var SecureNoteType;
+(function (SecureNoteType) {
+    SecureNoteType[SecureNoteType["Generic"] = 0] = "Generic";
+})(SecureNoteType || (SecureNoteType = {}));
+
+;// CONCATENATED MODULE: ../../libs/common/src/vault/enums/index.ts
+
+
+
+
+
+
+;// CONCATENATED MODULE: ./src/autofill/enums/autofill-field.enums.ts
+const AutofillFieldQualifier = {
+    password: "password",
+    username: "username",
+    cardholderName: "cardholderName",
+    cardNumber: "cardNumber",
+    cardExpirationMonth: "cardExpirationMonth",
+    cardExpirationYear: "cardExpirationYear",
+    cardExpirationDate: "cardExpirationDate",
+    cardCvv: "cardCvv",
+    identityTitle: "identityTitle",
+    identityFirstName: "identityFirstName",
+    identityMiddleName: "identityMiddleName",
+    identityLastName: "identityLastName",
+    identityFullName: "identityFullName",
+    identityAddress1: "identityAddress1",
+    identityAddress2: "identityAddress2",
+    identityAddress3: "identityAddress3",
+    identityCity: "identityCity",
+    identityState: "identityState",
+    identityPostalCode: "identityPostalCode",
+    identityCountry: "identityCountry",
+    identityCompany: "identityCompany",
+    identityPhone: "identityPhone",
+    identityEmail: "identityEmail",
+    identityUsername: "identityUsername",
 };
-const EVENTS = {
-    CHANGE: "change",
-    INPUT: "input",
-    KEYDOWN: "keydown",
-    KEYPRESS: "keypress",
-    KEYUP: "keyup",
-    BLUR: "blur",
-    CLICK: "click",
-    FOCUS: "focus",
-    SCROLL: "scroll",
-    RESIZE: "resize",
-    DOMCONTENTLOADED: "DOMContentLoaded",
-    LOAD: "load",
-    MESSAGE: "message",
-    VISIBILITYCHANGE: "visibilitychange",
-    FOCUSOUT: "focusout",
-};
-const ClearClipboardDelay = {
-    Never: null,
-    TenSeconds: 10,
-    TwentySeconds: 20,
-    ThirtySeconds: 30,
-    OneMinute: 60,
-    TwoMinutes: 120,
-    FiveMinutes: 300,
-};
-/* Context Menu item Ids */
-const AUTOFILL_CARD_ID = "autofill-card";
-const AUTOFILL_ID = "autofill";
-const SHOW_AUTOFILL_BUTTON = "show-autofill-button";
-const AUTOFILL_IDENTITY_ID = "autofill-identity";
-const COPY_IDENTIFIER_ID = "copy-identifier";
-const COPY_PASSWORD_ID = "copy-password";
-const COPY_USERNAME_ID = "copy-username";
-const COPY_VERIFICATION_CODE_ID = "copy-totp";
-const CREATE_CARD_ID = "create-card";
-const CREATE_IDENTITY_ID = "create-identity";
-const CREATE_LOGIN_ID = "create-login";
-const GENERATE_PASSWORD_ID = "generate-password";
-const NOOP_COMMAND_SUFFIX = "noop";
-const ROOT_ID = "root";
-const SEPARATOR_ID = "separator";
-const NOTIFICATION_BAR_LIFESPAN_MS = 150000; // 150 seconds
-const AutofillOverlayVisibility = {
-    Off: 0,
-    OnButtonClick: 1,
-    OnFieldFocus: 2,
-};
-
-;// CONCATENATED MODULE: ./src/autofill/utils/autofill-overlay.enum.ts
-const AutofillOverlayElement = {
-    Button: "autofill-overlay-button",
-    List: "autofill-overlay-list",
-};
-const AutofillOverlayPort = {
-    Button: "autofill-overlay-button-port",
-    List: "autofill-overlay-list-port",
-};
-const RedirectFocusDirection = {
-    Current: "current",
-    Previous: "previous",
-    Next: "next",
-};
-
-
-;// CONCATENATED MODULE: ../../libs/common/src/platform/enums/encryption-type.enum.ts
-var EncryptionType;
-(function (EncryptionType) {
-    EncryptionType[EncryptionType["AesCbc256_B64"] = 0] = "AesCbc256_B64";
-    EncryptionType[EncryptionType["AesCbc128_HmacSha256_B64"] = 1] = "AesCbc128_HmacSha256_B64";
-    EncryptionType[EncryptionType["AesCbc256_HmacSha256_B64"] = 2] = "AesCbc256_HmacSha256_B64";
-    EncryptionType[EncryptionType["Rsa2048_OaepSha256_B64"] = 3] = "Rsa2048_OaepSha256_B64";
-    EncryptionType[EncryptionType["Rsa2048_OaepSha1_B64"] = 4] = "Rsa2048_OaepSha1_B64";
-    EncryptionType[EncryptionType["Rsa2048_OaepSha256_HmacSha256_B64"] = 5] = "Rsa2048_OaepSha256_HmacSha256_B64";
-    EncryptionType[EncryptionType["Rsa2048_OaepSha1_HmacSha256_B64"] = 6] = "Rsa2048_OaepSha1_HmacSha256_B64";
-})(EncryptionType || (EncryptionType = {}));
-/** The expected number of parts to a serialized EncString of the given encryption type.
- * For example, an EncString of type AesCbc256_B64 will have 2 parts, and an EncString of type
- * AesCbc128_HmacSha256_B64 will have 3 parts.
- *
- * Example of annotated serialized EncStrings:
- * 0.iv|data
- * 1.iv|data|mac
- * 2.iv|data|mac
- * 3.data
- * 4.data
- *
- * @see EncString
- * @see EncryptionType
- * @see EncString.parseEncryptedString
- */
-const EXPECTED_NUM_PARTS_BY_ENCRYPTION_TYPE = {
-    [EncryptionType.AesCbc256_B64]: 2,
-    [EncryptionType.AesCbc128_HmacSha256_B64]: 3,
-    [EncryptionType.AesCbc256_HmacSha256_B64]: 3,
-    [EncryptionType.Rsa2048_OaepSha256_B64]: 1,
-    [EncryptionType.Rsa2048_OaepSha1_B64]: 1,
-    [EncryptionType.Rsa2048_OaepSha256_HmacSha256_B64]: 2,
-    [EncryptionType.Rsa2048_OaepSha1_HmacSha256_B64]: 2,
-};
-
-;// CONCATENATED MODULE: ../../libs/common/src/platform/enums/file-upload-type.enum.ts
-var FileUploadType;
-(function (FileUploadType) {
-    FileUploadType[FileUploadType["Direct"] = 0] = "Direct";
-    FileUploadType[FileUploadType["Azure"] = 1] = "Azure";
-})(FileUploadType || (FileUploadType = {}));
-
-;// CONCATENATED MODULE: ../../libs/common/src/platform/enums/hash-purpose.enum.ts
-var HashPurpose;
-(function (HashPurpose) {
-    HashPurpose[HashPurpose["ServerAuthorization"] = 1] = "ServerAuthorization";
-    HashPurpose[HashPurpose["LocalAuthorization"] = 2] = "LocalAuthorization";
-})(HashPurpose || (HashPurpose = {}));
-
-;// CONCATENATED MODULE: ../../libs/common/src/platform/enums/html-storage-location.enum.ts
-var HtmlStorageLocation;
-(function (HtmlStorageLocation) {
-    HtmlStorageLocation["Local"] = "local";
-    HtmlStorageLocation["Memory"] = "memory";
-    HtmlStorageLocation["Session"] = "session";
-})(HtmlStorageLocation || (HtmlStorageLocation = {}));
-
-;// CONCATENATED MODULE: ../../libs/common/src/auth/models/domain/kdf-config.ts
-
-/**
- * Password-Based Key Derivation Function 2 (PBKDF2) KDF configuration.
- */
-class PBKDF2KdfConfig {
-    constructor(iterations) {
-        this.kdfType = kdf_type_enum_KdfType.PBKDF2_SHA256;
-        this.iterations = iterations !== null && iterations !== void 0 ? iterations : PBKDF2_ITERATIONS.defaultValue;
-    }
-    /**
-     * Validates the PBKDF2 KDF configuration.
-     * A Valid PBKDF2 KDF configuration has KDF iterations between the 600_000 and 2_000_000.
-     */
-    validateKdfConfig() {
-        if (!PBKDF2_ITERATIONS.inRange(this.iterations)) {
-            throw new Error(`PBKDF2 iterations must be between ${PBKDF2_ITERATIONS.min} and ${PBKDF2_ITERATIONS.max}`);
-        }
-    }
-    static fromJSON(json) {
-        return new PBKDF2KdfConfig(json.iterations);
-    }
-}
-/**
- * Argon2 KDF configuration.
- */
-class Argon2KdfConfig {
-    constructor(iterations, memory, parallelism) {
-        this.kdfType = KdfType.Argon2id;
-        this.iterations = iterations !== null && iterations !== void 0 ? iterations : ARGON2_ITERATIONS.defaultValue;
-        this.memory = memory !== null && memory !== void 0 ? memory : ARGON2_MEMORY.defaultValue;
-        this.parallelism = parallelism !== null && parallelism !== void 0 ? parallelism : ARGON2_PARALLELISM.defaultValue;
-    }
-    /**
-     * Validates the Argon2 KDF configuration.
-     * A Valid Argon2 KDF configuration has iterations between 2 and 10, memory between 16mb and 1024mb, and parallelism between 1 and 16.
-     */
-    validateKdfConfig() {
-        if (!ARGON2_ITERATIONS.inRange(this.iterations)) {
-            throw new Error(`Argon2 iterations must be between ${ARGON2_ITERATIONS.min} and ${ARGON2_ITERATIONS.max}`);
-        }
-        if (!ARGON2_MEMORY.inRange(this.memory)) {
-            throw new Error(`Argon2 memory must be between ${ARGON2_MEMORY.min}mb and ${ARGON2_MEMORY.max}mb`);
-        }
-        if (!ARGON2_PARALLELISM.inRange(this.parallelism)) {
-            throw new Error(`Argon2 parallelism must be between ${ARGON2_PARALLELISM.min} and ${ARGON2_PARALLELISM.max}.`);
-        }
-    }
-    static fromJSON(json) {
-        return new Argon2KdfConfig(json.iterations, json.memory, json.parallelism);
-    }
-}
-
-;// CONCATENATED MODULE: ../../libs/common/src/platform/misc/range-with-default.ts
-/**
- * A range with a default value.
- *
- * Enforces constraints to ensure min > default > max.
- */
-class RangeWithDefault {
-    constructor(min, max, defaultValue) {
-        this.min = min;
-        this.max = max;
-        this.defaultValue = defaultValue;
-        if (min > max) {
-            throw new Error(`${min} is greater than ${max}.`);
-        }
-        if (this.inRange(defaultValue) === false) {
-            throw new Error("Default value is not in range.");
-        }
-    }
-    inRange(value) {
-        return value >= this.min && value <= this.max;
-    }
-}
-
-;// CONCATENATED MODULE: ../../libs/common/src/platform/enums/kdf-type.enum.ts
-
-
-var kdf_type_enum_KdfType;
-(function (KdfType) {
-    KdfType[KdfType["PBKDF2_SHA256"] = 0] = "PBKDF2_SHA256";
-    KdfType[KdfType["Argon2id"] = 1] = "Argon2id";
-})(kdf_type_enum_KdfType || (kdf_type_enum_KdfType = {}));
-const kdf_type_enum_ARGON2_MEMORY = new RangeWithDefault(16, 1024, 64);
-const kdf_type_enum_ARGON2_PARALLELISM = new RangeWithDefault(1, 16, 4);
-const kdf_type_enum_ARGON2_ITERATIONS = new RangeWithDefault(2, 10, 3);
-const DEFAULT_KDF_TYPE = kdf_type_enum_KdfType.PBKDF2_SHA256;
-const PBKDF2_ITERATIONS = new RangeWithDefault(600000, 2000000, 600000);
-const DEFAULT_KDF_CONFIG = new PBKDF2KdfConfig(PBKDF2_ITERATIONS.defaultValue);
-
-;// CONCATENATED MODULE: ../../libs/common/src/platform/enums/key-suffix-options.enum.ts
-var KeySuffixOptions;
-(function (KeySuffixOptions) {
-    KeySuffixOptions["Auto"] = "auto";
-    KeySuffixOptions["Biometric"] = "biometric";
-    KeySuffixOptions["Pin"] = "pin";
-})(KeySuffixOptions || (KeySuffixOptions = {}));
-
-;// CONCATENATED MODULE: ../../libs/common/src/platform/enums/log-level-type.enum.ts
-var LogLevelType;
-(function (LogLevelType) {
-    LogLevelType[LogLevelType["Debug"] = 0] = "Debug";
-    LogLevelType[LogLevelType["Info"] = 1] = "Info";
-    LogLevelType[LogLevelType["Warning"] = 2] = "Warning";
-    LogLevelType[LogLevelType["Error"] = 3] = "Error";
-})(LogLevelType || (LogLevelType = {}));
-
-;// CONCATENATED MODULE: ../../libs/common/src/platform/enums/storage-location.enum.ts
-var StorageLocation;
-(function (StorageLocation) {
-    StorageLocation["Both"] = "both";
-    StorageLocation["Disk"] = "disk";
-    StorageLocation["Memory"] = "memory";
-})(StorageLocation || (StorageLocation = {}));
-
-;// CONCATENATED MODULE: ../../libs/common/src/platform/enums/theme-type.enum.ts
-var ThemeType;
-(function (ThemeType) {
-    ThemeType["System"] = "system";
-    ThemeType["Light"] = "light";
-    ThemeType["Dark"] = "dark";
-    ThemeType["Nord"] = "nord";
-    ThemeType["SolarizedDark"] = "solarizedDark";
-})(ThemeType || (ThemeType = {}));
-
-;// CONCATENATED MODULE: ../../libs/common/src/platform/enums/index.ts
-
-
-
-
-
-
-
-
-
-
-;// CONCATENATED MODULE: ./src/autofill/enums/autofill-port.enums.ts
-const AutofillPort = {
-    InjectedScript: "autofill-injected-script-port",
-};
-
-
-;// CONCATENATED MODULE: ./src/autofill/utils/index.ts
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-
-/**
- * Generates a random string of characters that formatted as a custom element name.
- */
-function generateRandomCustomElementName() {
-    const generateRandomChars = (length) => {
-        const chars = "abcdefghijklmnopqrstuvwxyz";
-        const randomChars = [];
-        const randomBytes = new Uint8Array(length);
-        globalThis.crypto.getRandomValues(randomBytes);
-        for (let byteIndex = 0; byteIndex < randomBytes.length; byteIndex++) {
-            const byte = randomBytes[byteIndex];
-            randomChars.push(chars[byte % chars.length]);
-        }
-        return randomChars.join("");
-    };
-    const length = Math.floor(Math.random() * 5) + 8; // Between 8 and 12 characters
-    const numHyphens = Math.min(Math.max(Math.floor(Math.random() * 4), 1), length - 1); // At least 1, maximum of 3 hyphens
-    const hyphenIndices = [];
-    while (hyphenIndices.length < numHyphens) {
-        const index = Math.floor(Math.random() * (length - 1)) + 1;
-        if (!hyphenIndices.includes(index)) {
-            hyphenIndices.push(index);
-        }
-    }
-    hyphenIndices.sort((a, b) => a - b);
-    let randomString = "";
-    let prevIndex = 0;
-    for (let index = 0; index < hyphenIndices.length; index++) {
-        const hyphenIndex = hyphenIndices[index];
-        randomString = randomString + generateRandomChars(hyphenIndex - prevIndex) + "-";
-        prevIndex = hyphenIndex;
-    }
-    randomString += generateRandomChars(length - prevIndex);
-    return randomString;
-}
-/**
- * Builds a DOM element from an SVG string.
- *
- * @param svgString - The SVG string to build the DOM element from.
- * @param ariaHidden - Determines whether the SVG should be hidden from screen readers.
- */
-function buildSvgDomElement(svgString, ariaHidden = true) {
-    const domParser = new DOMParser();
-    const svgDom = domParser.parseFromString(svgString, "image/svg+xml");
-    const domElement = svgDom.documentElement;
-    domElement.setAttribute("aria-hidden", `${ariaHidden}`);
-    return domElement;
-}
-/**
- * Sends a message to the extension.
- *
- * @param command - The command to send.
- * @param options - The options to send with the command.
- */
-function sendExtensionMessage(command, options = {}) {
-    return __awaiter(this, void 0, void 0, function* () {
-        return new Promise((resolve) => {
-            chrome.runtime.sendMessage(Object.assign({ command }, options), (response) => {
-                if (chrome.runtime.lastError) {
-                    return;
-                }
-                resolve(response);
-            });
-        });
-    });
-}
-/**
- * Sets CSS styles on an element.
- *
- * @param element - The element to set the styles on.
- * @param styles - The styles to set on the element.
- * @param priority - Determines whether the styles should be set as important.
- */
-function setElementStyles(element, styles, priority) {
-    if (!element || !styles || !Object.keys(styles).length) {
-        return;
-    }
-    for (const styleProperty in styles) {
-        element.style.setProperty(styleProperty.replace(/([a-z])([A-Z])/g, "$1-$2"), // Convert camelCase to kebab-case
-        styles[styleProperty], priority ? "important" : undefined);
-    }
-}
-/**
- * Sets up a long-lived connection with the extension background
- * and triggers an onDisconnect event if the extension context
- * is invalidated.
- *
- * @param callback - Callback function to run when the extension disconnects
- */
-function setupExtensionDisconnectAction(callback) {
-    const port = chrome.runtime.connect({ name: AutofillPort.InjectedScript });
-    const onDisconnectCallback = (disconnectedPort) => {
-        callback(disconnectedPort);
-        port.onDisconnect.removeListener(onDisconnectCallback);
-    };
-    port.onDisconnect.addListener(onDisconnectCallback);
-}
-/**
- * Handles setup of the extension disconnect action for the autofill init class
- * in both instances where the overlay might or might not be initialized.
- *
- * @param windowContext - The global window context
- */
-function setupAutofillInitDisconnectAction(windowContext) {
-    if (!windowContext.bitwardenAutofillInit) {
-        return;
-    }
-    const onDisconnectCallback = () => {
-        windowContext.bitwardenAutofillInit.destroy();
-        delete windowContext.bitwardenAutofillInit;
-    };
-    setupExtensionDisconnectAction(onDisconnectCallback);
-}
-/**
- * Identifies whether an element is a fillable form field.
- * This is determined by whether the element is a form field and not a span.
- *
- * @param formFieldElement - The form field element to check.
- */
-function elementIsFillableFormField(formFieldElement) {
-    return (formFieldElement === null || formFieldElement === void 0 ? void 0 : formFieldElement.tagName.toLowerCase()) !== "span";
-}
-/**
- * Identifies whether an element is an instance of a specific tag name.
- *
- * @param element - The element to check.
- * @param tagName -  The tag name to check against.
- */
-function elementIsInstanceOf(element, tagName) {
-    return (element === null || element === void 0 ? void 0 : element.tagName.toLowerCase()) === tagName;
-}
-/**
- * Identifies whether an element is a span element.
- *
- * @param element - The element to check.
- */
-function elementIsSpanElement(element) {
-    return elementIsInstanceOf(element, "span");
-}
-/**
- * Identifies whether an element is an input field.
- *
- * @param element - The element to check.
- */
-function elementIsInputElement(element) {
-    return elementIsInstanceOf(element, "input");
-}
-/**
- * Identifies whether an element is a select field.
- *
- * @param element - The element to check.
- */
-function elementIsSelectElement(element) {
-    return elementIsInstanceOf(element, "select");
-}
-/**
- * Identifies whether an element is a textarea field.
- *
- * @param element - The element to check.
- */
-function elementIsTextAreaElement(element) {
-    return elementIsInstanceOf(element, "textarea");
-}
-/**
- * Identifies whether an element is a form element.
- *
- * @param element - The element to check.
- */
-function elementIsFormElement(element) {
-    return elementIsInstanceOf(element, "form");
-}
-/**
- * Identifies whether an element is a label element.
- *
- * @param element - The element to check.
- */
-function elementIsLabelElement(element) {
-    return elementIsInstanceOf(element, "label");
-}
-/**
- * Identifies whether an element is a description details `dd` element.
- *
- * @param element - The element to check.
- */
-function elementIsDescriptionDetailsElement(element) {
-    return elementIsInstanceOf(element, "dd");
-}
-/**
- * Identifies whether an element is a description term `dt` element.
- *
- * @param element - The element to check.
- */
-function elementIsDescriptionTermElement(element) {
-    return elementIsInstanceOf(element, "dt");
-}
-/**
- * Identifies whether a node is an HTML element.
- *
- * @param node - The node to check.
- */
-function nodeIsElement(node) {
-    if (!node) {
-        return false;
-    }
-    return node.nodeType === Node.ELEMENT_NODE;
-}
-/**
- * Identifies whether a node is an input element.
- *
- * @param node - The node to check.
- */
-function nodeIsInputElement(node) {
-    return nodeIsElement(node) && elementIsInputElement(node);
-}
-/**
- * Identifies whether a node is a form element.
- *
- * @param node - The node to check.
- */
-function nodeIsFormElement(node) {
-    return nodeIsElement(node) && elementIsFormElement(node);
-}
-
-
-;// CONCATENATED MODULE: ./src/autofill/overlay/iframe-content/autofill-overlay-iframe.service.ts
-
-
-
-class AutofillOverlayIframeService {
-    constructor(iframePath, portName, shadow) {
-        this.iframePath = iframePath;
-        this.portName = portName;
-        this.shadow = shadow;
-        this.port = null;
-        this.iframeStyles = {
-            all: "initial",
-            position: "fixed",
-            display: "block",
-            zIndex: "2147483647",
-            lineHeight: "0",
-            overflow: "hidden",
-            transition: "opacity 125ms ease-out 0s",
-            visibility: "visible",
-            clipPath: "none",
-            pointerEvents: "auto",
-            margin: "0",
-            padding: "0",
-            colorScheme: "normal",
-            opacity: "0",
-        };
-        this.defaultIframeAttributes = {
-            src: "",
-            title: "",
-            sandbox: "allow-scripts",
-            allowtransparency: "true",
-            tabIndex: "-1",
-        };
-        this.foreignMutationsCount = 0;
-        this.mutationObserverIterations = 0;
-        this.windowMessageHandlers = {
-            updateAutofillOverlayListHeight: (message) => this.updateElementStyles(this.iframe, message.styles),
-            getPageColorScheme: () => this.updateOverlayPageColorScheme(),
-        };
-        this.backgroundPortMessageHandlers = {
-            initAutofillOverlayList: ({ message }) => this.initAutofillOverlayList(message),
-            updateIframePosition: ({ message }) => this.updateIframePosition(message.styles),
-            updateOverlayHidden: ({ message }) => this.updateElementStyles(this.iframe, message.styles),
-        };
-        /**
-         * Sets up the port message listener to the extension background script. This
-         * listener is used to communicate between the iframe and the background script.
-         * This also facilitates announcing to screen readers when the iframe is loaded.
-         */
-        this.setupPortMessageListener = () => {
-            this.port = chrome.runtime.connect({ name: this.portName });
-            this.port.onDisconnect.addListener(this.handlePortDisconnect);
-            this.port.onMessage.addListener(this.handlePortMessage);
-            globalThis.addEventListener(EVENTS.MESSAGE, this.handleWindowMessage);
-            this.announceAriaAlert();
-        };
-        /**
-         * Handles disconnecting the port message listener from the extension background
-         * script. This also removes the listener that facilitates announcing to screen
-         * readers when the iframe is loaded.
-         *
-         * @param port - The port that is disconnected
-         */
-        this.handlePortDisconnect = (port) => {
-            var _a, _b, _c;
-            if (port.name !== this.portName) {
-                return;
-            }
-            this.updateElementStyles(this.iframe, { opacity: "0", height: "0px", display: "block" });
-            globalThis.removeEventListener("message", this.handleWindowMessage);
-            this.unobserveIframe();
-            (_a = this.port) === null || _a === void 0 ? void 0 : _a.onMessage.removeListener(this.handlePortMessage);
-            (_b = this.port) === null || _b === void 0 ? void 0 : _b.onDisconnect.removeListener(this.handlePortDisconnect);
-            (_c = this.port) === null || _c === void 0 ? void 0 : _c.disconnect();
-            this.port = null;
-        };
-        /**
-         * Handles messages sent from the extension background script to the iframe.
-         * Triggers behavior within the iframe as well as on the custom element that
-         * contains the iframe element.
-         *
-         * @param message
-         * @param port
-         */
-        this.handlePortMessage = (message, port) => {
-            var _a;
-            if (port.name !== this.portName) {
-                return;
-            }
-            if (this.backgroundPortMessageHandlers[message.command]) {
-                this.backgroundPortMessageHandlers[message.command]({ message, port });
-                return;
-            }
-            (_a = this.iframe.contentWindow) === null || _a === void 0 ? void 0 : _a.postMessage(message, "*");
-        };
-        /**
-         * Handles messages sent from the iframe. If the message does not have a
-         * specified handler set, it passes the message to the background script.
-         *
-         * @param event - The message event
-         */
-        this.handleWindowMessage = (event) => {
-            if (!this.port ||
-                event.source !== this.iframe.contentWindow ||
-                !this.isFromExtensionOrigin(event.origin.toLowerCase())) {
-                return;
-            }
-            const message = event.data;
-            if (this.windowMessageHandlers[message.command]) {
-                this.windowMessageHandlers[message.command](message);
-                return;
-            }
-            this.port.postMessage(event.data);
-        };
-        /**
-         * Handles mutations to the iframe element. The ensures that the iframe
-         * element's styles are not modified by a third party source.
-         *
-         * @param mutations - The mutations to the iframe element
-         */
-        this.handleMutations = (mutations) => {
-            if (this.isTriggeringExcessiveMutationObserverIterations()) {
-                return;
-            }
-            for (let index = 0; index < mutations.length; index++) {
-                const mutation = mutations[index];
-                if (mutation.type !== "attributes") {
-                    continue;
-                }
-                const element = mutation.target;
-                if (mutation.attributeName !== "style") {
-                    this.handleElementAttributeMutation(element);
-                    continue;
-                }
-                this.iframe.removeAttribute("style");
-                this.updateElementStyles(this.iframe, this.iframeStyles);
-            }
-        };
-        this.extensionOriginsSet = new Set([
-            chrome.runtime.getURL("").slice(0, -1).toLowerCase(),
-            "null",
-        ]);
-        this.iframeMutationObserver = new MutationObserver(this.handleMutations);
-    }
-    /**
-     * Handles initialization of the iframe which includes applying initial styles
-     * to the iframe, setting the source, and adding listener that connects the
-     * iframe to the background script each time it loads. Can conditionally
-     * create an aria alert element to announce to screen readers when the iframe
-     * is loaded. The end result is append to the shadowDOM of the custom element
-     * that is declared.
-     *
-     *
-     * @param initStyles - Initial styles to apply to the iframe
-     * @param iframeTitle - Title to apply to the iframe
-     * @param ariaAlert - Text to announce to screen readers when the iframe is loaded
-     */
-    initOverlayIframe(initStyles, iframeTitle, ariaAlert) {
-        this.defaultIframeAttributes.src = chrome.runtime.getURL(this.iframePath);
-        this.defaultIframeAttributes.title = iframeTitle;
-        this.iframe = globalThis.document.createElement("iframe");
-        this.updateElementStyles(this.iframe, Object.assign(Object.assign({}, this.iframeStyles), initStyles));
-        for (const [attribute, value] of Object.entries(this.defaultIframeAttributes)) {
-            this.iframe.setAttribute(attribute, value);
-        }
-        this.iframe.addEventListener(EVENTS.LOAD, this.setupPortMessageListener);
-        if (ariaAlert) {
-            this.createAriaAlertElement(ariaAlert);
-        }
-        this.shadow.appendChild(this.iframe);
-    }
-    /**
-     * Creates an aria alert element that is used to announce to screen readers
-     * when the iframe is loaded.
-     *
-     * @param ariaAlertText - Text to announce to screen readers when the iframe is loaded
-     */
-    createAriaAlertElement(ariaAlertText) {
-        this.ariaAlertElement = globalThis.document.createElement("div");
-        this.ariaAlertElement.setAttribute("role", "status");
-        this.ariaAlertElement.setAttribute("aria-live", "polite");
-        this.ariaAlertElement.setAttribute("aria-atomic", "true");
-        this.updateElementStyles(this.ariaAlertElement, {
-            position: "absolute",
-            top: "-9999px",
-            left: "-9999px",
-            width: "1px",
-            height: "1px",
-            overflow: "hidden",
-            opacity: "0",
-            pointerEvents: "none",
-        });
-        this.ariaAlertElement.textContent = ariaAlertText;
-    }
-    /**
-     * Announces the aria alert element to screen readers when the iframe is loaded.
-     */
-    announceAriaAlert() {
-        if (!this.ariaAlertElement) {
-            return;
-        }
-        this.ariaAlertElement.remove();
-        if (this.ariaAlertTimeout) {
-            clearTimeout(this.ariaAlertTimeout);
-        }
-        this.ariaAlertTimeout = setTimeout(() => this.shadow.appendChild(this.ariaAlertElement), 2000);
-    }
-    /**
-     * Handles messages sent from the iframe to the extension background script.
-     * Will adjust the border element to fit the user's set theme.
-     *
-     * @param message - The message sent from the iframe
-     */
-    initAutofillOverlayList(message) {
-        var _a;
-        const { theme } = message;
-        let borderColor;
-        let verifiedTheme = theme;
-        if (verifiedTheme === ThemeType.System) {
-            verifiedTheme = globalThis.matchMedia("(prefers-color-scheme: dark)").matches
-                ? ThemeType.Dark
-                : ThemeType.Light;
-        }
-        if (verifiedTheme === ThemeType.Dark) {
-            borderColor = "#4c525f";
-        }
-        if (theme === ThemeType.Nord) {
-            borderColor = "#2E3440";
-        }
-        if (theme === ThemeType.SolarizedDark) {
-            borderColor = "#073642";
-        }
-        if (borderColor) {
-            this.updateElementStyles(this.iframe, { borderColor });
-        }
-        message.theme = verifiedTheme;
-        (_a = this.iframe.contentWindow) === null || _a === void 0 ? void 0 : _a.postMessage(message, "*");
-    }
-    /**
-     * Updates the position of the iframe element. Will also announce
-     * to screen readers that the iframe is open.
-     *
-     * @param position - The position styles to apply to the iframe
-     */
-    updateIframePosition(position) {
-        if (!globalThis.document.hasFocus()) {
-            return;
-        }
-        this.updateElementStyles(this.iframe, position);
-        setTimeout(() => this.updateElementStyles(this.iframe, { opacity: "1" }), 0);
-        this.announceAriaAlert();
-    }
-    /**
-     * Gets the page color scheme meta tag and sends a message to the iframe
-     * to update its color scheme. Will default to "normal" if the meta tag
-     * does not exist.
-     */
-    updateOverlayPageColorScheme() {
-        var _a, _b;
-        const colorSchemeValue = (_a = globalThis.document
-            .querySelector("meta[name='color-scheme']")) === null || _a === void 0 ? void 0 : _a.getAttribute("content");
-        (_b = this.iframe.contentWindow) === null || _b === void 0 ? void 0 : _b.postMessage({ command: "updateOverlayPageColorScheme", colorScheme: colorSchemeValue || "normal" }, "*");
-    }
-    /**
-     * Accepts an element and updates the styles for that element. This method
-     * will also unobserve the element if it is the iframe element. This is
-     * done to ensure that we do not trigger the mutation observer when we
-     * update the styles for the iframe.
-     *
-     * @param customElement - The element to update the styles for
-     * @param styles - The styles to apply to the element
-     */
-    updateElementStyles(customElement, styles) {
-        if (!customElement) {
-            return;
-        }
-        this.unobserveIframe();
-        setElementStyles(customElement, styles, true);
-        this.iframeStyles = Object.assign(Object.assign({}, this.iframeStyles), styles);
-        this.observeIframe();
-    }
-    /**
-     * Chrome returns null for any sandboxed iframe sources.
-     * Firefox references the extension URI as its origin.
-     * Any other origin value is a security risk.
-     *
-     * @param messageOrigin - The origin of the window message
-     */
-    isFromExtensionOrigin(messageOrigin) {
-        return this.extensionOriginsSet.has(messageOrigin);
-    }
-    /**
-     * Handles mutations to the iframe element's attributes. This ensures that
-     * the iframe element's attributes are not modified by a third party source.
-     *
-     * @param element - The element to handle attribute mutations for
-     */
-    handleElementAttributeMutation(element) {
-        var _a;
-        const attributes = Array.from(element.attributes);
-        for (let attributeIndex = 0; attributeIndex < attributes.length; attributeIndex++) {
-            const attribute = attributes[attributeIndex];
-            if (attribute.name === "style") {
-                continue;
-            }
-            if (this.foreignMutationsCount >= 10) {
-                (_a = this.port) === null || _a === void 0 ? void 0 : _a.postMessage({ command: "forceCloseAutofillOverlay" });
-                break;
-            }
-            const defaultIframeAttribute = this.defaultIframeAttributes[attribute.name];
-            if (!defaultIframeAttribute) {
-                this.iframe.removeAttribute(attribute.name);
-                this.foreignMutationsCount++;
-                continue;
-            }
-            if (attribute.value === defaultIframeAttribute) {
-                continue;
-            }
-            this.iframe.setAttribute(attribute.name, defaultIframeAttribute);
-            this.foreignMutationsCount++;
-        }
-    }
-    /**
-     * Observes the iframe element for mutations to its style attribute.
-     */
-    observeIframe() {
-        this.iframeMutationObserver.observe(this.iframe, { attributes: true });
-    }
-    /**
-     * Unobserves the iframe element for mutations to its style attribute.
-     */
-    unobserveIframe() {
-        var _a;
-        (_a = this.iframeMutationObserver) === null || _a === void 0 ? void 0 : _a.disconnect();
-    }
-    /**
-     * Identifies if the mutation observer is triggering excessive iterations.
-     * Will remove the autofill overlay if any set mutation observer is
-     * triggering excessive iterations.
-     */
-    isTriggeringExcessiveMutationObserverIterations() {
-        var _a;
-        const resetCounters = () => {
-            this.mutationObserverIterations = 0;
-            this.foreignMutationsCount = 0;
-        };
-        if (this.mutationObserverIterationsResetTimeout) {
-            clearTimeout(this.mutationObserverIterationsResetTimeout);
-        }
-        this.mutationObserverIterations++;
-        this.mutationObserverIterationsResetTimeout = setTimeout(() => resetCounters(), 2000);
-        if (this.mutationObserverIterations > 20) {
-            clearTimeout(this.mutationObserverIterationsResetTimeout);
-            resetCounters();
-            (_a = this.port) === null || _a === void 0 ? void 0 : _a.postMessage({ command: "forceCloseAutofillOverlay" });
-            return true;
-        }
-        return false;
-    }
-}
-/* harmony default export */ var autofill_overlay_iframe_service = (AutofillOverlayIframeService);
-
-;// CONCATENATED MODULE: ./src/autofill/overlay/iframe-content/autofill-overlay-iframe-element.ts
-
-class AutofillOverlayIframeElement {
-    constructor(element, iframePath, portName, initStyles, iframeTitle, ariaAlert) {
-        const shadow = element.attachShadow({ mode: "closed" });
-        const autofillOverlayIframeService = new autofill_overlay_iframe_service(iframePath, portName, shadow);
-        autofillOverlayIframeService.initOverlayIframe(initStyles, iframeTitle, ariaAlert);
-    }
-}
-/* harmony default export */ var autofill_overlay_iframe_element = (AutofillOverlayIframeElement);
-
-;// CONCATENATED MODULE: ./src/autofill/overlay/iframe-content/autofill-overlay-button-iframe.ts
-
-
-class AutofillOverlayButtonIframe extends autofill_overlay_iframe_element {
-    constructor(element) {
-        super(element, "overlay/button.html", AutofillOverlayPort.Button, {
-            background: "transparent",
-            border: "none",
-        }, chrome.i18n.getMessage("bitwardenOverlayButton"), chrome.i18n.getMessage("bitwardenOverlayMenuAvailable"));
-    }
-}
-/* harmony default export */ var autofill_overlay_button_iframe = (AutofillOverlayButtonIframe);
-
-;// CONCATENATED MODULE: ./src/autofill/overlay/iframe-content/autofill-overlay-list-iframe.ts
-
-
-class AutofillOverlayListIframe extends autofill_overlay_iframe_element {
-    constructor(element) {
-        super(element, "overlay/list.html", AutofillOverlayPort.List, {
-            height: "0px",
-            minWidth: "250px",
-            maxHeight: "180px",
-            boxShadow: "rgba(0, 0, 0, 0.1) 2px 4px 6px 0px",
-            borderRadius: "4px",
-            borderWidth: "1px",
-            borderStyle: "solid",
-            borderColor: "rgb(206, 212, 220)",
-        }, chrome.i18n.getMessage("bitwardenVault"));
-    }
-}
-/* harmony default export */ var autofill_overlay_list_iframe = (AutofillOverlayListIframe);
 
 ;// CONCATENATED MODULE: ./src/autofill/services/autofill-constants.ts
 class AutoFillConstants {
 }
-AutoFillConstants.UsernameFieldNames = [
+AutoFillConstants.EmailFieldNames = [
     // English
-    "username",
-    "user name",
     "email",
     "email address",
     "e-mail",
     "e-mail address",
+    // German
+    "email adresse",
+    "e-mail adresse",
+];
+AutoFillConstants.UsernameFieldNames = [
+    // English
+    "username",
+    "user name",
     "userid",
     "user id",
     "customer id",
@@ -2457,10 +3059,9 @@ AutoFillConstants.UsernameFieldNames = [
     // German
     "benutzername",
     "benutzer name",
-    "email adresse",
-    "e-mail adresse",
     "benutzerid",
     "benutzer id",
+    ...AutoFillConstants.EmailFieldNames,
 ];
 AutoFillConstants.TotpFieldNames = [
     "totp",
@@ -2501,10 +3102,14 @@ AutoFillConstants.ExcludedAutofillTypes = [
     "checkbox",
     ...AutoFillConstants.ExcludedAutofillLoginTypes,
 ];
-AutoFillConstants.ExcludedOverlayTypes = [
+AutoFillConstants.ExcludedInlineMenuTypes = [
     "textarea",
     ...AutoFillConstants.ExcludedAutofillTypes,
 ];
+AutoFillConstants.ExcludedIdentityAutocompleteTypes = new Set([
+    "current-password",
+    "new-password",
+]);
 class CreditCardAutoFillConstants {
 }
 CreditCardAutoFillConstants.CardAttributes = [
@@ -2797,6 +3402,7 @@ IdentityAutoFillConstants.Address2FieldNames = [
     "address-line-2",
     "addr-2",
     "street-2",
+    "address-ext",
 ];
 IdentityAutoFillConstants.Address3FieldNames = [
     "address-3",
@@ -2811,6 +3417,7 @@ IdentityAutoFillConstants.PostalCodeFieldNames = [
     "zip-code",
     "postal-code",
     "post-code",
+    "postcode",
     "address-zip",
     "address-postal",
     "address-code",
@@ -3218,40 +3825,59 @@ var autofill_overlay_content_service_awaiter = (undefined && undefined.__awaiter
 
 
 class AutofillOverlayContentService {
-    constructor() {
-        this.isFieldCurrentlyFocused = false;
-        this.isCurrentlyFilling = false;
-        this.isOverlayCiphersPopulated = false;
+    constructor(inlineMenuFieldQualificationService) {
+        this.inlineMenuFieldQualificationService = inlineMenuFieldQualificationService;
         this.pageDetailsUpdateRequired = false;
-        this.isFirefoxBrowser = globalThis.navigator.userAgent.indexOf(" Firefox/") !== -1 ||
-            globalThis.navigator.userAgent.indexOf(" Gecko/") !== -1;
-        this.generateRandomCustomElementName = generateRandomCustomElementName;
         this.findTabs = tabbable;
         this.sendExtensionMessage = sendExtensionMessage;
-        this.formFieldElements = new Set([]);
-        this.ignoredFieldTypes = new Set(AutoFillConstants.ExcludedOverlayTypes);
+        this.formFieldElements = new Map();
+        this.hiddenFormFieldElements = new WeakMap();
+        this.ignoredFieldTypes = new Set(AutoFillConstants.ExcludedInlineMenuTypes);
         this.userFilledFields = {};
         this.focusableElements = [];
-        this.isOverlayButtonVisible = false;
-        this.isOverlayListVisible = false;
-        this.mutationObserverIterations = 0;
-        this.autofillFieldKeywordsMap = new WeakMap();
         this.eventHandlersMemo = {};
-        this.customElementDefaultStyles = {
-            all: "initial",
-            position: "fixed",
-            display: "block",
-            zIndex: "2147483647",
+        this.extensionMessageHandlers = {
+            openAutofillInlineMenu: ({ message }) => this.openInlineMenu(message),
+            addNewVaultItemFromOverlay: ({ message }) => this.addNewVaultItem(message),
+            blurMostRecentlyFocusedField: () => this.blurMostRecentlyFocusedField(),
+            unsetMostRecentlyFocusedField: () => this.unsetMostRecentlyFocusedField(),
+            checkIsMostRecentlyFocusedFieldWithinViewport: () => this.checkIsMostRecentlyFocusedFieldWithinViewport(),
+            bgUnlockPopoutOpened: () => this.blurMostRecentlyFocusedField(true),
+            bgVaultItemRepromptPopoutOpened: () => this.blurMostRecentlyFocusedField(true),
+            redirectAutofillInlineMenuFocusOut: ({ message }) => { var _a; return this.redirectInlineMenuFocusOut((_a = message === null || message === void 0 ? void 0 : message.data) === null || _a === void 0 ? void 0 : _a.direction); },
+            updateAutofillInlineMenuVisibility: ({ message }) => this.updateInlineMenuVisibility(message),
+            getSubFrameOffsets: ({ message }) => this.getSubFrameOffsets(message),
+            getSubFrameOffsetsFromWindowMessage: ({ message }) => this.getSubFrameOffsetsFromWindowMessage(message),
+            checkMostRecentlyFocusedFieldHasValue: () => this.mostRecentlyFocusedFieldHasValue(),
+            setupRebuildSubFrameOffsetsListeners: () => this.setupRebuildSubFrameOffsetsListeners(),
+            destroyAutofillInlineMenuListeners: () => this.destroy(),
         };
-        /**
-         * Removes the autofill overlay from the page. This will initially
-         * unobserve the body element to ensure the mutation observer no
-         * longer triggers.
-         */
-        this.removeAutofillOverlay = () => {
-            this.removeBodyElementObserver();
-            this.removeAutofillOverlayButton();
-            this.removeAutofillOverlayList();
+        this.cardFieldQualifiers = {
+            [AutofillFieldQualifier.cardholderName]: this.inlineMenuFieldQualificationService.isFieldForCardholderName,
+            [AutofillFieldQualifier.cardNumber]: this.inlineMenuFieldQualificationService.isFieldForCardNumber,
+            [AutofillFieldQualifier.cardExpirationMonth]: this.inlineMenuFieldQualificationService.isFieldForCardExpirationMonth,
+            [AutofillFieldQualifier.cardExpirationYear]: this.inlineMenuFieldQualificationService.isFieldForCardExpirationYear,
+            [AutofillFieldQualifier.cardExpirationDate]: this.inlineMenuFieldQualificationService.isFieldForCardExpirationDate,
+            [AutofillFieldQualifier.cardCvv]: this.inlineMenuFieldQualificationService.isFieldForCardCvv,
+        };
+        this.identityFieldQualifiers = {
+            [AutofillFieldQualifier.identityTitle]: this.inlineMenuFieldQualificationService.isFieldForIdentityTitle,
+            [AutofillFieldQualifier.identityFirstName]: this.inlineMenuFieldQualificationService.isFieldForIdentityFirstName,
+            [AutofillFieldQualifier.identityMiddleName]: this.inlineMenuFieldQualificationService.isFieldForIdentityMiddleName,
+            [AutofillFieldQualifier.identityLastName]: this.inlineMenuFieldQualificationService.isFieldForIdentityLastName,
+            [AutofillFieldQualifier.identityFullName]: this.inlineMenuFieldQualificationService.isFieldForIdentityFullName,
+            [AutofillFieldQualifier.identityAddress1]: this.inlineMenuFieldQualificationService.isFieldForIdentityAddress1,
+            [AutofillFieldQualifier.identityAddress2]: this.inlineMenuFieldQualificationService.isFieldForIdentityAddress2,
+            [AutofillFieldQualifier.identityAddress3]: this.inlineMenuFieldQualificationService.isFieldForIdentityAddress3,
+            [AutofillFieldQualifier.identityCity]: this.inlineMenuFieldQualificationService.isFieldForIdentityCity,
+            [AutofillFieldQualifier.identityState]: this.inlineMenuFieldQualificationService.isFieldForIdentityState,
+            [AutofillFieldQualifier.identityPostalCode]: this.inlineMenuFieldQualificationService.isFieldForIdentityPostalCode,
+            [AutofillFieldQualifier.identityCountry]: this.inlineMenuFieldQualificationService.isFieldForIdentityCountry,
+            [AutofillFieldQualifier.identityCompany]: this.inlineMenuFieldQualificationService.isFieldForIdentityCompany,
+            [AutofillFieldQualifier.identityPhone]: this.inlineMenuFieldQualificationService.isFieldForIdentityPhone,
+            [AutofillFieldQualifier.identityEmail]: this.inlineMenuFieldQualificationService.isFieldForIdentityEmail,
+            [AutofillFieldQualifier.identityUsername]: this.inlineMenuFieldQualificationService.isFieldForIdentityUsername,
+            [AutofillFieldQualifier.password]: this.inlineMenuFieldQualificationService.isNewPasswordField,
         };
         /**
          * Helper method that facilitates registration of an event handler to a form field element.
@@ -3264,41 +3890,41 @@ class AutofillOverlayContentService {
         };
         /**
          * Form Field blur event handler. Updates the value identifying whether
-         * the field is focused and sends a message to check if the overlay itself
+         * the field is focused and sends a message to check if the inline menu itself
          * is currently focused.
          */
         this.handleFormFieldBlurEvent = () => {
-            this.isFieldCurrentlyFocused = false;
-            // FIXME: Verify that this floating promise is intentional. If it is, add an explanatory comment and ensure there is proper error handling.
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            this.sendExtensionMessage("checkAutofillOverlayFocused");
+            void this.sendExtensionMessage("updateIsFieldCurrentlyFocused", {
+                isFieldCurrentlyFocused: false,
+            });
+            void this.sendExtensionMessage("checkAutofillInlineMenuFocused");
         };
         /**
          * Form field keyup event handler. Facilitates the ability to remove the
-         * autofill overlay using the escape key, focusing the overlay list using
-         * the ArrowDown key, and ensuring that the overlay is repositioned when
+         * autofill inline menu using the escape key, focusing the inline menu list using
+         * the ArrowDown key, and ensuring that the inline menu is repositioned when
          * the form is submitted using the Enter key.
          *
          * @param event - The keyup event.
          */
-        this.handleFormFieldKeyupEvent = (event) => {
+        this.handleFormFieldKeyupEvent = (event) => autofill_overlay_content_service_awaiter(this, void 0, void 0, function* () {
             const eventCode = event.code;
             if (eventCode === "Escape") {
-                this.removeAutofillOverlay();
+                void this.sendExtensionMessage("closeAutofillInlineMenu", {
+                    forceCloseInlineMenu: true,
+                });
                 return;
             }
-            if (eventCode === "Enter" && !this.isCurrentlyFilling) {
-                this.handleOverlayRepositionEvent();
+            if (eventCode === "Enter" && !(yield this.isFieldCurrentlyFilling())) {
+                void this.handleOverlayRepositionEvent();
                 return;
             }
             if (eventCode === "ArrowDown") {
                 event.preventDefault();
                 event.stopPropagation();
-                // FIXME: Verify that this floating promise is intentional. If it is, add an explanatory comment and ensure there is proper error handling.
-                // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                this.focusOverlayList();
+                void this.focusInlineMenuList();
             }
-        };
+        });
         /**
          * Sets up and memoizes the form field input event handler.
          *
@@ -3324,37 +3950,55 @@ class AutofillOverlayContentService {
             return this.useEventHandlersMemo(() => this.triggerFormFieldFocusedAction(formFieldElement), this.getFormFieldHandlerMemoIndex(formFieldElement, EVENTS.FOCUS));
         };
         /**
-         * Handles the resize or scroll events that enact
-         * repositioning of the overlay.
+         * Handles the focus event on a hidden field. When
+         * triggered, the inline menu is set up on the field.
+         *
+         * @param event - The focus event.
          */
-        this.handleOverlayRepositionEvent = () => {
-            if (!this.isOverlayButtonVisible && !this.isOverlayListVisible) {
-                return;
+        this.handleHiddenFieldFocusEvent = (event) => {
+            const formFieldElement = event.target;
+            const autofillFieldData = this.hiddenFormFieldElements.get(formFieldElement);
+            if (autofillFieldData) {
+                autofillFieldData.readonly = getAttributeBoolean(formFieldElement, "disabled");
+                autofillFieldData.disabled = getAttributeBoolean(formFieldElement, "disabled");
+                autofillFieldData.viewable = true;
+                void this.setupInlineMenuOnQualifiedField(formFieldElement, autofillFieldData);
             }
-            this.toggleOverlayHidden(true);
-            this.clearUserInteractionEventTimeout();
-            this.userInteractionEventTimeout = setTimeout(this.triggerOverlayRepositionUpdates, 750);
+            this.removeHiddenFieldFallbackListener(formFieldElement);
         };
         /**
-         * Triggers the overlay reposition updates. This method ensures that the overlay elements
-         * are correctly positioned when the viewport scrolls or repositions.
+         * Calculates the sub frame positioning for the current frame
+         * through all parent frames until the top frame is reached.
+         *
+         * @param event - The message event.
          */
-        this.triggerOverlayRepositionUpdates = () => autofill_overlay_content_service_awaiter(this, void 0, void 0, function* () {
-            var _a, _b;
-            if (!this.recentlyFocusedFieldIsCurrentlyFocused()) {
-                this.toggleOverlayHidden(false);
-                this.removeAutofillOverlay();
+        this.calculateSubFramePositioning = (event) => autofill_overlay_content_service_awaiter(this, void 0, void 0, function* () {
+            const subFrameData = event.data.subFrameData;
+            subFrameData.subFrameDepth++;
+            if (subFrameData.subFrameDepth >= MAX_SUB_FRAME_DEPTH) {
+                void this.sendExtensionMessage("destroyAutofillInlineMenuListeners", { subFrameData });
                 return;
             }
-            yield this.updateMostRecentlyFocusedField(this.mostRecentlyFocusedField);
-            this.updateOverlayElementsPosition();
-            this.toggleOverlayHidden(false);
-            this.clearUserInteractionEventTimeout();
-            if (((_a = this.focusedFieldData.focusedFieldRects) === null || _a === void 0 ? void 0 : _a.top) > 0 &&
-                ((_b = this.focusedFieldData.focusedFieldRects) === null || _b === void 0 ? void 0 : _b.top) < globalThis.innerHeight) {
+            let subFrameOffsets;
+            const iframes = globalThis.document.querySelectorAll("iframe");
+            for (let i = 0; i < iframes.length; i++) {
+                if (iframes[i].contentWindow === event.source) {
+                    const iframeElement = iframes[i];
+                    subFrameOffsets = this.calculateSubFrameOffsets(iframeElement, subFrameData.url, subFrameData.frameId);
+                    subFrameData.top += subFrameOffsets.top;
+                    subFrameData.left += subFrameOffsets.left;
+                    const parentFrameId = yield this.sendExtensionMessage("getCurrentTabFrameId");
+                    if (typeof parentFrameId !== "undefined") {
+                        subFrameData.parentFrameIds.push(parentFrameId);
+                    }
+                    break;
+                }
+            }
+            if (globalThis.window.self !== globalThis.window.top) {
+                globalThis.parent.postMessage({ command: "calculateSubFramePositioning", subFrameData }, "*");
                 return;
             }
-            this.removeAutofillOverlay();
+            void this.sendExtensionMessage("updateSubFrameData", { subFrameData });
         });
         /**
          * Sets up global event listeners and the mutation
@@ -3362,81 +4006,86 @@ class AutofillOverlayContentService {
          * overlay elements.
          */
         this.setupGlobalEventListeners = () => {
+            globalThis.addEventListener(EVENTS.MESSAGE, this.handleWindowMessageEvent);
             globalThis.document.addEventListener(EVENTS.VISIBILITYCHANGE, this.handleVisibilityChangeEvent);
             globalThis.addEventListener(EVENTS.FOCUSOUT, this.handleFormFieldBlurEvent);
-            this.setupMutationObserver();
+            this.setOverlayRepositionEventListeners();
+        };
+        /**
+         * Handles window messages that are sent to the current frame. Will trigger a
+         * calculation of the sub frame offsets through the parent frame.
+         *
+         * @param event - The message event.
+         */
+        this.handleWindowMessageEvent = (event) => {
+            var _a;
+            if (((_a = event.data) === null || _a === void 0 ? void 0 : _a.command) === "calculateSubFramePositioning") {
+                void this.calculateSubFramePositioning(event);
+            }
         };
         /**
          * Handles the visibility change event. This method will remove the
          * autofill overlay if the document is not visible.
          */
         this.handleVisibilityChangeEvent = () => {
-            if (document.visibilityState === "visible") {
+            if (!this.mostRecentlyFocusedField || globalThis.document.visibilityState === "visible") {
                 return;
             }
-            this.mostRecentlyFocusedField = null;
-            this.removeAutofillOverlay();
+            this.unsetMostRecentlyFocusedField();
+            void this.sendExtensionMessage("closeAutofillInlineMenu", {
+                forceCloseInlineMenu: true,
+            });
         };
         /**
-         * Sets up mutation observers for the overlay elements, the body element, and the
-         * document element. The mutation observers are used to remove any styles that are
-         * added to the overlay elements by the website. They are also used to ensure that
-         * the overlay elements are always present at the bottom of the body element.
+         * Handles the resize or scroll events that enact
+         * repositioning of existing overlay elements.
          */
-        this.setupMutationObserver = () => {
-            this.overlayElementsMutationObserver = new MutationObserver(this.handleOverlayElementMutationObserverUpdate);
-            this.bodyElementMutationObserver = new MutationObserver(this.handleBodyElementMutationObserverUpdate);
+        this.handleOverlayRepositionEvent = () => autofill_overlay_content_service_awaiter(this, void 0, void 0, function* () {
+            yield this.sendExtensionMessage("triggerAutofillOverlayReposition");
+        });
+        /**
+         * Sets up listeners that facilitate a rebuild of the sub frame offsets
+         * when a user interacts or focuses an element within the frame.
+         */
+        this.setupRebuildSubFrameOffsetsListeners = () => {
+            if (globalThis.window.top === globalThis.window || this.formFieldElements.size < 1) {
+                return;
+            }
+            this.removeSubFrameFocusOutListeners();
+            globalThis.addEventListener(EVENTS.FOCUS, this.handleSubFrameFocusInEvent);
+            globalThis.document.body.addEventListener(EVENTS.MOUSEENTER, this.handleSubFrameFocusInEvent);
         };
         /**
-         * Handles the mutation observer update for the overlay elements. This method will
-         * remove any attributes or styles that might be added to the overlay elements by
-         * a separate process within the website where this script is injected.
-         *
-         * @param mutationRecord - The mutation record that triggered the update.
+         * Removes the listeners that facilitate a rebuild of the sub frame offsets.
          */
-        this.handleOverlayElementMutationObserverUpdate = (mutationRecord) => {
-            if (this.isTriggeringExcessiveMutationObserverIterations()) {
-                return;
-            }
-            for (let recordIndex = 0; recordIndex < mutationRecord.length; recordIndex++) {
-                const record = mutationRecord[recordIndex];
-                if (record.type !== "attributes") {
-                    continue;
-                }
-                const element = record.target;
-                if (record.attributeName !== "style") {
-                    this.removeModifiedElementAttributes(element);
-                    continue;
-                }
-                element.removeAttribute("style");
-                this.updateCustomElementDefaultStyles(element);
-            }
+        this.removeRebuildSubFrameOffsetsListeners = () => {
+            globalThis.removeEventListener(EVENTS.FOCUS, this.handleSubFrameFocusInEvent);
+            globalThis.document.body.removeEventListener(EVENTS.MOUSEENTER, this.handleSubFrameFocusInEvent);
         };
         /**
-         * Handles the mutation observer update for the body element. This method will
-         * ensure that the overlay elements are always present at the bottom of the body
-         * element.
+         * Re-establishes listeners that handle the sub frame offsets rebuild of the frame
+         * based on user interaction with the sub frame.
          */
-        this.handleBodyElementMutationObserverUpdate = () => {
-            if ((!this.overlayButtonElement && !this.overlayListElement) ||
-                this.isTriggeringExcessiveMutationObserverIterations()) {
-                return;
-            }
-            const lastChild = globalThis.document.body.lastElementChild;
-            const secondToLastChild = lastChild === null || lastChild === void 0 ? void 0 : lastChild.previousElementSibling;
-            const lastChildIsOverlayList = lastChild === this.overlayListElement;
-            const lastChildIsOverlayButton = lastChild === this.overlayButtonElement;
-            const secondToLastChildIsOverlayButton = secondToLastChild === this.overlayButtonElement;
-            if ((lastChildIsOverlayList && secondToLastChildIsOverlayButton) ||
-                (lastChildIsOverlayButton && !this.isOverlayListVisible)) {
-                return;
-            }
-            if ((lastChildIsOverlayList && !secondToLastChildIsOverlayButton) ||
-                (lastChildIsOverlayButton && this.isOverlayListVisible)) {
-                globalThis.document.body.insertBefore(this.overlayButtonElement, this.overlayListElement);
-                return;
-            }
-            globalThis.document.body.insertBefore(lastChild, this.overlayButtonElement);
+        this.setupSubFrameFocusOutListeners = () => {
+            globalThis.addEventListener(EVENTS.BLUR, this.setupRebuildSubFrameOffsetsListeners);
+            globalThis.document.body.addEventListener(EVENTS.MOUSELEAVE, this.setupRebuildSubFrameOffsetsListeners);
+        };
+        /**
+         * Removes the listeners that trigger when a user focuses away from the sub frame.
+         */
+        this.removeSubFrameFocusOutListeners = () => {
+            globalThis.removeEventListener(EVENTS.BLUR, this.setupRebuildSubFrameOffsetsListeners);
+            globalThis.document.body.removeEventListener(EVENTS.MOUSELEAVE, this.setupRebuildSubFrameOffsetsListeners);
+        };
+        /**
+         * Sends a message to the background script to trigger a rebuild of the sub frame
+         * offsets. Will deregister the listeners to ensure that other focus and mouse
+         * events do not unnecessarily re-trigger a sub frame rebuild.
+         */
+        this.handleSubFrameFocusInEvent = () => {
+            void this.sendExtensionMessage("triggerSubFrameFocusInRebuild");
+            this.removeRebuildSubFrameOffsetsListeners();
+            this.setupSubFrameFocusOutListeners();
         };
     }
     /**
@@ -3451,168 +4100,191 @@ class AutofillOverlayContentService {
         this.setupGlobalEventListeners();
     }
     /**
-     * Sets up the autofill overlay listener on the form field element. This method is called
+     * Getter used to access the extension message handlers associated
+     * with the autofill overlay content service.
+     */
+    get messageHandlers() {
+        return this.extensionMessageHandlers;
+    }
+    /**
+     * Sets up the autofill inline menu listener on the form field element. This method is called
      * during the page details collection process.
      *
      * @param formFieldElement - Form field elements identified during the page details collection process.
      * @param autofillFieldData - Autofill field data captured from the form field element.
+     * @param pageDetails - The collected page details from the tab.
      */
-    setupAutofillOverlayListenerOnField(formFieldElement, autofillFieldData) {
+    setupInlineMenu(formFieldElement, autofillFieldData, pageDetails) {
         return autofill_overlay_content_service_awaiter(this, void 0, void 0, function* () {
-            if (this.isIgnoredField(autofillFieldData) || this.formFieldElements.has(formFieldElement)) {
+            if (this.formFieldElements.has(formFieldElement) ||
+                this.isIgnoredField(autofillFieldData, pageDetails)) {
                 return;
             }
-            this.formFieldElements.add(formFieldElement);
-            if (!this.autofillOverlayVisibility) {
-                yield this.getAutofillOverlayVisibility();
-            }
-            this.setupFormFieldElementEventListeners(formFieldElement);
-            if (this.getRootNodeActiveElement(formFieldElement) === formFieldElement) {
-                yield this.triggerFormFieldFocusedAction(formFieldElement);
+            if (this.isHiddenField(formFieldElement, autofillFieldData)) {
                 return;
             }
-            if (!this.mostRecentlyFocusedField) {
-                yield this.updateMostRecentlyFocusedField(formFieldElement);
-            }
+            yield this.setupInlineMenuOnQualifiedField(formFieldElement, autofillFieldData);
         });
     }
     /**
-     * Handles opening the autofill overlay. Will conditionally open
-     * the overlay based on the current autofill overlay visibility setting.
-     * Allows you to optionally focus the field element when opening the overlay.
-     * Will also optionally ignore the overlay visibility setting and open the
+     * Handles opening the autofill inline menu. Will conditionally open
+     * the inline menu based on the current inline menu visibility setting.
+     * Allows you to optionally focus the field element when opening the inline menu.
+     * Will also optionally ignore the inline menu visibility setting and open the
      *
-     * @param options - Options for opening the autofill overlay.
+     * @param options - Options for opening the autofill inline menu.
      */
-    openAutofillOverlay(options = {}) {
-        const { isFocusingFieldElement, isOpeningFullOverlay, authStatus } = options;
+    openInlineMenu(options = {}) {
+        const { isFocusingFieldElement, isOpeningFullInlineMenu, authStatus } = options;
         if (!this.mostRecentlyFocusedField) {
             return;
         }
         if (this.pageDetailsUpdateRequired) {
-            // FIXME: Verify that this floating promise is intentional. If it is, add an explanatory comment and ensure there is proper error handling.
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            this.sendExtensionMessage("bgCollectPageDetails", {
+            void this.sendExtensionMessage("bgCollectPageDetails", {
                 sender: "autofillOverlayContentService",
             });
             this.pageDetailsUpdateRequired = false;
         }
         if (isFocusingFieldElement && !this.recentlyFocusedFieldIsCurrentlyFocused()) {
-            this.focusMostRecentOverlayField();
+            this.focusMostRecentlyFocusedField();
         }
         if (typeof authStatus !== "undefined") {
             this.authStatus = authStatus;
         }
-        if (this.autofillOverlayVisibility === AutofillOverlayVisibility.OnButtonClick &&
-            !isOpeningFullOverlay) {
-            this.updateOverlayButtonPosition();
+        if (this.inlineMenuVisibility === AutofillOverlayVisibility.OnButtonClick &&
+            !isOpeningFullInlineMenu) {
+            this.updateInlineMenuButtonPosition();
             return;
         }
-        this.updateOverlayElementsPosition();
+        this.updateInlineMenuElementsPosition();
     }
     /**
      * Focuses the most recently focused field element.
      */
-    focusMostRecentOverlayField() {
+    focusMostRecentlyFocusedField() {
         var _a;
         (_a = this.mostRecentlyFocusedField) === null || _a === void 0 ? void 0 : _a.focus();
     }
     /**
      * Removes focus from the most recently focused field element.
      */
-    blurMostRecentOverlayField() {
+    blurMostRecentlyFocusedField(isClosingInlineMenu = false) {
         var _a;
         (_a = this.mostRecentlyFocusedField) === null || _a === void 0 ? void 0 : _a.blur();
+        if (isClosingInlineMenu) {
+            void this.sendExtensionMessage("closeAutofillInlineMenu");
+        }
     }
     /**
-     * Removes the overlay button from the DOM if it is currently present. Will
-     * also remove the overlay reposition event listeners.
+     * Sets the most recently focused field within the current frame to a `null` value.
      */
-    removeAutofillOverlayButton() {
-        if (!this.overlayButtonElement) {
-            return;
-        }
-        this.overlayButtonElement.remove();
-        this.isOverlayButtonVisible = false;
-        void this.sendExtensionMessage("autofillOverlayElementClosed", {
-            overlayElement: AutofillOverlayElement.Button,
-        });
-        this.removeOverlayRepositionEventListeners();
-    }
-    /**
-     * Removes the overlay list from the DOM if it is currently present.
-     */
-    removeAutofillOverlayList() {
-        if (!this.overlayListElement) {
-            return;
-        }
-        this.overlayListElement.remove();
-        this.isOverlayListVisible = false;
-        void this.sendExtensionMessage("autofillOverlayElementClosed", {
-            overlayElement: AutofillOverlayElement.List,
-        });
+    unsetMostRecentlyFocusedField() {
+        this.mostRecentlyFocusedField = null;
     }
     /**
      * Formats any found user filled fields for a login cipher and sends a message
      * to the background script to add a new cipher.
      */
-    addNewVaultItem() {
-        var _a, _b;
-        if (!this.isOverlayListVisible) {
-            return;
-        }
-        const login = {
-            username: ((_a = this.userFilledFields["username"]) === null || _a === void 0 ? void 0 : _a.value) || "",
-            password: ((_b = this.userFilledFields["password"]) === null || _b === void 0 ? void 0 : _b.value) || "",
-            uri: globalThis.document.URL,
-            hostname: globalThis.document.location.hostname,
-        };
-        // FIXME: Verify that this floating promise is intentional. If it is, add an explanatory comment and ensure there is proper error handling.
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        this.sendExtensionMessage("autofillOverlayAddNewVaultItem", { login });
+    addNewVaultItem({ addNewCipherType }) {
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z;
+        return autofill_overlay_content_service_awaiter(this, void 0, void 0, function* () {
+            const command = "autofillOverlayAddNewVaultItem";
+            if (addNewCipherType === CipherType.Login) {
+                const login = {
+                    username: ((_a = this.userFilledFields["username"]) === null || _a === void 0 ? void 0 : _a.value) || "",
+                    password: ((_b = this.userFilledFields["password"]) === null || _b === void 0 ? void 0 : _b.value) || "",
+                    uri: globalThis.document.URL,
+                    hostname: globalThis.document.location.hostname,
+                };
+                void this.sendExtensionMessage(command, { addNewCipherType, login });
+                return;
+            }
+            if (addNewCipherType === CipherType.Card) {
+                const card = {
+                    cardholderName: ((_c = this.userFilledFields["cardholderName"]) === null || _c === void 0 ? void 0 : _c.value) || "",
+                    number: ((_d = this.userFilledFields["cardNumber"]) === null || _d === void 0 ? void 0 : _d.value) || "",
+                    expirationMonth: ((_e = this.userFilledFields["cardExpirationMonth"]) === null || _e === void 0 ? void 0 : _e.value) || "",
+                    expirationYear: ((_f = this.userFilledFields["cardExpirationYear"]) === null || _f === void 0 ? void 0 : _f.value) || "",
+                    expirationDate: ((_g = this.userFilledFields["cardExpirationDate"]) === null || _g === void 0 ? void 0 : _g.value) || "",
+                    cvv: ((_h = this.userFilledFields["cardCvv"]) === null || _h === void 0 ? void 0 : _h.value) || "",
+                };
+                void this.sendExtensionMessage(command, { addNewCipherType, card });
+                return;
+            }
+            if (addNewCipherType === CipherType.Identity) {
+                const identity = {
+                    title: ((_j = this.userFilledFields["identityTitle"]) === null || _j === void 0 ? void 0 : _j.value) || "",
+                    firstName: ((_k = this.userFilledFields["identityFirstName"]) === null || _k === void 0 ? void 0 : _k.value) || "",
+                    middleName: ((_l = this.userFilledFields["identityMiddleName"]) === null || _l === void 0 ? void 0 : _l.value) || "",
+                    lastName: ((_m = this.userFilledFields["identityLastName"]) === null || _m === void 0 ? void 0 : _m.value) || "",
+                    fullName: ((_o = this.userFilledFields["identityFullName"]) === null || _o === void 0 ? void 0 : _o.value) || "",
+                    address1: ((_p = this.userFilledFields["identityAddress1"]) === null || _p === void 0 ? void 0 : _p.value) || "",
+                    address2: ((_q = this.userFilledFields["identityAddress2"]) === null || _q === void 0 ? void 0 : _q.value) || "",
+                    address3: ((_r = this.userFilledFields["identityAddress3"]) === null || _r === void 0 ? void 0 : _r.value) || "",
+                    city: ((_s = this.userFilledFields["identityCity"]) === null || _s === void 0 ? void 0 : _s.value) || "",
+                    state: ((_t = this.userFilledFields["identityState"]) === null || _t === void 0 ? void 0 : _t.value) || "",
+                    postalCode: ((_u = this.userFilledFields["identityPostalCode"]) === null || _u === void 0 ? void 0 : _u.value) || "",
+                    country: ((_v = this.userFilledFields["identityCountry"]) === null || _v === void 0 ? void 0 : _v.value) || "",
+                    company: ((_w = this.userFilledFields["identityCompany"]) === null || _w === void 0 ? void 0 : _w.value) || "",
+                    phone: ((_x = this.userFilledFields["identityPhone"]) === null || _x === void 0 ? void 0 : _x.value) || "",
+                    email: ((_y = this.userFilledFields["identityEmail"]) === null || _y === void 0 ? void 0 : _y.value) || "",
+                    username: ((_z = this.userFilledFields["identityUsername"]) === null || _z === void 0 ? void 0 : _z.value) || "",
+                };
+                void this.sendExtensionMessage(command, { addNewCipherType, identity });
+            }
+        });
     }
     /**
-     * Redirects the keyboard focus out of the overlay, selecting the element that is
+     * Redirects the keyboard focus out of the inline menu, selecting the element that is
      * either previous or next in the tab order. If the direction is current, the most
      * recently focused field will be focused.
      *
-     * @param direction - The direction to redirect the focus.
+     * @param direction - The direction to redirect the focus out.
      */
-    redirectOverlayFocusOut(direction) {
-        if (!this.isOverlayListVisible || !this.mostRecentlyFocusedField) {
-            return;
-        }
-        if (direction === RedirectFocusDirection.Current) {
-            this.focusMostRecentOverlayField();
-            setTimeout(this.removeAutofillOverlay, 100);
-            return;
-        }
-        if (!this.focusableElements.length) {
-            this.focusableElements = this.findTabs(globalThis.document.body, { getShadowRoot: true });
-        }
-        const focusedElementIndex = this.focusableElements.findIndex((element) => element === this.mostRecentlyFocusedField);
-        const indexOffset = direction === RedirectFocusDirection.Previous ? -1 : 1;
-        const redirectFocusElement = this.focusableElements[focusedElementIndex + indexOffset];
-        redirectFocusElement === null || redirectFocusElement === void 0 ? void 0 : redirectFocusElement.focus();
+    redirectInlineMenuFocusOut(direction) {
+        return autofill_overlay_content_service_awaiter(this, void 0, void 0, function* () {
+            if (!direction || !this.mostRecentlyFocusedField || !(yield this.isInlineMenuListVisible())) {
+                return;
+            }
+            if (direction === RedirectFocusDirection.Current) {
+                this.focusMostRecentlyFocusedField();
+                this.closeInlineMenuOnRedirectTimeout = globalThis.setTimeout(() => void this.sendExtensionMessage("closeAutofillInlineMenu"), 100);
+                return;
+            }
+            if (!this.focusableElements.length) {
+                this.focusableElements = this.findTabs(globalThis.document.body, { getShadowRoot: true });
+            }
+            const focusedElementIndex = this.focusableElements.findIndex((element) => element === this.mostRecentlyFocusedField);
+            const indexOffset = direction === RedirectFocusDirection.Previous ? -1 : 1;
+            const redirectFocusElement = this.focusableElements[focusedElementIndex + indexOffset];
+            if (redirectFocusElement) {
+                redirectFocusElement.focus();
+                return;
+            }
+            this.focusMostRecentlyFocusedField();
+        });
     }
     /**
      * Sets up the event listeners that facilitate interaction with the form field elements.
      * Will clear any cached form field element handlers that are encountered when setting
-     * up a form field element to the overlay.
+     * up a form field element.
      *
      * @param formFieldElement - The form field element to set up the event listeners for.
      */
     setupFormFieldElementEventListeners(formFieldElement) {
         this.removeCachedFormFieldEventListeners(formFieldElement);
+        formFieldElement.addEventListener(EVENTS.INPUT, this.handleFormFieldInputEvent(formFieldElement));
+        formFieldElement.addEventListener(EVENTS.FOCUS, this.handleFormFieldFocusEvent(formFieldElement));
+        if (elementIsSelectElement(formFieldElement)) {
+            return;
+        }
         formFieldElement.addEventListener(EVENTS.BLUR, this.handleFormFieldBlurEvent);
         formFieldElement.addEventListener(EVENTS.KEYUP, this.handleFormFieldKeyupEvent);
-        formFieldElement.addEventListener(EVENTS.INPUT, this.handleFormFieldInputEvent(formFieldElement));
         formFieldElement.addEventListener(EVENTS.CLICK, this.handleFormFieldClickEvent(formFieldElement));
-        formFieldElement.addEventListener(EVENTS.FOCUS, this.handleFormFieldFocusEvent(formFieldElement));
     }
     /**
      * Removes any cached form field element handlers that are encountered
-     * when setting up a form field element to present the overlay.
+     * when setting up a form field element to present the inline menu.
      *
      * @param formFieldElement - The form field element to remove the cached handlers for.
      */
@@ -3639,40 +4311,47 @@ class AutofillOverlayContentService {
         return `${formFieldElement.opid}-${formFieldElement.id}-${event}-handler`;
     }
     /**
-     * Triggers a focus of the overlay list, if it is visible. If the list is not visible,
-     * the overlay will be opened and the list will be focused after a short delay. Ensures
-     * that the overlay list is focused when the user presses the down arrow key.
+     * Triggers a focus of the inline menu list, if it is visible. If the list is not visible,
+     * the inline menu will be opened and the list will be focused after a short delay. Ensures
+     * that the inline menu list is focused when the user presses the down arrow key.
      */
-    focusOverlayList() {
+    focusInlineMenuList() {
         return autofill_overlay_content_service_awaiter(this, void 0, void 0, function* () {
-            if (!this.isOverlayListVisible && this.mostRecentlyFocusedField) {
+            if (this.mostRecentlyFocusedField && !(yield this.isInlineMenuListVisible())) {
+                this.clearFocusInlineMenuListTimeout();
                 yield this.updateMostRecentlyFocusedField(this.mostRecentlyFocusedField);
-                this.openAutofillOverlay({ isOpeningFullOverlay: true });
-                setTimeout(() => this.sendExtensionMessage("focusAutofillOverlayList"), 125);
+                this.openInlineMenu({ isOpeningFullInlineMenu: true });
+                this.focusInlineMenuListTimeout = globalThis.setTimeout(() => this.sendExtensionMessage("focusAutofillInlineMenuList"), 125);
                 return;
             }
-            // FIXME: Verify that this floating promise is intentional. If it is, add an explanatory comment and ensure there is proper error handling.
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            this.sendExtensionMessage("focusAutofillOverlayList");
+            void this.sendExtensionMessage("focusAutofillInlineMenuList");
         });
     }
     /**
      * Triggers when the form field element receives an input event. This method will
      * store the modified form element data for use when the user attempts to add a new
-     * vault item. It also acts to remove the overlay list while the user is typing.
+     * vault item. It also acts to remove the inline menu list while the user is typing.
      *
      * @param formFieldElement - The form field element that triggered the input event.
      */
     triggerFormFieldInput(formFieldElement) {
-        if (!elementIsFillableFormField(formFieldElement)) {
-            return;
-        }
-        this.storeModifiedFormElement(formFieldElement);
-        if (formFieldElement.value && (this.isOverlayCiphersPopulated || !this.isUserAuthed())) {
-            this.removeAutofillOverlayList();
-            return;
-        }
-        this.openAutofillOverlay();
+        return autofill_overlay_content_service_awaiter(this, void 0, void 0, function* () {
+            if (!elementIsFillableFormField(formFieldElement)) {
+                return;
+            }
+            this.storeModifiedFormElement(formFieldElement);
+            if (elementIsSelectElement(formFieldElement)) {
+                return;
+            }
+            if (yield this.hideInlineMenuListOnFilledField(formFieldElement)) {
+                void this.sendExtensionMessage("closeAutofillInlineMenu", {
+                    overlayElement: AutofillOverlayElement.List,
+                    forceCloseInlineMenu: true,
+                });
+                return;
+            }
+            this.openInlineMenu();
+        });
     }
     /**
      * Stores the modified form element data for use when the user attempts to add a new
@@ -3683,24 +4362,94 @@ class AutofillOverlayContentService {
      * @private
      */
     storeModifiedFormElement(formFieldElement) {
-        if (formFieldElement === this.mostRecentlyFocusedField) {
-            this.mostRecentlyFocusedField = formFieldElement;
+        if (formFieldElement !== this.mostRecentlyFocusedField) {
+            void this.updateMostRecentlyFocusedField(formFieldElement);
         }
-        if (formFieldElement.type === "password") {
-            this.userFilledFields.password = formFieldElement;
+        const autofillFieldData = this.formFieldElements.get(formFieldElement);
+        if (!autofillFieldData) {
             return;
         }
-        this.userFilledFields.username = formFieldElement;
+        if (!autofillFieldData.fieldQualifier) {
+            switch (autofillFieldData.filledByCipherType) {
+                case CipherType.Login:
+                    this.qualifyUserFilledLoginField(autofillFieldData);
+                    break;
+                case CipherType.Card:
+                    this.qualifyUserFilledCardField(autofillFieldData);
+                    break;
+                case CipherType.Identity:
+                    this.qualifyUserFilledIdentityField(autofillFieldData);
+                    break;
+            }
+        }
+        this.storeQualifiedUserFilledField(formFieldElement, autofillFieldData);
+    }
+    /**
+     * Handles qualifying the user field login field to be used when adding a new vault item.
+     *
+     * @param autofillFieldData - Autofill field data captured from the form field element.
+     */
+    qualifyUserFilledLoginField(autofillFieldData) {
+        if (autofillFieldData.type === "password") {
+            autofillFieldData.fieldQualifier = AutofillFieldQualifier.password;
+            return;
+        }
+        autofillFieldData.fieldQualifier = AutofillFieldQualifier.username;
+    }
+    /**
+     * Handles qualifying the user field card field to be used when adding a new vault item.
+     *
+     * @param autofillFieldData - Autofill field data captured from the form field element.
+     */
+    qualifyUserFilledCardField(autofillFieldData) {
+        for (const [fieldQualifier, fieldQualifierFunction] of Object.entries(this.cardFieldQualifiers)) {
+            if (fieldQualifierFunction(autofillFieldData)) {
+                autofillFieldData.fieldQualifier = fieldQualifier;
+                return;
+            }
+        }
+    }
+    /**
+     *  Handles qualifying the user field identity field to be used when adding a new vault item.
+     *
+     * @param autofillFieldData - Autofill field data captured from the form field element.
+     */
+    qualifyUserFilledIdentityField(autofillFieldData) {
+        for (const [fieldQualifier, fieldQualifierFunction] of Object.entries(this.identityFieldQualifiers)) {
+            if (fieldQualifierFunction(autofillFieldData)) {
+                autofillFieldData.fieldQualifier = fieldQualifier;
+                return;
+            }
+        }
+    }
+    /**
+     * Stores the qualified user filled filed to allow for referencing its value when adding a new vault item.
+     *
+     * @param formFieldElement - The form field element that triggered the input event.
+     * @param autofillFieldData - Autofill field data captured from the form field element.
+     */
+    storeQualifiedUserFilledField(formFieldElement, autofillFieldData) {
+        if (!autofillFieldData.fieldQualifier) {
+            return;
+        }
+        const identityLoginFields = [
+            AutofillFieldQualifier.identityUsername,
+            AutofillFieldQualifier.identityEmail,
+        ];
+        if (identityLoginFields.includes(autofillFieldData.fieldQualifier)) {
+            this.userFilledFields[AutofillFieldQualifier.username] = formFieldElement;
+        }
+        this.userFilledFields[autofillFieldData.fieldQualifier] = formFieldElement;
     }
     /**
      * Triggers when the form field element receives a click event. This method will
-     * trigger the focused action for the form field element if the overlay is not visible.
+     * trigger the focused action for the form field element if the inline menu is not visible.
      *
      * @param formFieldElement - The form field element that triggered the click event.
      */
     triggerFormFieldClickedAction(formFieldElement) {
         return autofill_overlay_content_service_awaiter(this, void 0, void 0, function* () {
-            if (this.isOverlayButtonVisible || this.isOverlayListVisible) {
+            if ((yield this.isInlineMenuButtonVisible()) || (yield this.isInlineMenuListVisible())) {
                 return;
             }
             yield this.triggerFormFieldFocusedAction(formFieldElement);
@@ -3708,32 +4457,40 @@ class AutofillOverlayContentService {
     }
     /**
      * Triggers when the form field element receives a focus event. This method will
-     * update the most recently focused field and open the autofill overlay if the
+     * update the most recently focused field and open the autofill inline menu if the
      * autofill process is not currently active.
      *
      * @param formFieldElement - The form field element that triggered the focus event.
      */
     triggerFormFieldFocusedAction(formFieldElement) {
         return autofill_overlay_content_service_awaiter(this, void 0, void 0, function* () {
-            if (this.isCurrentlyFilling) {
+            if (yield this.isFieldCurrentlyFilling()) {
                 return;
             }
-            this.isFieldCurrentlyFocused = true;
-            this.clearUserInteractionEventTimeout();
+            if (elementIsSelectElement(formFieldElement)) {
+                yield this.sendExtensionMessage("closeAutofillInlineMenu", {
+                    forceCloseInlineMenu: true,
+                });
+                return;
+            }
+            yield this.sendExtensionMessage("updateIsFieldCurrentlyFocused", {
+                isFieldCurrentlyFocused: true,
+            });
             const initiallyFocusedField = this.mostRecentlyFocusedField;
             yield this.updateMostRecentlyFocusedField(formFieldElement);
-            const formElementHasValue = Boolean(formFieldElement.value);
-            if (this.autofillOverlayVisibility === AutofillOverlayVisibility.OnButtonClick ||
-                (formElementHasValue && initiallyFocusedField !== this.mostRecentlyFocusedField)) {
-                this.removeAutofillOverlayList();
+            const hideInlineMenuListOnFilledField = yield this.hideInlineMenuListOnFilledField(formFieldElement);
+            if (this.inlineMenuVisibility === AutofillOverlayVisibility.OnButtonClick ||
+                (initiallyFocusedField !== this.mostRecentlyFocusedField && hideInlineMenuListOnFilledField)) {
+                yield this.sendExtensionMessage("closeAutofillInlineMenu", {
+                    overlayElement: AutofillOverlayElement.List,
+                    forceCloseInlineMenu: true,
+                });
             }
-            if (!formElementHasValue || (!this.isOverlayCiphersPopulated && this.isUserAuthed())) {
-                // FIXME: Verify that this floating promise is intentional. If it is, add an explanatory comment and ensure there is proper error handling.
-                // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                this.sendExtensionMessage("openAutofillOverlay");
+            if (hideInlineMenuListOnFilledField) {
+                this.updateInlineMenuButtonPosition();
                 return;
             }
-            this.updateOverlayButtonPosition();
+            void this.sendExtensionMessage("openAutofillInlineMenu");
         });
     }
     /**
@@ -3743,47 +4500,6 @@ class AutofillOverlayContentService {
         return this.authStatus === AuthenticationStatus.Unlocked;
     }
     /**
-     * Identifies if the autofill field's data contains any of
-     * the keyboards matching the passed list of keywords.
-     *
-     * @param autofillFieldData - Autofill field data captured from the form field element.
-     * @param keywords - Keywords to search for in the autofill field data.
-     */
-    keywordsFoundInFieldData(autofillFieldData, keywords) {
-        const searchedString = this.getAutofillFieldDataKeywords(autofillFieldData);
-        return keywords.some((keyword) => searchedString.includes(keyword));
-    }
-    /**
-     * Aggregates the autofill field's data into a single string
-     * that can be used to search for keywords.
-     *
-     * @param autofillFieldData - Autofill field data captured from the form field element.
-     */
-    getAutofillFieldDataKeywords(autofillFieldData) {
-        if (this.autofillFieldKeywordsMap.has(autofillFieldData)) {
-            return this.autofillFieldKeywordsMap.get(autofillFieldData);
-        }
-        const keywordValues = [
-            autofillFieldData.htmlID,
-            autofillFieldData.htmlName,
-            autofillFieldData.htmlClass,
-            autofillFieldData.type,
-            autofillFieldData.title,
-            autofillFieldData.placeholder,
-            autofillFieldData.autoCompleteType,
-            autofillFieldData["label-data"],
-            autofillFieldData["label-aria"],
-            autofillFieldData["label-left"],
-            autofillFieldData["label-right"],
-            autofillFieldData["label-tag"],
-            autofillFieldData["label-top"],
-        ]
-            .join(",")
-            .toLowerCase();
-        this.autofillFieldKeywordsMap.set(autofillFieldData, keywordValues);
-        return keywordValues;
-    }
-    /**
      * Validates that the most recently focused field is currently
      * focused within the root node relative to the field.
      */
@@ -3791,89 +4507,61 @@ class AutofillOverlayContentService {
         return (this.getRootNodeActiveElement(this.mostRecentlyFocusedField) === this.mostRecentlyFocusedField);
     }
     /**
-     * Updates the position of both the overlay button and overlay list.
+     * Updates the position of both the inline menu button and list.
      */
-    updateOverlayElementsPosition() {
-        this.updateOverlayButtonPosition();
-        this.updateOverlayListPosition();
+    updateInlineMenuElementsPosition() {
+        this.updateInlineMenuButtonPosition();
+        this.updateInlineMenuListPosition();
     }
     /**
-     * Updates the position of the overlay button.
+     * Updates the position of the inline menu button.
      */
-    updateOverlayButtonPosition() {
-        if (!this.overlayButtonElement) {
-            this.createAutofillOverlayButton();
-            this.updateCustomElementDefaultStyles(this.overlayButtonElement);
-        }
-        if (!this.isOverlayButtonVisible) {
-            this.appendOverlayElementToBody(this.overlayButtonElement);
-            this.isOverlayButtonVisible = true;
-            this.setOverlayRepositionEventListeners();
-        }
-        // FIXME: Verify that this floating promise is intentional. If it is, add an explanatory comment and ensure there is proper error handling.
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        this.sendExtensionMessage("updateAutofillOverlayPosition", {
+    updateInlineMenuButtonPosition() {
+        void this.sendExtensionMessage("updateAutofillInlineMenuPosition", {
             overlayElement: AutofillOverlayElement.Button,
         });
     }
     /**
-     * Updates the position of the overlay list.
+     * Updates the position of the inline menu list.
      */
-    updateOverlayListPosition() {
-        if (!this.overlayListElement) {
-            this.createAutofillOverlayList();
-            this.updateCustomElementDefaultStyles(this.overlayListElement);
-        }
-        if (!this.isOverlayListVisible) {
-            this.appendOverlayElementToBody(this.overlayListElement);
-            this.isOverlayListVisible = true;
-        }
-        // FIXME: Verify that this floating promise is intentional. If it is, add an explanatory comment and ensure there is proper error handling.
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        this.sendExtensionMessage("updateAutofillOverlayPosition", {
+    updateInlineMenuListPosition() {
+        void this.sendExtensionMessage("updateAutofillInlineMenuPosition", {
             overlayElement: AutofillOverlayElement.List,
         });
     }
     /**
-     * Appends the overlay element to the body element. This method will also
-     * observe the body element to ensure that the overlay element is not
-     * interfered with by any DOM changes.
-     *
-     * @param element - The overlay element to append to the body element.
-     */
-    appendOverlayElementToBody(element) {
-        this.observeBodyElement();
-        globalThis.document.body.appendChild(element);
-    }
-    /**
-     * Sends a message that facilitates hiding the overlay elements.
-     *
-     * @param isHidden - Indicates if the overlay elements should be hidden.
-     */
-    toggleOverlayHidden(isHidden) {
-        const displayValue = isHidden ? "none" : "block";
-        void this.sendExtensionMessage("updateAutofillOverlayHidden", { display: displayValue });
-        this.isOverlayButtonVisible = !!this.overlayButtonElement && !isHidden;
-        this.isOverlayListVisible = !!this.overlayListElement && !isHidden;
-    }
-    /**
-     * Updates the data used to position the overlay elements in relation
+     * Updates the data used to position the inline menu elements in relation
      * to the most recently focused form field.
      *
      * @param formFieldElement - The form field element that triggered the focus event.
      */
     updateMostRecentlyFocusedField(formFieldElement) {
         return autofill_overlay_content_service_awaiter(this, void 0, void 0, function* () {
+            if (!formFieldElement ||
+                !elementIsFillableFormField(formFieldElement) ||
+                elementIsSelectElement(formFieldElement)) {
+                return;
+            }
             this.mostRecentlyFocusedField = formFieldElement;
             const { paddingRight, paddingLeft } = globalThis.getComputedStyle(formFieldElement);
             const { width, height, top, left } = yield this.getMostRecentlyFocusedFieldRects(formFieldElement);
+            const autofillFieldData = this.formFieldElements.get(formFieldElement);
+            let accountCreationFieldType = null;
+            if (((autofillFieldData === null || autofillFieldData === void 0 ? void 0 : autofillFieldData.showInlineMenuAccountCreation) ||
+                (autofillFieldData === null || autofillFieldData === void 0 ? void 0 : autofillFieldData.filledByCipherType) === CipherType.Login) &&
+                this.inlineMenuFieldQualificationService.isUsernameField(autofillFieldData)) {
+                accountCreationFieldType = this.inlineMenuFieldQualificationService.isEmailField(autofillFieldData)
+                    ? "email"
+                    : autofillFieldData.type;
+            }
             this.focusedFieldData = {
                 focusedFieldStyles: { paddingRight, paddingLeft },
                 focusedFieldRects: { width, height, top, left },
+                filledByCipherType: autofillFieldData === null || autofillFieldData === void 0 ? void 0 : autofillFieldData.filledByCipherType,
+                showInlineMenuAccountCreation: autofillFieldData === null || autofillFieldData === void 0 ? void 0 : autofillFieldData.showInlineMenuAccountCreation,
+                accountCreationFieldType,
             };
-            // FIXME: Verify that this floating promise is intentional. If it is, add an explanatory comment and ensure there is proper error handling.
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            this.sendExtensionMessage("updateFocusedFieldData", {
+            yield this.sendExtensionMessage("updateFocusedFieldData", {
                 focusedFieldData: this.focusedFieldData,
             });
         });
@@ -3925,196 +4613,165 @@ class AutofillOverlayContentService {
         });
     }
     /**
-     * Identifies if the field should have the autofill overlay setup on it. Currently, this is mainly
+     * Identifies if the field should have the autofill inline menu setup on it. Currently, this is mainly
      * determined by whether the field correlates with a login cipher. This method will need to be
      * updated in the future to support other types of forms.
      *
      * @param autofillFieldData - Autofill field data captured from the form field element.
+     * @param pageDetails - The collected page details from the tab.
      */
-    isIgnoredField(autofillFieldData) {
-        if (autofillFieldData.readonly ||
-            autofillFieldData.disabled ||
-            !autofillFieldData.viewable ||
-            this.ignoredFieldTypes.has(autofillFieldData.type) ||
-            this.keywordsFoundInFieldData(autofillFieldData, ["search", "captcha"])) {
+    isIgnoredField(autofillFieldData, pageDetails) {
+        if (this.ignoredFieldTypes.has(autofillFieldData.type)) {
             return true;
         }
-        const isLoginCipherField = autofillFieldData.type === "password" ||
-            this.keywordsFoundInFieldData(autofillFieldData, AutoFillConstants.UsernameFieldNames);
-        return !isLoginCipherField;
+        if (this.inlineMenuFieldQualificationService.isFieldForLoginForm(autofillFieldData, pageDetails)) {
+            autofillFieldData.filledByCipherType = CipherType.Login;
+            return false;
+        }
+        if (this.inlineMenuFieldQualificationService.isFieldForCreditCardForm(autofillFieldData, pageDetails)) {
+            autofillFieldData.filledByCipherType = CipherType.Card;
+            return false;
+        }
+        if (this.inlineMenuFieldQualificationService.isFieldForAccountCreationForm(autofillFieldData, pageDetails)) {
+            autofillFieldData.filledByCipherType = CipherType.Identity;
+            autofillFieldData.showInlineMenuAccountCreation = true;
+            return false;
+        }
+        if (this.inlineMenuFieldQualificationService.isFieldForIdentityForm(autofillFieldData, pageDetails)) {
+            autofillFieldData.filledByCipherType = CipherType.Identity;
+            return false;
+        }
+        return true;
     }
     /**
-     * Creates the autofill overlay button element. Will not attempt
-     * to create the element if it already exists in the DOM.
-     */
-    createAutofillOverlayButton() {
-        var _a;
-        if (this.overlayButtonElement) {
-            return;
-        }
-        if (this.isFirefoxBrowser) {
-            this.overlayButtonElement = globalThis.document.createElement("div");
-            new autofill_overlay_button_iframe(this.overlayButtonElement);
-            return;
-        }
-        const customElementName = this.generateRandomCustomElementName();
-        (_a = globalThis.customElements) === null || _a === void 0 ? void 0 : _a.define(customElementName, class extends HTMLElement {
-            constructor() {
-                super();
-                new autofill_overlay_button_iframe(this);
-            }
-        });
-        this.overlayButtonElement = globalThis.document.createElement(customElementName);
-    }
-    /**
-     * Creates the autofill overlay list element. Will not attempt
-     * to create the element if it already exists in the DOM.
-     */
-    createAutofillOverlayList() {
-        var _a;
-        if (this.overlayListElement) {
-            return;
-        }
-        if (this.isFirefoxBrowser) {
-            this.overlayListElement = globalThis.document.createElement("div");
-            new autofill_overlay_list_iframe(this.overlayListElement);
-            return;
-        }
-        const customElementName = this.generateRandomCustomElementName();
-        (_a = globalThis.customElements) === null || _a === void 0 ? void 0 : _a.define(customElementName, class extends HTMLElement {
-            constructor() {
-                super();
-                new autofill_overlay_list_iframe(this);
-            }
-        });
-        this.overlayListElement = globalThis.document.createElement(customElementName);
-    }
-    /**
-     * Updates the default styles for the custom element. This method will
-     * remove any styles that are added to the custom element by other methods.
+     * Validates whether a field is considered to be "hidden" based on the field's attributes.
+     * If the field is hidden, a fallback listener will be set up to ensure that the
+     * field will have the inline menu set up on it when it becomes visible.
      *
-     * @param element - The custom element to update the default styles for.
+     * @param formFieldElement - The form field element that triggered the focus event.
+     * @param autofillFieldData - Autofill field data captured from the form field element.
      */
-    updateCustomElementDefaultStyles(element) {
-        this.unobserveCustomElements();
-        setElementStyles(element, this.customElementDefaultStyles, true);
-        this.observeCustomElements();
+    isHiddenField(formFieldElement, autofillFieldData) {
+        if (!autofillFieldData.readonly && !autofillFieldData.disabled && autofillFieldData.viewable) {
+            this.removeHiddenFieldFallbackListener(formFieldElement);
+            return false;
+        }
+        this.setupHiddenFieldFallbackListener(formFieldElement, autofillFieldData);
+        return true;
     }
     /**
-     * Queries the background script for the autofill overlay visibility setting.
+     * Sets up a fallback listener that will facilitate setting up the
+     * inline menu on the field when it becomes visible and focused.
+     *
+     * @param formFieldElement - The form field element that triggered the focus event.
+     * @param autofillFieldData - Autofill field data captured from the form field element.
+     */
+    setupHiddenFieldFallbackListener(formFieldElement, autofillFieldData) {
+        this.hiddenFormFieldElements.set(formFieldElement, autofillFieldData);
+        formFieldElement.addEventListener(EVENTS.FOCUS, this.handleHiddenFieldFocusEvent);
+    }
+    /**
+     * Removes the fallback listener that facilitates setting up the inline
+     *  menu on the field when it becomes visible and focused.
+     *
+     * @param formFieldElement - The form field element that triggered the focus event.
+     */
+    removeHiddenFieldFallbackListener(formFieldElement) {
+        formFieldElement.removeEventListener(EVENTS.FOCUS, this.handleHiddenFieldFocusEvent);
+        this.hiddenFormFieldElements.delete(formFieldElement);
+    }
+    /**
+     * Sets up the inline menu on a qualified form field element.
+     *
+     * @param formFieldElement - The form field element to set up the inline menu on.
+     * @param autofillFieldData - Autofill field data captured from the form field element.
+     */
+    setupInlineMenuOnQualifiedField(formFieldElement, autofillFieldData) {
+        return autofill_overlay_content_service_awaiter(this, void 0, void 0, function* () {
+            this.formFieldElements.set(formFieldElement, autofillFieldData);
+            if (!this.mostRecentlyFocusedField) {
+                yield this.updateMostRecentlyFocusedField(formFieldElement);
+            }
+            if (!this.inlineMenuVisibility) {
+                yield this.getInlineMenuVisibility();
+            }
+            this.setupFormFieldElementEventListeners(formFieldElement);
+            if (globalThis.document.hasFocus() &&
+                this.getRootNodeActiveElement(formFieldElement) === formFieldElement) {
+                yield this.triggerFormFieldFocusedAction(formFieldElement);
+            }
+        });
+    }
+    /**
+     * Queries the background script for the autofill inline menu visibility setting.
      * If the setting is not found, a default value of OnFieldFocus will be used
      * @private
      */
-    getAutofillOverlayVisibility() {
+    getInlineMenuVisibility() {
         return autofill_overlay_content_service_awaiter(this, void 0, void 0, function* () {
-            const overlayVisibility = yield this.sendExtensionMessage("getAutofillOverlayVisibility");
-            this.autofillOverlayVisibility = overlayVisibility || AutofillOverlayVisibility.OnFieldFocus;
+            const inlineMenuVisibility = yield this.sendExtensionMessage("getAutofillInlineMenuVisibility");
+            this.inlineMenuVisibility = inlineMenuVisibility || AutofillOverlayVisibility.OnFieldFocus;
         });
     }
     /**
-     * Sets up event listeners that facilitate repositioning
-     * the autofill overlay on scroll or resize.
-     */
-    setOverlayRepositionEventListeners() {
-        globalThis.addEventListener(EVENTS.SCROLL, this.handleOverlayRepositionEvent, {
-            capture: true,
-        });
-        globalThis.addEventListener(EVENTS.RESIZE, this.handleOverlayRepositionEvent);
-    }
-    /**
-     * Removes the listeners that facilitate repositioning
-     * the autofill overlay on scroll or resize.
-     */
-    removeOverlayRepositionEventListeners() {
-        globalThis.removeEventListener(EVENTS.SCROLL, this.handleOverlayRepositionEvent, {
-            capture: true,
-        });
-        globalThis.removeEventListener(EVENTS.RESIZE, this.handleOverlayRepositionEvent);
-    }
-    /**
-     * Clears the user interaction event timeout. This is used to ensure that
-     * the overlay is not repositioned while the user is interacting with it.
-     */
-    clearUserInteractionEventTimeout() {
-        if (this.userInteractionEventTimeout) {
-            clearTimeout(this.userInteractionEventTimeout);
-        }
-    }
-    /**
-     * Sets up mutation observers to verify that the overlay
-     * elements are not modified by the website.
-     */
-    observeCustomElements() {
-        var _a, _b;
-        if (this.overlayButtonElement) {
-            (_a = this.overlayElementsMutationObserver) === null || _a === void 0 ? void 0 : _a.observe(this.overlayButtonElement, {
-                attributes: true,
-            });
-        }
-        if (this.overlayListElement) {
-            (_b = this.overlayElementsMutationObserver) === null || _b === void 0 ? void 0 : _b.observe(this.overlayListElement, { attributes: true });
-        }
-    }
-    /**
-     * Disconnects the mutation observers that are used to verify that the overlay
-     * elements are not modified by the website.
-     */
-    unobserveCustomElements() {
-        var _a;
-        (_a = this.overlayElementsMutationObserver) === null || _a === void 0 ? void 0 : _a.disconnect();
-    }
-    /**
-     * Sets up a mutation observer for the body element. The mutation observer is used
-     * to ensure that the overlay elements are always present at the bottom of the body
-     * element.
-     */
-    observeBodyElement() {
-        var _a;
-        (_a = this.bodyElementMutationObserver) === null || _a === void 0 ? void 0 : _a.observe(globalThis.document.body, { childList: true });
-    }
-    /**
-     * Disconnects the mutation observer for the body element.
-     */
-    removeBodyElementObserver() {
-        var _a;
-        (_a = this.bodyElementMutationObserver) === null || _a === void 0 ? void 0 : _a.disconnect();
-    }
-    /**
-     * Removes all elements from a passed overlay
-     * element except for the style attribute.
+     * Returns a value that indicates if we should hide the inline menu list due to a filled field.
      *
-     * @param element - The element to remove the attributes from.
+     * @param formFieldElement - The form field element that triggered the focus event.
      */
-    removeModifiedElementAttributes(element) {
-        const attributes = Array.from(element.attributes);
-        for (let attributeIndex = 0; attributeIndex < attributes.length; attributeIndex++) {
-            const attribute = attributes[attributeIndex];
-            if (attribute.name === "style") {
-                continue;
-            }
-            element.removeAttribute(attribute.name);
+    hideInlineMenuListOnFilledField(formFieldElement) {
+        return autofill_overlay_content_service_awaiter(this, void 0, void 0, function* () {
+            return ((formFieldElement === null || formFieldElement === void 0 ? void 0 : formFieldElement.value) &&
+                ((yield this.isInlineMenuCiphersPopulated()) || !this.isUserAuthed()));
+        });
+    }
+    /**
+     * Indicates whether the most recently focused field has a value.
+     */
+    mostRecentlyFocusedFieldHasValue() {
+        var _a;
+        return Boolean((_a = this.mostRecentlyFocusedField) === null || _a === void 0 ? void 0 : _a.value);
+    }
+    /**
+     * Updates the local reference to the inline menu visibility setting.
+     *
+     * @param data - The data object from the extension message.
+     */
+    updateInlineMenuVisibility({ data }) {
+        if (!isNaN(data === null || data === void 0 ? void 0 : data.inlineMenuVisibility)) {
+            this.inlineMenuVisibility = data.inlineMenuVisibility;
         }
     }
     /**
-     * Identifies if the mutation observer is triggering excessive iterations.
-     * Will trigger a blur of the most recently focused field and remove the
-     * autofill overlay if any set mutation observer is triggering
-     * excessive iterations.
+     * Checks if a field is currently filling within an frame in the tab.
      */
-    isTriggeringExcessiveMutationObserverIterations() {
-        if (this.mutationObserverIterationsResetTimeout) {
-            clearTimeout(this.mutationObserverIterationsResetTimeout);
-        }
-        this.mutationObserverIterations++;
-        this.mutationObserverIterationsResetTimeout = setTimeout(() => (this.mutationObserverIterations = 0), 2000);
-        if (this.mutationObserverIterations > 100) {
-            clearTimeout(this.mutationObserverIterationsResetTimeout);
-            this.mutationObserverIterations = 0;
-            this.blurMostRecentOverlayField();
-            this.removeAutofillOverlay();
-            return true;
-        }
-        return false;
+    isFieldCurrentlyFilling() {
+        return autofill_overlay_content_service_awaiter(this, void 0, void 0, function* () {
+            return (yield this.sendExtensionMessage("checkIsFieldCurrentlyFilling")) === true;
+        });
+    }
+    /**
+     * Checks if the inline menu button is visible at the top frame.
+     */
+    isInlineMenuButtonVisible() {
+        return autofill_overlay_content_service_awaiter(this, void 0, void 0, function* () {
+            return (yield this.sendExtensionMessage("checkIsAutofillInlineMenuButtonVisible")) === true;
+        });
+    }
+    /**
+     * Checks if the inline menu list if visible at the top frame.
+     */
+    isInlineMenuListVisible() {
+        return autofill_overlay_content_service_awaiter(this, void 0, void 0, function* () {
+            return (yield this.sendExtensionMessage("checkIsAutofillInlineMenuListVisible")) === true;
+        });
+    }
+    /**
+     * Checks if the current tab contains ciphers that can be used to populate the inline menu.
+     */
+    isInlineMenuCiphersPopulated() {
+        return autofill_overlay_content_service_awaiter(this, void 0, void 0, function* () {
+            return (yield this.sendExtensionMessage("checkIsInlineMenuCiphersPopulated")) === true;
+        });
     }
     /**
      * Gets the root node of the passed element and returns the active element within that root node.
@@ -4122,30 +4779,1076 @@ class AutofillOverlayContentService {
      * @param element - The element to get the root node active element for.
      */
     getRootNodeActiveElement(element) {
+        if (!element) {
+            return null;
+        }
         const documentRoot = element.getRootNode();
         return documentRoot === null || documentRoot === void 0 ? void 0 : documentRoot.activeElement;
+    }
+    /**
+     * Queries all iframe elements within the document and returns the
+     * sub frame offsets for each iframe element.
+     *
+     * @param message - The message object from the extension.
+     */
+    getSubFrameOffsets(message) {
+        return autofill_overlay_content_service_awaiter(this, void 0, void 0, function* () {
+            const { subFrameUrl } = message;
+            const subFrameUrlVariations = this.getSubFrameUrlVariations(subFrameUrl);
+            if (!subFrameUrlVariations) {
+                return null;
+            }
+            let iframeElement = null;
+            const iframeElements = globalThis.document.getElementsByTagName("iframe");
+            for (let iframeIndex = 0; iframeIndex < iframeElements.length; iframeIndex++) {
+                const iframe = iframeElements[iframeIndex];
+                if (!subFrameUrlVariations.has(iframe.src)) {
+                    continue;
+                }
+                if (iframeElement) {
+                    return null;
+                }
+                iframeElement = iframe;
+            }
+            if (!iframeElement) {
+                return null;
+            }
+            return this.calculateSubFrameOffsets(iframeElement, subFrameUrl);
+        });
+    }
+    /**
+     * Returns a set of all possible URL variations for the sub frame URL.
+     *
+     * @param subFrameUrl - The URL of the sub frame.
+     */
+    getSubFrameUrlVariations(subFrameUrl) {
+        try {
+            const url = new URL(subFrameUrl, globalThis.location.href);
+            const pathAndHash = url.pathname + url.hash;
+            const pathAndSearch = url.pathname + url.search;
+            const pathSearchAndHash = pathAndSearch + url.hash;
+            const pathNameWithoutTrailingSlash = url.pathname.replace(/\/$/, "");
+            const pathWithoutTrailingSlashAndHash = pathNameWithoutTrailingSlash + url.hash;
+            const pathWithoutTrailingSlashAndSearch = pathNameWithoutTrailingSlash + url.search;
+            const pathWithoutTrailingSlashSearchAndHash = pathWithoutTrailingSlashAndSearch + url.hash;
+            return new Set([
+                url.href,
+                url.href.replace(/\/$/, ""),
+                url.pathname,
+                pathAndHash,
+                pathAndSearch,
+                pathSearchAndHash,
+                pathNameWithoutTrailingSlash,
+                pathWithoutTrailingSlashAndHash,
+                pathWithoutTrailingSlashAndSearch,
+                pathWithoutTrailingSlashSearchAndHash,
+                url.hostname + url.pathname,
+                url.hostname + pathAndHash,
+                url.hostname + pathAndSearch,
+                url.hostname + pathSearchAndHash,
+                url.hostname + pathNameWithoutTrailingSlash,
+                url.hostname + pathWithoutTrailingSlashAndHash,
+                url.hostname + pathWithoutTrailingSlashAndSearch,
+                url.hostname + pathWithoutTrailingSlashSearchAndHash,
+                url.origin + url.pathname,
+                url.origin + pathAndHash,
+                url.origin + pathAndSearch,
+                url.origin + pathSearchAndHash,
+                url.origin + pathNameWithoutTrailingSlash,
+                url.origin + pathWithoutTrailingSlashAndHash,
+                url.origin + pathWithoutTrailingSlashAndSearch,
+                url.origin + pathWithoutTrailingSlashSearchAndHash,
+            ]);
+        }
+        catch (_error) {
+            return null;
+        }
+    }
+    /**
+     * Posts a message to the parent frame to calculate the sub frame offset of the current frame.
+     *
+     * @param message - The message object from the extension.
+     */
+    getSubFrameOffsetsFromWindowMessage(message) {
+        globalThis.parent.postMessage({
+            command: "calculateSubFramePositioning",
+            subFrameData: {
+                url: window.location.href,
+                frameId: message.subFrameId,
+                left: 0,
+                top: 0,
+                parentFrameIds: [0],
+                subFrameDepth: 0,
+            },
+        }, "*");
+    }
+    /**
+     * Calculates the bounding rect for the queried frame and returns the
+     * offset data for the sub frame.
+     *
+     * @param iframeElement - The iframe element to calculate the sub frame offsets for.
+     * @param subFrameUrl - The URL of the sub frame.
+     * @param frameId - The frame ID of the sub frame.
+     */
+    calculateSubFrameOffsets(iframeElement, subFrameUrl, frameId) {
+        const iframeRect = iframeElement.getBoundingClientRect();
+        const iframeStyles = globalThis.getComputedStyle(iframeElement);
+        const paddingLeft = parseInt(iframeStyles.getPropertyValue("padding-left")) || 0;
+        const paddingTop = parseInt(iframeStyles.getPropertyValue("padding-top")) || 0;
+        const borderWidthLeft = parseInt(iframeStyles.getPropertyValue("border-left-width")) || 0;
+        const borderWidthTop = parseInt(iframeStyles.getPropertyValue("border-top-width")) || 0;
+        return {
+            url: subFrameUrl,
+            frameId,
+            top: iframeRect.top + paddingTop + borderWidthTop,
+            left: iframeRect.left + paddingLeft + borderWidthLeft,
+        };
+    }
+    /**
+     * Sets up event listeners that facilitate repositioning
+     * the overlay elements on scroll or resize.
+     */
+    setOverlayRepositionEventListeners() {
+        const handler = this.useEventHandlersMemo(throttle(this.handleOverlayRepositionEvent, 250), AUTOFILL_OVERLAY_HANDLE_REPOSITION);
+        globalThis.addEventListener(EVENTS.SCROLL, handler, {
+            capture: true,
+            passive: true,
+        });
+        globalThis.addEventListener(EVENTS.RESIZE, handler);
+    }
+    /**
+     * Removes the listeners that facilitate repositioning
+     * the overlay elements on scroll or resize.
+     */
+    removeOverlayRepositionEventListeners() {
+        const handler = this.eventHandlersMemo[AUTOFILL_OVERLAY_HANDLE_REPOSITION];
+        globalThis.removeEventListener(EVENTS.SCROLL, handler, {
+            capture: true,
+        });
+        globalThis.removeEventListener(EVENTS.RESIZE, handler);
+        delete this.eventHandlersMemo[AUTOFILL_OVERLAY_HANDLE_REPOSITION];
+    }
+    /**
+     * Triggers an update in the most recently focused field's data and returns
+     * whether the field is within the viewport bounds. If not within the bounds
+     * of the viewport, the inline menu will be closed.
+     */
+    checkIsMostRecentlyFocusedFieldWithinViewport() {
+        var _a, _b, _c, _d;
+        return autofill_overlay_content_service_awaiter(this, void 0, void 0, function* () {
+            yield this.updateMostRecentlyFocusedField(this.mostRecentlyFocusedField);
+            const focusedFieldRectsTop = (_b = (_a = this.focusedFieldData) === null || _a === void 0 ? void 0 : _a.focusedFieldRects) === null || _b === void 0 ? void 0 : _b.top;
+            const focusedFieldRectsBottom = focusedFieldRectsTop + ((_d = (_c = this.focusedFieldData) === null || _c === void 0 ? void 0 : _c.focusedFieldRects) === null || _d === void 0 ? void 0 : _d.height);
+            const viewportHeight = globalThis.innerHeight + globalThis.scrollY;
+            return (!globalThis.isNaN(focusedFieldRectsTop) &&
+                focusedFieldRectsTop >= 0 &&
+                focusedFieldRectsTop < viewportHeight &&
+                focusedFieldRectsBottom <= viewportHeight);
+        });
+    }
+    /**
+     * Clears the timeout that triggers a debounced focus of the inline menu list.
+     */
+    clearFocusInlineMenuListTimeout() {
+        if (this.focusInlineMenuListTimeout) {
+            globalThis.clearTimeout(this.focusInlineMenuListTimeout);
+        }
+    }
+    /**
+     * Clears the timeout that triggers the closing of the inline menu on a focus redirection.
+     */
+    clearCloseInlineMenuOnRedirectTimeout() {
+        if (this.closeInlineMenuOnRedirectTimeout) {
+            globalThis.clearTimeout(this.closeInlineMenuOnRedirectTimeout);
+        }
     }
     /**
      * Destroys the autofill overlay content service. This method will
      * disconnect the mutation observers and remove all event listeners.
      */
     destroy() {
-        var _a;
-        (_a = this.documentElementMutationObserver) === null || _a === void 0 ? void 0 : _a.disconnect();
-        this.clearUserInteractionEventTimeout();
-        this.formFieldElements.forEach((formFieldElement) => {
+        this.clearFocusInlineMenuListTimeout();
+        this.clearCloseInlineMenuOnRedirectTimeout();
+        this.formFieldElements.forEach((_autofillField, formFieldElement) => {
             this.removeCachedFormFieldEventListeners(formFieldElement);
             formFieldElement.removeEventListener(EVENTS.BLUR, this.handleFormFieldBlurEvent);
             formFieldElement.removeEventListener(EVENTS.KEYUP, this.handleFormFieldKeyupEvent);
             this.formFieldElements.delete(formFieldElement);
         });
+        globalThis.removeEventListener(EVENTS.MESSAGE, this.handleWindowMessageEvent);
         globalThis.document.removeEventListener(EVENTS.VISIBILITYCHANGE, this.handleVisibilityChangeEvent);
         globalThis.removeEventListener(EVENTS.FOCUSOUT, this.handleFormFieldBlurEvent);
-        this.removeAutofillOverlay();
         this.removeOverlayRepositionEventListeners();
+        this.removeRebuildSubFrameOffsetsListeners();
+        this.removeSubFrameFocusOutListeners();
     }
 }
-/* harmony default export */ var autofill_overlay_content_service = (AutofillOverlayContentService);
+
+;// CONCATENATED MODULE: ./src/autofill/services/inline-menu-field-qualification.service.ts
+
+
+class InlineMenuFieldQualificationService {
+    constructor() {
+        this.searchFieldNamesSet = new Set(AutoFillConstants.SearchFieldNames);
+        this.excludedAutofillFieldTypesSet = new Set(AutoFillConstants.ExcludedAutofillLoginTypes);
+        this.usernameFieldTypes = new Set(["text", "email", "number", "tel"]);
+        this.usernameAutocompleteValue = "username";
+        this.emailAutocompleteValue = "email";
+        this.loginUsernameAutocompleteValues = new Set([
+            this.usernameAutocompleteValue,
+            this.emailAutocompleteValue,
+        ]);
+        this.fieldIgnoreListString = AutoFillConstants.FieldIgnoreList.join(",");
+        this.passwordFieldExcludeListString = AutoFillConstants.PasswordFieldExcludeList.join(",");
+        this.currentPasswordAutocompleteValue = "current-password";
+        this.newPasswordAutoCompleteValue = "new-password";
+        this.autofillFieldKeywordsMap = new WeakMap();
+        this.autocompleteDisabledValues = new Set(["off", "false"]);
+        this.newFieldKeywords = new Set(["new", "change", "neue", "ändern"]);
+        this.accountCreationFieldKeywords = [
+            ...new Set(["register", "registration", "create", "confirm", ...this.newFieldKeywords]),
+        ];
+        this.creditCardFieldKeywords = [
+            ...new Set([
+                ...CreditCardAutoFillConstants.CardHolderFieldNames,
+                ...CreditCardAutoFillConstants.CardNumberFieldNames,
+                ...CreditCardAutoFillConstants.CardExpiryFieldNames,
+                ...CreditCardAutoFillConstants.ExpiryMonthFieldNames,
+                ...CreditCardAutoFillConstants.ExpiryYearFieldNames,
+                ...CreditCardAutoFillConstants.CVVFieldNames,
+                ...CreditCardAutoFillConstants.CardBrandFieldNames,
+            ]),
+        ];
+        this.creditCardNameAutocompleteValues = new Set([
+            "cc-name",
+            "cc-given-name,",
+            "cc-additional-name",
+            "cc-family-name",
+        ]);
+        this.creditCardExpirationDateAutocompleteValue = "cc-exp";
+        this.creditCardExpirationMonthAutocompleteValue = "cc-exp-month";
+        this.creditCardExpirationYearAutocompleteValue = "cc-exp-year";
+        this.creditCardCvvAutocompleteValue = "cc-csc";
+        this.creditCardNumberAutocompleteValue = "cc-number";
+        this.creditCardTypeAutocompleteValue = "cc-type";
+        this.creditCardAutocompleteValues = new Set([
+            ...this.creditCardNameAutocompleteValues,
+            this.creditCardExpirationDateAutocompleteValue,
+            this.creditCardExpirationMonthAutocompleteValue,
+            this.creditCardExpirationYearAutocompleteValue,
+            this.creditCardNumberAutocompleteValue,
+            this.creditCardCvvAutocompleteValue,
+            this.creditCardTypeAutocompleteValue,
+        ]);
+        this.identityHonorificPrefixAutocompleteValue = "honorific-prefix";
+        this.identityFullNameAutocompleteValue = "name";
+        this.identityFirstNameAutocompleteValue = "given-name";
+        this.identityMiddleNameAutocompleteValue = "additional-name";
+        this.identityLastNameAutocompleteValue = "family-name";
+        this.identityNameAutocompleteValues = new Set([
+            this.identityFullNameAutocompleteValue,
+            this.identityHonorificPrefixAutocompleteValue,
+            this.identityFirstNameAutocompleteValue,
+            this.identityMiddleNameAutocompleteValue,
+            this.identityLastNameAutocompleteValue,
+            "honorific-suffix",
+            "nickname",
+        ]);
+        this.identityCompanyAutocompleteValue = "organization";
+        this.identityStreetAddressAutocompleteValue = "street-address";
+        this.identityAddressLine1AutocompleteValue = "address-line1";
+        this.identityAddressLine2AutocompleteValue = "address-line2";
+        this.identityAddressLine3AutocompleteValue = "address-line3";
+        this.identityAddressCityAutocompleteValue = "address-level2";
+        this.identityAddressStateAutocompleteValue = "address-level1";
+        this.identityAddressAutoCompleteValues = new Set([
+            this.identityStreetAddressAutocompleteValue,
+            this.identityAddressLine1AutocompleteValue,
+            this.identityAddressLine2AutocompleteValue,
+            this.identityAddressLine3AutocompleteValue,
+            this.identityAddressCityAutocompleteValue,
+            this.identityAddressStateAutocompleteValue,
+            "shipping",
+            "billing",
+            "address-level4",
+            "address-level3",
+        ]);
+        this.identityCountryAutocompleteValues = new Set(["country", "country-name"]);
+        this.identityPostalCodeAutocompleteValue = "postal-code";
+        this.identityPhoneAutocompleteValue = "tel";
+        this.identityPhoneNumberAutocompleteValues = new Set([
+            this.identityPhoneAutocompleteValue,
+            "tel-country-code",
+            "tel-area-code",
+            "tel-local",
+            "tel-extension",
+        ]);
+        this.identityAutocompleteValues = new Set([
+            ...this.identityNameAutocompleteValues,
+            ...this.loginUsernameAutocompleteValues,
+            ...this.identityCompanyAutocompleteValue,
+            ...this.identityAddressAutoCompleteValues,
+            ...this.identityCountryAutocompleteValues,
+            ...this.identityPhoneNumberAutocompleteValues,
+            this.identityPostalCodeAutocompleteValue,
+        ]);
+        this.identityFieldKeywords = [
+            ...new Set([
+                ...IdentityAutoFillConstants.TitleFieldNames,
+                ...IdentityAutoFillConstants.FullNameFieldNames,
+                ...IdentityAutoFillConstants.FirstnameFieldNames,
+                ...IdentityAutoFillConstants.MiddlenameFieldNames,
+                ...IdentityAutoFillConstants.LastnameFieldNames,
+                ...IdentityAutoFillConstants.AddressFieldNames,
+                ...IdentityAutoFillConstants.Address1FieldNames,
+                ...IdentityAutoFillConstants.Address2FieldNames,
+                ...IdentityAutoFillConstants.Address3FieldNames,
+                ...IdentityAutoFillConstants.PostalCodeFieldNames,
+                ...IdentityAutoFillConstants.CityFieldNames,
+                ...IdentityAutoFillConstants.StateFieldNames,
+                ...IdentityAutoFillConstants.CountryFieldNames,
+                ...IdentityAutoFillConstants.CompanyFieldNames,
+                ...IdentityAutoFillConstants.PhoneFieldNames,
+                ...IdentityAutoFillConstants.EmailFieldNames,
+                ...IdentityAutoFillConstants.UserNameFieldNames,
+            ]),
+        ];
+        this.inlineMenuFieldQualificationFlagSet = false;
+        /**
+         * Validates the provided field as a credit card name field.
+         *
+         * @param field - The field to validate
+         */
+        this.isFieldForCardholderName = (field) => {
+            if (this.fieldContainsAutocompleteValues(field, this.creditCardNameAutocompleteValues)) {
+                return true;
+            }
+            return this.keywordsFoundInFieldData(field, CreditCardAutoFillConstants.CardHolderFieldNames, false);
+        };
+        /**
+         * Validates the provided field as a credit card number field.
+         *
+         * @param field - The field to validate
+         */
+        this.isFieldForCardNumber = (field) => {
+            if (this.fieldContainsAutocompleteValues(field, this.creditCardNumberAutocompleteValue)) {
+                return true;
+            }
+            return this.keywordsFoundInFieldData(field, CreditCardAutoFillConstants.CardNumberFieldNames, false);
+        };
+        /**
+         * Validates the provided field as a credit card expiration date field.
+         *
+         * @param field - The field to validate
+         */
+        this.isFieldForCardExpirationDate = (field) => {
+            if (this.fieldContainsAutocompleteValues(field, this.creditCardExpirationDateAutocompleteValue)) {
+                return true;
+            }
+            return this.keywordsFoundInFieldData(field, CreditCardAutoFillConstants.CardExpiryFieldNames, false);
+        };
+        /**
+         * Validates the provided field as a credit card expiration month field.
+         *
+         * @param field - The field to validate
+         */
+        this.isFieldForCardExpirationMonth = (field) => {
+            if (this.fieldContainsAutocompleteValues(field, this.creditCardExpirationMonthAutocompleteValue)) {
+                return true;
+            }
+            return this.keywordsFoundInFieldData(field, CreditCardAutoFillConstants.ExpiryMonthFieldNames, false);
+        };
+        /**
+         * Validates the provided field as a credit card expiration year field.
+         *
+         * @param field - The field to validate
+         */
+        this.isFieldForCardExpirationYear = (field) => {
+            if (this.fieldContainsAutocompleteValues(field, this.creditCardExpirationYearAutocompleteValue)) {
+                return true;
+            }
+            return this.keywordsFoundInFieldData(field, CreditCardAutoFillConstants.ExpiryYearFieldNames, false);
+        };
+        /**
+         * Validates the provided field as a credit card CVV field.
+         *
+         * @param field - The field to validate
+         */
+        this.isFieldForCardCvv = (field) => {
+            if (this.fieldContainsAutocompleteValues(field, this.creditCardCvvAutocompleteValue)) {
+                return true;
+            }
+            return this.keywordsFoundInFieldData(field, CreditCardAutoFillConstants.CVVFieldNames, false);
+        };
+        /**
+         * Validates the provided field as an identity title type field.
+         *
+         * @param field - The field to validate
+         */
+        this.isFieldForIdentityTitle = (field) => {
+            if (this.fieldContainsAutocompleteValues(field, this.identityHonorificPrefixAutocompleteValue)) {
+                return true;
+            }
+            return this.keywordsFoundInFieldData(field, IdentityAutoFillConstants.TitleFieldNames, false);
+        };
+        /**
+         * Validates the provided field as an identity full name field.
+         *
+         * @param field
+         */
+        this.isFieldForIdentityFirstName = (field) => {
+            if (this.fieldContainsAutocompleteValues(field, this.identityFirstNameAutocompleteValue)) {
+                return true;
+            }
+            return this.keywordsFoundInFieldData(field, IdentityAutoFillConstants.FirstnameFieldNames, false);
+        };
+        /**
+         * Validates the provided field as an identity middle name field.
+         *
+         * @param field - The field to validate
+         */
+        this.isFieldForIdentityMiddleName = (field) => {
+            if (this.fieldContainsAutocompleteValues(field, this.identityMiddleNameAutocompleteValue)) {
+                return true;
+            }
+            return this.keywordsFoundInFieldData(field, IdentityAutoFillConstants.MiddlenameFieldNames, false);
+        };
+        /**
+         *  Validates the provided field as an identity last name field.
+         *
+         * @param field - The field to validate
+         */
+        this.isFieldForIdentityLastName = (field) => {
+            if (this.fieldContainsAutocompleteValues(field, this.identityLastNameAutocompleteValue)) {
+                return true;
+            }
+            return this.keywordsFoundInFieldData(field, IdentityAutoFillConstants.LastnameFieldNames, false);
+        };
+        /**
+         * Validates the provided field as an identity full name field.
+         *
+         * @param field - The field to validate
+         */
+        this.isFieldForIdentityFullName = (field) => {
+            if (this.fieldContainsAutocompleteValues(field, this.identityFullNameAutocompleteValue)) {
+                return true;
+            }
+            return this.keywordsFoundInFieldData(field, IdentityAutoFillConstants.FullNameFieldNames, false);
+        };
+        /**
+         * Validates the provided field as an identity address field.
+         *
+         * @param field - The field to validate
+         */
+        this.isFieldForIdentityAddress1 = (field) => {
+            if (this.fieldContainsAutocompleteValues(field, this.identityAddressLine1AutocompleteValue)) {
+                return true;
+            }
+            return this.keywordsFoundInFieldData(field, [
+                ...IdentityAutoFillConstants.AddressFieldNames,
+                ...IdentityAutoFillConstants.Address1FieldNames,
+            ], false);
+        };
+        /**
+         * Validates the provided field as an identity address field.
+         *
+         * @param field - The field to validate
+         */
+        this.isFieldForIdentityAddress2 = (field) => {
+            if (this.fieldContainsAutocompleteValues(field, this.identityAddressLine2AutocompleteValue)) {
+                return true;
+            }
+            return this.keywordsFoundInFieldData(field, IdentityAutoFillConstants.Address2FieldNames, false);
+        };
+        /**
+         * Validates the provided field as an identity address field.
+         *
+         * @param field - The field to validate
+         */
+        this.isFieldForIdentityAddress3 = (field) => {
+            if (this.fieldContainsAutocompleteValues(field, this.identityAddressLine3AutocompleteValue)) {
+                return true;
+            }
+            return this.keywordsFoundInFieldData(field, IdentityAutoFillConstants.Address3FieldNames, false);
+        };
+        /**
+         * Validates the provided field as an identity city field.
+         *
+         * @param field - The field to validate
+         */
+        this.isFieldForIdentityCity = (field) => {
+            if (this.fieldContainsAutocompleteValues(field, this.identityAddressCityAutocompleteValue)) {
+                return true;
+            }
+            return this.keywordsFoundInFieldData(field, IdentityAutoFillConstants.CityFieldNames, false);
+        };
+        /**
+         * Validates the provided field as an identity state field.
+         *
+         * @param field - The field to validate
+         */
+        this.isFieldForIdentityState = (field) => {
+            if (this.fieldContainsAutocompleteValues(field, this.identityAddressStateAutocompleteValue)) {
+                return true;
+            }
+            return this.keywordsFoundInFieldData(field, IdentityAutoFillConstants.StateFieldNames, false);
+        };
+        /**
+         * Validates the provided field as an identity postal code field.
+         *
+         * @param field - The field to validate
+         */
+        this.isFieldForIdentityPostalCode = (field) => {
+            if (this.fieldContainsAutocompleteValues(field, this.identityPostalCodeAutocompleteValue)) {
+                return true;
+            }
+            return this.keywordsFoundInFieldData(field, IdentityAutoFillConstants.PostalCodeFieldNames, false);
+        };
+        /**
+         * Validates the provided field as an identity country field.
+         *
+         * @param field - The field to validate
+         */
+        this.isFieldForIdentityCountry = (field) => {
+            if (this.fieldContainsAutocompleteValues(field, this.identityCountryAutocompleteValues)) {
+                return true;
+            }
+            return this.keywordsFoundInFieldData(field, IdentityAutoFillConstants.CountryFieldNames, false);
+        };
+        /**
+         * Validates the provided field as an identity company field.
+         *
+         * @param field - The field to validate
+         */
+        this.isFieldForIdentityCompany = (field) => {
+            if (this.fieldContainsAutocompleteValues(field, this.identityCompanyAutocompleteValue)) {
+                return true;
+            }
+            return this.keywordsFoundInFieldData(field, IdentityAutoFillConstants.CompanyFieldNames, false);
+        };
+        /**
+         * Validates the provided field as an identity phone field.
+         *
+         * @param field - The field to validate
+         */
+        this.isFieldForIdentityPhone = (field) => {
+            if (this.fieldContainsAutocompleteValues(field, this.identityPhoneAutocompleteValue)) {
+                return true;
+            }
+            return this.keywordsFoundInFieldData(field, IdentityAutoFillConstants.PhoneFieldNames, false);
+        };
+        /**
+         * Validates the provided field as an identity email field.
+         *
+         * @param field - The field to validate
+         */
+        this.isFieldForIdentityEmail = (field) => {
+            if (this.fieldContainsAutocompleteValues(field, this.emailAutocompleteValue) ||
+                field.type === "email") {
+                return true;
+            }
+            return this.keywordsFoundInFieldData(field, IdentityAutoFillConstants.EmailFieldNames, false);
+        };
+        /**
+         * Validates the provided field as an identity username field.
+         *
+         * @param field - The field to validate
+         */
+        this.isFieldForIdentityUsername = (field) => {
+            if (this.fieldContainsAutocompleteValues(field, this.usernameAutocompleteValue)) {
+                return true;
+            }
+            return this.keywordsFoundInFieldData(field, IdentityAutoFillConstants.UserNameFieldNames, false);
+        };
+        /**
+         * Validates the provided field as a username field.
+         *
+         * @param field - The field to validate
+         */
+        this.isUsernameField = (field) => {
+            if (!this.usernameFieldTypes.has(field.type) ||
+                this.isExcludedFieldType(field, this.excludedAutofillFieldTypesSet)) {
+                return false;
+            }
+            return this.keywordsFoundInFieldData(field, AutoFillConstants.UsernameFieldNames);
+        };
+        /**
+         * Validates the provided field as an email field.
+         *
+         * @param field - The field to validate
+         */
+        this.isEmailField = (field) => {
+            if (field.type === "email") {
+                return true;
+            }
+            return (!this.isExcludedFieldType(field, this.excludedAutofillFieldTypesSet) &&
+                this.keywordsFoundInFieldData(field, AutoFillConstants.EmailFieldNames));
+        };
+        /**
+         * Validates the provided field as a current password field.
+         *
+         * @param field - The field to validate
+         */
+        this.isCurrentPasswordField = (field) => {
+            if (this.fieldContainsAutocompleteValues(field, this.newPasswordAutoCompleteValue) ||
+                this.keywordsFoundInFieldData(field, this.accountCreationFieldKeywords)) {
+                return false;
+            }
+            return this.isPasswordField(field);
+        };
+        /**
+         * Validates the provided field as a new password field.
+         *
+         * @param field - The field to validate
+         */
+        this.isNewPasswordField = (field) => {
+            if (this.fieldContainsAutocompleteValues(field, this.currentPasswordAutocompleteValue)) {
+                return false;
+            }
+            return (this.isPasswordField(field) &&
+                this.keywordsFoundInFieldData(field, this.accountCreationFieldKeywords));
+        };
+        /**
+         * Validates the provided field as a password field.
+         *
+         * @param field - The field to validate
+         */
+        this.isPasswordField = (field) => {
+            const isInputPasswordType = field.type === "password";
+            if ((!isInputPasswordType &&
+                this.isExcludedFieldType(field, this.excludedAutofillFieldTypesSet)) ||
+                this.fieldHasDisqualifyingAttributeValue(field)) {
+                return false;
+            }
+            return isInputPasswordType || this.isLikePasswordField(field);
+        };
+        void sendExtensionMessage("getInlineMenuFieldQualificationFeatureFlag").then((getInlineMenuFieldQualificationFlag) => (this.inlineMenuFieldQualificationFlagSet = !!(getInlineMenuFieldQualificationFlag === null || getInlineMenuFieldQualificationFlag === void 0 ? void 0 : getInlineMenuFieldQualificationFlag.result)));
+    }
+    /**
+     * Validates the provided field as a field for a login form.
+     *
+     * @param field - The field to validate, should be a username or password field.
+     * @param pageDetails - The details of the page that the field is on.
+     */
+    isFieldForLoginForm(field, pageDetails) {
+        if (!this.inlineMenuFieldQualificationFlagSet) {
+            return this.isFieldForLoginFormFallback(field);
+        }
+        const isCurrentPasswordField = this.isCurrentPasswordField(field);
+        if (isCurrentPasswordField) {
+            return this.isPasswordFieldForLoginForm(field, pageDetails);
+        }
+        const isUsernameField = this.isUsernameField(field);
+        if (!isUsernameField) {
+            return false;
+        }
+        return this.isUsernameFieldForLoginForm(field, pageDetails);
+    }
+    /**
+     * Validates the provided field as a field for a credit card form.
+     *
+     * @param field - The field to validate
+     * @param pageDetails - The details of the page that the field is on.
+     */
+    isFieldForCreditCardForm(field, pageDetails) {
+        // If the field contains any of the standardized autocomplete attribute values
+        // for credit card fields, we should assume that the field is part of a credit card form.
+        if (this.fieldContainsAutocompleteValues(field, this.creditCardAutocompleteValues)) {
+            return true;
+        }
+        // If the field contains any keywords indicating this is for a "new" or "changed" credit card
+        // field, we should assume that the field is not going to be autofilled.
+        if (this.keywordsFoundInFieldData(field, [...this.newFieldKeywords])) {
+            return false;
+        }
+        const parentForm = pageDetails.forms[field.form];
+        // If the field does not have a parent form
+        if (!parentForm) {
+            // If a credit card number field is not present on the page or there are multiple credit
+            // card number fields, this field is not part of a credit card form.
+            const numberFieldsInPageDetails = pageDetails.fields.filter(this.isFieldForCardNumber);
+            if (numberFieldsInPageDetails.length !== 1) {
+                return false;
+            }
+            // If a credit card CVV field is not present on the page or there are multiple credit card
+            // CVV fields, this field is not part of a credit card form.
+            const cvvFieldsInPageDetails = pageDetails.fields.filter(this.isFieldForCardCvv);
+            if (cvvFieldsInPageDetails.length !== 1) {
+                return false;
+            }
+            return this.keywordsFoundInFieldData(field, this.creditCardFieldKeywords);
+        }
+        // If the field has a parent form, check the fields from that form exclusively
+        const fieldsFromSameForm = pageDetails.fields.filter((f) => f.form === field.form);
+        // If a credit card number field is not present on the page or there are multiple credit
+        // card number fields, this field is not part of a credit card form.
+        const numberFieldsInPageDetails = fieldsFromSameForm.filter(this.isFieldForCardNumber);
+        if (numberFieldsInPageDetails.length !== 1) {
+            return false;
+        }
+        // If a credit card CVV field is not present on the page or there are multiple credit card
+        // CVV fields, this field is not part of a credit card form.
+        const cvvFieldsInPageDetails = fieldsFromSameForm.filter(this.isFieldForCardCvv);
+        if (cvvFieldsInPageDetails.length !== 1) {
+            return false;
+        }
+        return this.keywordsFoundInFieldData(field, [...this.creditCardFieldKeywords]);
+    }
+    /** Validates the provided field as a field for an account creation form.
+     *
+     * @param field - The field to validate
+     * @param pageDetails - The details of the page that the field is on.
+     */
+    isFieldForAccountCreationForm(field, pageDetails) {
+        if (this.isExcludedFieldType(field, this.excludedAutofillFieldTypesSet)) {
+            return false;
+        }
+        if (!this.isUsernameField(field) && !this.isPasswordField(field)) {
+            return false;
+        }
+        const parentForm = pageDetails.forms[field.form];
+        if (!parentForm) {
+            // If the field does not have a parent form, but we can identify that the page contains at least
+            // one new password field, we should assume that the field is part of an account creation form.
+            const newPasswordFields = pageDetails.fields.filter(this.isNewPasswordField);
+            if (newPasswordFields.length >= 1) {
+                return true;
+            }
+            // If no password fields are found on the page, check for keywords that indicate the field is
+            // part of an account creation form.
+            return this.keywordsFoundInFieldData(field, this.accountCreationFieldKeywords);
+        }
+        // If the field has a parent form, check the fields from that form exclusively
+        const fieldsFromSameForm = pageDetails.fields.filter((f) => f.form === field.form);
+        const newPasswordFields = fieldsFromSameForm.filter(this.isNewPasswordField);
+        if (newPasswordFields.length >= 1) {
+            return true;
+        }
+        return this.keywordsFoundInFieldData(field, this.accountCreationFieldKeywords);
+    }
+    /**
+     * Validates the provided field as a field for an identity form.
+     *
+     * @param field - The field to validate
+     * @param _pageDetails - Currently unused, will likely be required in the future
+     */
+    isFieldForIdentityForm(field, _pageDetails) {
+        if (this.isExcludedFieldType(field, this.excludedAutofillFieldTypesSet)) {
+            return false;
+        }
+        if (this.fieldContainsAutocompleteValues(field, this.identityAutocompleteValues)) {
+            return true;
+        }
+        return (!this.fieldContainsAutocompleteValues(field, this.autocompleteDisabledValues) &&
+            this.keywordsFoundInFieldData(field, this.identityFieldKeywords, false));
+    }
+    /**
+     * Validates the provided field as a password field for a login form.
+     *
+     * @param field - The field to validate
+     * @param pageDetails - The details of the page that the field is on.
+     */
+    isPasswordFieldForLoginForm(field, pageDetails) {
+        // If the provided field is set with an autocomplete value of "current-password", we should assume that
+        // the page developer intends for this field to be interpreted as a password field for a login form.
+        if (this.fieldContainsAutocompleteValues(field, this.currentPasswordAutocompleteValue)) {
+            return true;
+        }
+        const usernameFieldsInPageDetails = pageDetails.fields.filter(this.isUsernameField);
+        const passwordFieldsInPageDetails = pageDetails.fields.filter(this.isCurrentPasswordField);
+        // If a single username and a single password field exists on the page, we
+        // should assume that this field is part of a login form.
+        if (usernameFieldsInPageDetails.length === 1 && passwordFieldsInPageDetails.length === 1) {
+            return true;
+        }
+        // If the field is not structured within a form, we need to identify if the field is present on
+        // a page with multiple password fields. If that isn't the case, we can assume this is a login form field.
+        const parentForm = pageDetails.forms[field.form];
+        if (!parentForm) {
+            // If no parent form is found, and multiple password fields are present, we should assume that
+            // the passed field belongs to a user account creation form.
+            if (passwordFieldsInPageDetails.length > 1) {
+                return false;
+            }
+            // If multiple username fields exist on the page, we should assume that
+            // the provided field is part of an account creation form.
+            const visibleUsernameFields = usernameFieldsInPageDetails.filter((f) => f.viewable);
+            if (visibleUsernameFields.length > 1) {
+                return false;
+            }
+            // If a single username field or less is present on the page, then we can assume that the
+            // provided field is for a login form. This will only be the case if the field does not
+            // explicitly have its autocomplete attribute set to "off" or "false".
+            return !this.fieldContainsAutocompleteValues(field, this.autocompleteDisabledValues);
+        }
+        // If the field has a form parent and there are multiple visible password fields
+        // in the form, this is not a login form field
+        const visiblePasswordFieldsInPageDetails = passwordFieldsInPageDetails.filter((f) => f.form === field.form && f.viewable);
+        if (visiblePasswordFieldsInPageDetails.length > 1) {
+            return false;
+        }
+        // If the form has any visible username fields, we should treat the field as part of a login form
+        const visibleUsernameFields = usernameFieldsInPageDetails.filter((f) => f.form === field.form && f.viewable);
+        if (visibleUsernameFields.length > 0) {
+            return true;
+        }
+        // If the field has a form parent and no username field exists and the field has an
+        // autocomplete attribute set to "off" or "false", this is not a password field
+        return !this.fieldContainsAutocompleteValues(field, this.autocompleteDisabledValues);
+    }
+    /**
+     * Validates the provided field as a username field for a login form.
+     *
+     * @param field - The field to validate
+     * @param pageDetails - The details of the page that the field is on.
+     */
+    isUsernameFieldForLoginForm(field, pageDetails) {
+        // If the provided field is set with an autocomplete of "username", we should assume that
+        // the page developer intends for this field to be interpreted as a username field.
+        if (this.fieldContainsAutocompleteValues(field, this.loginUsernameAutocompleteValues)) {
+            const newPasswordFieldsInPageDetails = pageDetails.fields.filter(this.isNewPasswordField);
+            return newPasswordFieldsInPageDetails.length === 0;
+        }
+        // If any keywords in the field's data indicates that this is a field for a "new" or "changed"
+        // username, we should assume that this field is not for a login form.
+        if (this.keywordsFoundInFieldData(field, [...this.newFieldKeywords])) {
+            return false;
+        }
+        // If the field is not explicitly set as a username field, we need to qualify
+        // the field based on the other fields that are present on the page.
+        const parentForm = pageDetails.forms[field.form];
+        const passwordFieldsInPageDetails = pageDetails.fields.filter(this.isCurrentPasswordField);
+        // If the field is not structured within a form, we need to identify if the field is used in conjunction
+        // with a password field. If that's the case, then we should assume that it is a form field element.
+        if (!parentForm) {
+            // If a formless field is present in a webpage with a single password field, we
+            // should assume that it is part of a login workflow.
+            const visiblePasswordFieldsInPageDetails = passwordFieldsInPageDetails.filter((passwordField) => passwordField.viewable);
+            if (visiblePasswordFieldsInPageDetails.length === 1) {
+                return true;
+            }
+            // If more than a single password field exists on the page, we should assume that the field
+            // is part of an account creation form.
+            if (visiblePasswordFieldsInPageDetails.length > 1) {
+                return false;
+            }
+            // If no visible fields are found on the page, but we have a single password
+            // field we should assume that the field is part of a login form.
+            if (passwordFieldsInPageDetails.length === 1) {
+                return true;
+            }
+            // If the page does not contain any password fields, it might be part of a multistep login form.
+            // That will only be the case if the field does not explicitly have its autocomplete attribute
+            // set to "off" or "false".
+            return !this.fieldContainsAutocompleteValues(field, this.autocompleteDisabledValues);
+        }
+        // If the field is structured within a form, but no password fields are present in the form,
+        // we need to consider whether the field is part of a multistep login form.
+        if (passwordFieldsInPageDetails.length === 0) {
+            // If the field's autocomplete is set to a disabled value, we should assume that the field is
+            // not part of a login form.
+            if (this.fieldContainsAutocompleteValues(field, this.autocompleteDisabledValues)) {
+                return false;
+            }
+            // If the form that contains the field has more than one visible field, we should assume
+            // that the field is part of an account creation form.
+            const fieldsWithinForm = pageDetails.fields.filter((pageDetailsField) => pageDetailsField.form === field.form && pageDetailsField.viewable);
+            return fieldsWithinForm.length === 1;
+        }
+        // If a single password field exists within the page details, and that password field is part of
+        // the same form as the provided field, we should assume that the field is part of a login form.
+        const visiblePasswordFieldsInPageDetails = passwordFieldsInPageDetails.filter((passwordField) => passwordField.form === field.form && passwordField.viewable);
+        if (visiblePasswordFieldsInPageDetails.length === 1) {
+            return true;
+        }
+        // If multiple visible password fields exist within the page details, we need to assume that the
+        // provided field is part of an account creation form.
+        if (visiblePasswordFieldsInPageDetails.length > 1) {
+            return false;
+        }
+        // If no visible password fields are found, this field might be part of a multipart form.
+        // Check for an invalid autocompleteType to determine if the field is part of a login form.
+        return !this.fieldContainsAutocompleteValues(field, this.autocompleteDisabledValues);
+    }
+    /**
+     * Validates the provided field as a field to indicate if the
+     * field potentially acts as a password field.
+     *
+     * @param field - The field to validate
+     */
+    isLikePasswordField(field) {
+        if (field.type !== "text") {
+            return false;
+        }
+        const testedValues = [field.htmlID, field.htmlName, field.placeholder];
+        for (let i = 0; i < testedValues.length; i++) {
+            if (this.valueIsLikePassword(testedValues[i])) {
+                return true;
+            }
+        }
+        return false;
+    }
+    /**
+     * Validates the provided value to indicate if the value is like a password.
+     *
+     * @param value - The value to validate
+     */
+    valueIsLikePassword(value) {
+        if (value == null) {
+            return false;
+        }
+        // Removes all whitespace, _ and - characters
+        const cleanedValue = value.toLowerCase().replace(/[\s_-]/g, "");
+        if (cleanedValue.indexOf("password") < 0) {
+            return false;
+        }
+        return !(this.passwordFieldExcludeListString.indexOf(cleanedValue) > -1);
+    }
+    /**
+     * Validates the provided field to indicate if the field has a
+     * disqualifying attribute that would impede autofill entirely.
+     *
+     * @param field - The field to validate
+     */
+    fieldHasDisqualifyingAttributeValue(field) {
+        const checkedAttributeValues = [field.htmlID, field.htmlName, field.placeholder];
+        for (let i = 0; i < checkedAttributeValues.length; i++) {
+            const checkedAttributeValue = checkedAttributeValues[i];
+            const cleanedValue = checkedAttributeValue === null || checkedAttributeValue === void 0 ? void 0 : checkedAttributeValue.toLowerCase().replace(/[\s_-]/g, "");
+            if (cleanedValue && this.fieldIgnoreListString.indexOf(cleanedValue) > -1) {
+                return true;
+            }
+        }
+        return false;
+    }
+    /**
+     * Validates the provided field to indicate if the field is excluded from autofill.
+     *
+     * @param field - The field to validate
+     * @param excludedTypes - The set of excluded types
+     */
+    isExcludedFieldType(field, excludedTypes) {
+        if (excludedTypes.has(field.type)) {
+            return true;
+        }
+        return this.isSearchField(field);
+    }
+    /**
+     * Validates the provided field to indicate if the field is a search field.
+     *
+     * @param field - The field to validate
+     */
+    isSearchField(field) {
+        const matchFieldAttributeValues = [field.type, field.htmlName, field.htmlID, field.placeholder];
+        for (let attrIndex = 0; attrIndex < matchFieldAttributeValues.length; attrIndex++) {
+            if (!matchFieldAttributeValues[attrIndex]) {
+                continue;
+            }
+            // Separate camel case words and case them to lower case values
+            const camelCaseSeparatedFieldAttribute = matchFieldAttributeValues[attrIndex]
+                .replace(/([a-z])([A-Z])/g, "$1 $2")
+                .toLowerCase();
+            // Split the attribute by non-alphabetical characters to get the keywords
+            const attributeKeywords = camelCaseSeparatedFieldAttribute.split(/[^a-z]/gi);
+            for (let keywordIndex = 0; keywordIndex < attributeKeywords.length; keywordIndex++) {
+                if (this.searchFieldNamesSet.has(attributeKeywords[keywordIndex])) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    /**
+     * Validates the provided field to indicate if the field has any of the provided keywords.
+     *
+     * @param autofillFieldData - The field data to search for keywords
+     * @param keywords - The keywords to search for
+     * @param fuzzyMatchKeywords - Indicates if the keywords should be matched in a fuzzy manner
+     */
+    keywordsFoundInFieldData(autofillFieldData, keywords, fuzzyMatchKeywords = true) {
+        const searchedValues = this.getAutofillFieldDataKeywords(autofillFieldData, fuzzyMatchKeywords);
+        const parsedKeywords = keywords.map((keyword) => keyword.replace(/-/g, ""));
+        if (typeof searchedValues === "string") {
+            return parsedKeywords.some((keyword) => searchedValues.indexOf(keyword) > -1);
+        }
+        return parsedKeywords.some((keyword) => searchedValues.has(keyword));
+    }
+    /**
+     * Retrieves the keywords from the provided autofill field data.
+     *
+     * @param autofillFieldData - The field data to search for keywords
+     * @param returnStringValue - Indicates if the method should return a string value
+     */
+    getAutofillFieldDataKeywords(autofillFieldData, returnStringValue) {
+        if (!this.autofillFieldKeywordsMap.has(autofillFieldData)) {
+            const keywords = [
+                autofillFieldData.htmlID,
+                autofillFieldData.htmlName,
+                autofillFieldData.htmlClass,
+                autofillFieldData.type,
+                autofillFieldData.title,
+                autofillFieldData.placeholder,
+                autofillFieldData.autoCompleteType,
+                autofillFieldData["label-data"],
+                autofillFieldData["label-aria"],
+                autofillFieldData["label-left"],
+                autofillFieldData["label-right"],
+                autofillFieldData["label-tag"],
+                autofillFieldData["label-top"],
+            ];
+            const keywordsSet = new Set();
+            for (let i = 0; i < keywords.length; i++) {
+                if (typeof keywords[i] === "string") {
+                    keywords[i]
+                        .toLowerCase()
+                        .replace(/-/g, "")
+                        .replace(/[^a-zA-Z0-9]+/g, "|")
+                        .split("|")
+                        .forEach((keyword) => keywordsSet.add(keyword));
+                }
+            }
+            const stringValue = Array.from(keywordsSet).join(",");
+            this.autofillFieldKeywordsMap.set(autofillFieldData, { keywordsSet, stringValue });
+        }
+        const mapValues = this.autofillFieldKeywordsMap.get(autofillFieldData);
+        return returnStringValue ? mapValues.stringValue : mapValues.keywordsSet;
+    }
+    /**
+     * Separates the provided field data into space-separated values and checks if any
+     * of the values are present in the provided set of autocomplete values.
+     *
+     * @param autofillFieldData - The field autocomplete value to validate
+     * @param compareValues - The set of autocomplete values to check against
+     */
+    fieldContainsAutocompleteValues(autofillFieldData, compareValues) {
+        const fieldAutocompleteValue = autofillFieldData.autoCompleteType;
+        if (!fieldAutocompleteValue || typeof fieldAutocompleteValue !== "string") {
+            return false;
+        }
+        const autocompleteValueParts = fieldAutocompleteValue.split(" ");
+        if (typeof compareValues === "string") {
+            return autocompleteValueParts.indexOf(compareValues) > -1;
+        }
+        for (let index = 0; index < autocompleteValueParts.length; index++) {
+            if (compareValues.has(autocompleteValueParts[index])) {
+                return true;
+            }
+        }
+        return false;
+    }
+    /**
+     * This method represents the previous rudimentary approach to qualifying fields for login forms.
+     *
+     * @param field - The field to validate
+     * @deprecated - This method will only be used when the fallback flag is set to true.
+     */
+    isFieldForLoginFormFallback(field) {
+        if (field.type === "password") {
+            return true;
+        }
+        return this.isUsernameField(field);
+    }
+}
 
 ;// CONCATENATED MODULE: ./src/autofill/services/collect-autofill-content.service.ts
 var collect_autofill_content_service_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -4160,6 +5863,9 @@ var collect_autofill_content_service_awaiter = (undefined && undefined.__awaiter
 
 class CollectAutofillContentService {
     constructor(domElementVisibilityService, autofillOverlayContentService) {
+        this.sendExtensionMessage = sendExtensionMessage;
+        this.getAttributeBoolean = getAttributeBoolean;
+        this.getPropertyOrAttribute = getPropertyOrAttribute;
         this.noFieldsFound = false;
         this.domRecentlyMutated = true;
         this.autofillFormElements = new Map();
@@ -4167,7 +5873,7 @@ class CollectAutofillContentService {
         this.currentLocationHref = "";
         this.elementInitializingIntersectionObserver = new Set();
         this.mutationsQueue = [];
-        this.updateAfterMutationTimeoutDelay = 1000;
+        this.updateAfterMutationTimeout = 1000;
         this.nonInputFormFieldTags = new Set(["textarea", "select"]);
         this.ignoredInputTypes = new Set([
             "hidden",
@@ -4187,7 +5893,7 @@ class CollectAutofillContentService {
          * @param index - The index of the form field element
          */
         this.buildAutofillFieldItem = (element, index) => collect_autofill_content_service_awaiter(this, void 0, void 0, function* () {
-            var _a, _b, _c;
+            var _a;
             if (element.closest("button[type='submit']")) {
                 return null;
             }
@@ -4217,7 +5923,6 @@ class CollectAutofillContentService {
             }
             if (elementIsSpanElement(element)) {
                 this.cacheAutofillFieldElement(index, element, autofillFieldBase);
-                void ((_b = this.autofillOverlayContentService) === null || _b === void 0 ? void 0 : _b.setupAutofillOverlayListenerOnField(element, autofillFieldBase));
                 return autofillFieldBase;
             }
             let autofillFieldLabels = {};
@@ -4238,7 +5943,6 @@ class CollectAutofillContentService {
                     ? this.getSelectElementOptions(element)
                     : null, form: fieldFormElement ? this.getPropertyOrAttribute(fieldFormElement, "opid") : null, "aria-hidden": this.getAttributeBoolean(element, "aria-hidden", true), "aria-disabled": this.getAttributeBoolean(element, "aria-disabled", true), "aria-haspopup": this.getAttributeBoolean(element, "aria-haspopup", true), "data-stripe": this.getPropertyOrAttribute(element, "data-stripe") });
             this.cacheAutofillFieldElement(index, element, autofillField);
-            void ((_c = this.autofillOverlayContentService) === null || _c === void 0 ? void 0 : _c.setupAutofillOverlayListenerOnField(element, autofillField));
             return autofillField;
         });
         /**
@@ -4270,7 +5974,7 @@ class CollectAutofillContentService {
                 return;
             }
             if (!this.mutationsQueue.length) {
-                globalThis.requestIdleCallback(this.processMutations, { timeout: 500 });
+                requestIdleCallbackPolyfill(this.processMutations, { timeout: 500 });
             }
             this.mutationsQueue.push(mutations);
         };
@@ -4295,7 +5999,7 @@ class CollectAutofillContentService {
          * @param entries - The entries observed by the IntersectionObserver
          */
         this.handleFormElementIntersection = (entries) => collect_autofill_content_service_awaiter(this, void 0, void 0, function* () {
-            var _d, _e;
+            var _b;
             for (let entryIndex = 0; entryIndex < entries.length; entryIndex++) {
                 const entry = entries[entryIndex];
                 const formFieldElement = entry.target;
@@ -4303,17 +6007,18 @@ class CollectAutofillContentService {
                     this.elementInitializingIntersectionObserver.delete(formFieldElement);
                     continue;
                 }
+                const cachedAutofillFieldElement = this.autofillFieldElements.get(formFieldElement);
+                if (!cachedAutofillFieldElement) {
+                    this.intersectionObserver.unobserve(entry.target);
+                    continue;
+                }
                 const isViewable = yield this.domElementVisibilityService.isFormFieldViewable(formFieldElement);
                 if (!isViewable) {
                     continue;
                 }
-                const cachedAutofillFieldElement = this.autofillFieldElements.get(formFieldElement);
-                if (!cachedAutofillFieldElement) {
-                    continue;
-                }
                 cachedAutofillFieldElement.viewable = true;
-                void ((_d = this.autofillOverlayContentService) === null || _d === void 0 ? void 0 : _d.setupAutofillOverlayListenerOnField(formFieldElement, cachedAutofillFieldElement));
-                (_e = this.intersectionObserver) === null || _e === void 0 ? void 0 : _e.unobserve(entry.target);
+                this.setupInlineMenu(formFieldElement, cachedAutofillFieldElement);
+                (_b = this.intersectionObserver) === null || _b === void 0 ? void 0 : _b.unobserve(entry.target);
             }
         });
         this.domElementVisibilityService = domElementVisibilityService;
@@ -4358,7 +6063,9 @@ class CollectAutofillContentService {
                 this.noFieldsFound = true;
             }
             this.domRecentlyMutated = false;
-            return this.getFormattedPageDetails(autofillFormsData, autofillFieldsData);
+            const pageDetails = this.getFormattedPageDetails(autofillFormsData, autofillFieldsData);
+            this.setupInlineMenuListeners(pageDetails);
+            return pageDetails;
         });
     }
     /**
@@ -4486,8 +6193,11 @@ class CollectAutofillContentService {
      */
     updateCachedAutofillFieldVisibility() {
         this.autofillFieldElements.forEach((autofillField, element) => collect_autofill_content_service_awaiter(this, void 0, void 0, function* () {
-            return (autofillField.viewable =
-                yield this.domElementVisibilityService.isFormFieldViewable(element));
+            const previouslyViewable = autofillField.viewable;
+            autofillField.viewable = yield this.domElementVisibilityService.isFormFieldViewable(element);
+            if (!previouslyViewable && autofillField.viewable) {
+                this.setupInlineMenu(element, autofillField);
+            }
         }));
     }
     /**
@@ -4616,24 +6326,9 @@ class CollectAutofillContentService {
      * @private
      */
     getAutoCompleteAttribute(element) {
-        const autoCompleteType = this.getPropertyOrAttribute(element, "x-autocompletetype") ||
+        return (this.getPropertyOrAttribute(element, "x-autocompletetype") ||
             this.getPropertyOrAttribute(element, "autocompletetype") ||
-            this.getPropertyOrAttribute(element, "autocomplete");
-        return autoCompleteType !== "off" ? autoCompleteType : null;
-    }
-    /**
-     * Returns a boolean representing the attribute value of an element.
-     * @param {ElementWithOpId<FormFieldElement>} element
-     * @param {string} attributeName
-     * @param {boolean} checkString
-     * @returns {boolean}
-     * @private
-     */
-    getAttributeBoolean(element, attributeName, checkString = false) {
-        if (checkString) {
-            return this.getPropertyOrAttribute(element, attributeName) === "true";
-        }
-        return Boolean(this.getPropertyOrAttribute(element, attributeName));
+            this.getPropertyOrAttribute(element, "autocomplete"));
     }
     /**
      * Returns the attribute of an element as a lowercase value.
@@ -4879,19 +6574,6 @@ class CollectAutofillContentService {
         return this.recursivelyGetTextFromPreviousSiblings(siblingElement);
     }
     /**
-     * Get the value of a property or attribute from a FormFieldElement.
-     * @param {HTMLElement} element
-     * @param {string} attributeName
-     * @returns {string | null}
-     * @private
-     */
-    getPropertyOrAttribute(element, attributeName) {
-        if (attributeName in element) {
-            return element[attributeName];
-        }
-        return element.getAttribute(attributeName);
-    }
-    /**
      * Gets the value of the element. If the element is a checkbox, returns a checkmark if the
      * checkbox is checked, or an empty string if it is not checked. If the element is a hidden
      * input, returns the value of the input if it is less than 254 characters, or a truncated
@@ -5032,6 +6714,7 @@ class CollectAutofillContentService {
         this.domRecentlyMutated = true;
         if (this.autofillOverlayContentService) {
             this.autofillOverlayContentService.pageDetailsUpdateRequired = true;
+            void this.sendExtensionMessage("closeAutofillInlineMenu", { forceCloseInlineMenu: true });
         }
         this.noFieldsFound = false;
         this.autofillFormElements.clear();
@@ -5117,7 +6800,7 @@ class CollectAutofillContentService {
                 this.autofillFieldElements.get(node)) {
                 continue;
             }
-            globalThis.requestIdleCallback(
+            requestIdleCallbackPolyfill(
             // We are setting this item to a -1 index because we do not know its position in the DOM.
             // This value should be updated with the next call to collect page details.
             () => void this.buildAutofillFieldItem(node, -1), { timeout: 1000 });
@@ -5144,10 +6827,10 @@ class CollectAutofillContentService {
      * @private
      */
     updateAutofillElementsAfterMutation() {
-        if (this.updateAutofillElementsAfterMutationTimeout) {
-            clearTimeout(this.updateAutofillElementsAfterMutationTimeout);
+        if (this.updateAfterMutationIdleCallback) {
+            cancelIdleCallbackPolyfill(this.updateAfterMutationIdleCallback);
         }
-        this.updateAutofillElementsAfterMutationTimeout = setTimeout(this.getPageDetails.bind(this), this.updateAfterMutationTimeoutDelay);
+        this.updateAfterMutationIdleCallback = requestIdleCallbackPolyfill(this.getPageDetails.bind(this), { timeout: this.updateAfterMutationTimeout });
     }
     /**
      * Handles observed DOM mutations related to an autofill element attribute.
@@ -5264,13 +6947,41 @@ class CollectAutofillContentService {
         });
     }
     /**
+     * Iterates over all cached field elements and sets up the inline menu listeners on each field.
+     *
+     * @param pageDetails - The page details to use for the inline menu listeners
+     */
+    setupInlineMenuListeners(pageDetails) {
+        if (!this.autofillOverlayContentService) {
+            return;
+        }
+        this.autofillFieldElements.forEach((autofillField, formFieldElement) => {
+            this.setupInlineMenu(formFieldElement, autofillField, pageDetails);
+        });
+    }
+    /**
+     * Sets up the inline menu listener on the passed field element.
+     *
+     * @param formFieldElement - The form field element to set up the inline menu listener on
+     * @param autofillField - The metadata for the form field
+     * @param pageDetails - The page details to use for the inline menu listeners
+     */
+    setupInlineMenu(formFieldElement, autofillField, pageDetails) {
+        if (!this.autofillOverlayContentService) {
+            return;
+        }
+        const autofillPageDetails = pageDetails ||
+            this.getFormattedPageDetails(this.getFormattedAutofillFormsData(), this.getFormattedAutofillFieldsData());
+        void this.autofillOverlayContentService.setupInlineMenu(formFieldElement, autofillField, autofillPageDetails);
+    }
+    /**
      * Destroys the CollectAutofillContentService. Clears all
      * timeouts and disconnects the mutation observer.
      */
     destroy() {
         var _a, _b;
-        if (this.updateAutofillElementsAfterMutationTimeout) {
-            clearTimeout(this.updateAutofillElementsAfterMutationTimeout);
+        if (this.updateAfterMutationIdleCallback) {
+            cancelIdleCallbackPolyfill(this.updateAfterMutationIdleCallback);
         }
         (_a = this.mutationObserver) === null || _a === void 0 ? void 0 : _a.disconnect();
         (_b = this.intersectionObserver) === null || _b === void 0 ? void 0 : _b.disconnect();
@@ -5385,7 +7096,8 @@ var dom_element_visibility_service_awaiter = (undefined && undefined.__awaiter) 
     });
 };
 class DomElementVisibilityService {
-    constructor() {
+    constructor(inlineMenuElements) {
+        this.inlineMenuElements = inlineMenuElements;
         this.cachedComputedStyle = null;
     }
     /**
@@ -5524,7 +7236,7 @@ class DomElementVisibilityService {
      * @private
      */
     formFieldIsNotHiddenBehindAnotherElement(targetElement, targetElementBoundingClientRect = null) {
-        var _a;
+        var _a, _b;
         const elementBoundingClientRect = targetElementBoundingClientRect || targetElement.getBoundingClientRect();
         const elementRootNode = targetElement.getRootNode();
         const rootElement = elementRootNode instanceof ShadowRoot ? elementRootNode : targetElement.ownerDocument;
@@ -5532,11 +7244,14 @@ class DomElementVisibilityService {
         if (elementAtCenterPoint === targetElement) {
             return true;
         }
+        if ((_a = this.inlineMenuElements) === null || _a === void 0 ? void 0 : _a.isElementInlineMenu(elementAtCenterPoint)) {
+            return true;
+        }
         const targetElementLabelsSet = new Set(targetElement.labels);
         if (targetElementLabelsSet.has(elementAtCenterPoint)) {
             return true;
         }
-        const closestParentLabel = (_a = elementAtCenterPoint === null || elementAtCenterPoint === void 0 ? void 0 : elementAtCenterPoint.parentElement) === null || _a === void 0 ? void 0 : _a.closest("label");
+        const closestParentLabel = (_b = elementAtCenterPoint === null || elementAtCenterPoint === void 0 ? void 0 : elementAtCenterPoint.parentElement) === null || _b === void 0 ? void 0 : _b.closest("label");
         return targetElementLabelsSet.has(closestParentLabel);
     }
 }
@@ -5871,26 +7586,21 @@ var autofill_init_awaiter = (undefined && undefined.__awaiter) || function (this
 
 
 
+
 class AutofillInit {
     /**
      * AutofillInit constructor. Initializes the DomElementVisibilityService,
      * CollectAutofillContentService and InsertAutofillContentService classes.
      *
      * @param autofillOverlayContentService - The autofill overlay content service, potentially undefined.
+     * @param inlineMenuElements - The inline menu elements, potentially undefined.
      */
-    constructor(autofillOverlayContentService) {
+    constructor(autofillOverlayContentService, inlineMenuElements) {
+        this.sendExtensionMessage = sendExtensionMessage;
         this.extensionMessageHandlers = {
             collectPageDetails: ({ message }) => this.collectPageDetails(message),
             collectPageDetailsImmediately: ({ message }) => this.collectPageDetails(message, true),
             fillForm: ({ message }) => this.fillForm(message),
-            openAutofillOverlay: ({ message }) => this.openAutofillOverlay(message),
-            closeAutofillOverlay: ({ message }) => this.removeAutofillOverlay(message),
-            addNewVaultItemFromOverlay: () => this.addNewVaultItemFromOverlay(),
-            redirectOverlayFocusOut: ({ message }) => this.redirectOverlayFocusOut(message),
-            updateIsOverlayCiphersPopulated: ({ message }) => this.updateIsOverlayCiphersPopulated(message),
-            bgUnlockPopoutOpened: () => this.blurAndRemoveOverlay(),
-            bgVaultItemRepromptPopoutOpened: () => this.blurAndRemoveOverlay(),
-            updateAutofillOverlayVisibility: ({ message }) => this.updateAutofillOverlayVisibility(message),
         };
         /**
          * Handles the extension messages sent to the content script.
@@ -5901,21 +7611,20 @@ class AutofillInit {
          */
         this.handleExtensionMessage = (message, sender, sendResponse) => {
             const command = message.command;
-            const handler = this.extensionMessageHandlers[command];
+            const handler = this.getExtensionMessageHandler(command);
             if (!handler) {
-                return;
+                return null;
             }
             const messageResponse = handler({ message, sender });
-            if (!messageResponse) {
-                return;
+            if (typeof messageResponse === "undefined") {
+                return null;
             }
-            // FIXME: Verify that this floating promise is intentional. If it is, add an explanatory comment and ensure there is proper error handling.
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            Promise.resolve(messageResponse).then((response) => sendResponse(response));
+            void Promise.resolve(messageResponse).then((response) => sendResponse(response));
             return true;
         };
         this.autofillOverlayContentService = autofillOverlayContentService;
-        this.domElementVisibilityService = new dom_element_visibility_service();
+        this.autofillInlineMenuContentService = inlineMenuElements;
+        this.domElementVisibilityService = new dom_element_visibility_service(this.autofillInlineMenuContentService);
         this.collectAutofillContentService = new collect_autofill_content_service(this.domElementVisibilityService, this.autofillOverlayContentService);
         this.insertAutofillContentService = new insert_autofill_content_service(this.domElementVisibilityService, this.collectAutofillContentService);
     }
@@ -5938,12 +7647,12 @@ class AutofillInit {
     collectPageDetailsOnLoad() {
         const sendCollectDetailsMessage = () => {
             this.clearCollectPageDetailsOnLoadTimeout();
-            this.collectPageDetailsOnLoadTimeout = setTimeout(() => sendExtensionMessage("bgCollectPageDetails", { sender: "autofillInit" }), 250);
+            this.collectPageDetailsOnLoadTimeout = setTimeout(() => this.sendExtensionMessage("bgCollectPageDetails", { sender: "autofillInit" }), 250);
         };
         if (globalThis.document.readyState === "complete") {
             sendCollectDetailsMessage();
         }
-        globalThis.addEventListener("load", sendCollectDetailsMessage);
+        globalThis.addEventListener(EVENTS.LOAD, sendCollectDetailsMessage);
     }
     /**
      * Collects the page details and sends them to the
@@ -5961,8 +7670,7 @@ class AutofillInit {
             if (sendDetailsInResponse) {
                 return pageDetails;
             }
-            void chrome.runtime.sendMessage({
-                command: "collectPageDetailsResponse",
+            void this.sendExtensionMessage("collectPageDetailsResponse", {
                 tab: message.tab,
                 details: pageDetails,
                 sender: message.sender,
@@ -5979,112 +7687,24 @@ class AutofillInit {
             if ((document.defaultView || window).location.href !== pageDetailsUrl) {
                 return;
             }
-            this.blurAndRemoveOverlay();
-            this.updateOverlayIsCurrentlyFilling(true);
+            this.blurFocusedFieldAndCloseInlineMenu();
+            yield this.sendExtensionMessage("updateIsFieldCurrentlyFilling", {
+                isFieldCurrentlyFilling: true,
+            });
             yield this.insertAutofillContentService.fillForm(fillScript);
-            if (!this.autofillOverlayContentService) {
-                return;
-            }
-            setTimeout(() => this.updateOverlayIsCurrentlyFilling(false), 250);
+            setTimeout(() => this.sendExtensionMessage("updateIsFieldCurrentlyFilling", {
+                isFieldCurrentlyFilling: false,
+            }), 250);
         });
     }
     /**
-     * Handles updating the overlay is currently filling value.
-     *
-     * @param isCurrentlyFilling - Indicates if the overlay is currently filling
-     */
-    updateOverlayIsCurrentlyFilling(isCurrentlyFilling) {
-        if (!this.autofillOverlayContentService) {
-            return;
-        }
-        this.autofillOverlayContentService.isCurrentlyFilling = isCurrentlyFilling;
-    }
-    /**
-     * Opens the autofill overlay.
-     *
-     * @param data - The extension message data.
-     */
-    openAutofillOverlay({ data }) {
-        if (!this.autofillOverlayContentService) {
-            return;
-        }
-        this.autofillOverlayContentService.openAutofillOverlay(data);
-    }
-    /**
-     * Blurs the most recent overlay field and removes the overlay. Used
+     * Blurs the most recently focused field and removes the inline menu. Used
      * in cases where the background unlock or vault item reprompt popout
      * is opened.
      */
-    blurAndRemoveOverlay() {
-        if (!this.autofillOverlayContentService) {
-            return;
-        }
-        this.autofillOverlayContentService.blurMostRecentOverlayField();
-        this.removeAutofillOverlay();
-    }
-    /**
-     * Removes the autofill overlay if the field is not currently focused.
-     * If the autofill is currently filling, only the overlay list will be
-     * removed.
-     */
-    removeAutofillOverlay(message) {
-        var _a, _b;
-        if ((_a = message === null || message === void 0 ? void 0 : message.data) === null || _a === void 0 ? void 0 : _a.forceCloseOverlay) {
-            (_b = this.autofillOverlayContentService) === null || _b === void 0 ? void 0 : _b.removeAutofillOverlay();
-            return;
-        }
-        if (!this.autofillOverlayContentService ||
-            this.autofillOverlayContentService.isFieldCurrentlyFocused) {
-            return;
-        }
-        if (this.autofillOverlayContentService.isCurrentlyFilling) {
-            this.autofillOverlayContentService.removeAutofillOverlayList();
-            return;
-        }
-        this.autofillOverlayContentService.removeAutofillOverlay();
-    }
-    /**
-     * Adds a new vault item from the overlay.
-     */
-    addNewVaultItemFromOverlay() {
-        if (!this.autofillOverlayContentService) {
-            return;
-        }
-        this.autofillOverlayContentService.addNewVaultItem();
-    }
-    /**
-     * Redirects the overlay focus out of an overlay iframe.
-     *
-     * @param data - Contains the direction to redirect the focus.
-     */
-    redirectOverlayFocusOut({ data }) {
-        if (!this.autofillOverlayContentService) {
-            return;
-        }
-        this.autofillOverlayContentService.redirectOverlayFocusOut(data === null || data === void 0 ? void 0 : data.direction);
-    }
-    /**
-     * Updates whether the current tab has ciphers that can populate the overlay list
-     *
-     * @param data - Contains the isOverlayCiphersPopulated value
-     *
-     */
-    updateIsOverlayCiphersPopulated({ data }) {
-        if (!this.autofillOverlayContentService) {
-            return;
-        }
-        this.autofillOverlayContentService.isOverlayCiphersPopulated = Boolean(data === null || data === void 0 ? void 0 : data.isOverlayCiphersPopulated);
-    }
-    /**
-     * Updates the autofill overlay visibility.
-     *
-     * @param data - Contains the autoFillOverlayVisibility value
-     */
-    updateAutofillOverlayVisibility({ data }) {
-        if (!this.autofillOverlayContentService || isNaN(data === null || data === void 0 ? void 0 : data.autofillOverlayVisibility)) {
-            return;
-        }
-        this.autofillOverlayContentService.autofillOverlayVisibility = data === null || data === void 0 ? void 0 : data.autofillOverlayVisibility;
+    blurFocusedFieldAndCloseInlineMenu() {
+        var _a;
+        (_a = this.autofillOverlayContentService) === null || _a === void 0 ? void 0 : _a.blurMostRecentlyFocusedField(true);
     }
     /**
      * Clears the send collect details message timeout.
@@ -6101,15 +7721,31 @@ class AutofillInit {
         chrome.runtime.onMessage.addListener(this.handleExtensionMessage);
     }
     /**
+     * Gets the extension message handler for the given command.
+     *
+     * @param command - The extension message command.
+     */
+    getExtensionMessageHandler(command) {
+        var _a, _b, _c, _d;
+        if ((_b = (_a = this.autofillOverlayContentService) === null || _a === void 0 ? void 0 : _a.messageHandlers) === null || _b === void 0 ? void 0 : _b[command]) {
+            return this.autofillOverlayContentService.messageHandlers[command];
+        }
+        if ((_d = (_c = this.autofillInlineMenuContentService) === null || _c === void 0 ? void 0 : _c.messageHandlers) === null || _d === void 0 ? void 0 : _d[command]) {
+            return this.autofillInlineMenuContentService.messageHandlers[command];
+        }
+        return this.extensionMessageHandlers[command];
+    }
+    /**
      * Handles destroying the autofill init content script. Removes all
      * listeners, timeouts, and object instances to prevent memory leaks.
      */
     destroy() {
-        var _a;
+        var _a, _b;
         this.clearCollectPageDetailsOnLoadTimeout();
         chrome.runtime.onMessage.removeListener(this.handleExtensionMessage);
         this.collectAutofillContentService.destroy();
         (_a = this.autofillOverlayContentService) === null || _a === void 0 ? void 0 : _a.destroy();
+        (_b = this.autofillInlineMenuContentService) === null || _b === void 0 ? void 0 : _b.destroy();
     }
 }
 /* harmony default export */ var autofill_init = (AutofillInit);
@@ -6118,10 +7754,17 @@ class AutofillInit {
 
 
 
+
+
 (function (windowContext) {
     if (!windowContext.bitwardenAutofillInit) {
-        const autofillOverlayContentService = new autofill_overlay_content_service();
-        windowContext.bitwardenAutofillInit = new autofill_init(autofillOverlayContentService);
+        const inlineMenuFieldQualificationService = new InlineMenuFieldQualificationService();
+        const autofillOverlayContentService = new AutofillOverlayContentService(inlineMenuFieldQualificationService);
+        let inlineMenuElements;
+        if (globalThis.self === globalThis.top) {
+            inlineMenuElements = new AutofillInlineMenuContentService();
+        }
+        windowContext.bitwardenAutofillInit = new autofill_init(autofillOverlayContentService, inlineMenuElements);
         setupAutofillInitDisconnectAction(windowContext);
         windowContext.bitwardenAutofillInit.init();
     }

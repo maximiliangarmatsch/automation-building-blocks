@@ -1,6 +1,5 @@
 /******/ (function() { // webpackBootstrap
 /******/ 	"use strict";
-var __webpack_exports__ = {};
 
 ;// CONCATENATED MODULE: ../../libs/common/src/platform/abstractions/fido2/fido2-client.service.abstraction.ts
 const UserRequestedFallbackAbortReason = "UserRequestedFallback";
@@ -213,7 +212,7 @@ class WebauthnUtils {
     }
 }
 
-;// CONCATENATED MODULE: ./src/vault/fido2/content/messaging/message.ts
+;// CONCATENATED MODULE: ./src/autofill/fido2/content/messaging/message.ts
 var MessageType;
 (function (MessageType) {
     MessageType[MessageType["CredentialCreationRequest"] = 0] = "CredentialCreationRequest";
@@ -227,7 +226,7 @@ var MessageType;
     MessageType[MessageType["ErrorResponse"] = 8] = "ErrorResponse";
 })(MessageType || (MessageType = {}));
 
-;// CONCATENATED MODULE: ./src/vault/fido2/content/messaging/messenger.ts
+;// CONCATENATED MODULE: ./src/autofill/fido2/content/messaging/messenger.ts
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -372,8 +371,8 @@ class Messenger {
     }
 }
 
-;// CONCATENATED MODULE: ./src/vault/fido2/content/page-script.ts
-var page_script_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+;// CONCATENATED MODULE: ./src/autofill/fido2/content/fido2-page-script.ts
+var fido2_page_script_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -388,7 +387,9 @@ var page_script_awaiter = (undefined && undefined.__awaiter) || function (thisAr
 
 (function (globalContext) {
     const shouldExecuteContentScript = globalContext.document.contentType === "text/html" &&
-        globalContext.document.location.protocol === "https:";
+        (globalContext.document.location.protocol === "https:" ||
+            (globalContext.document.location.protocol === "http:" &&
+                globalContext.document.location.hostname === "localhost"));
     if (!shouldExecuteContentScript) {
         return;
     }
@@ -403,12 +404,12 @@ var page_script_awaiter = (undefined && undefined.__awaiter) || function (thisAr
             // credentials are read-only if supported, use type-casting to force assignment
             navigator.credentials = {
                 create() {
-                    return page_script_awaiter(this, void 0, void 0, function* () {
+                    return fido2_page_script_awaiter(this, void 0, void 0, function* () {
                         throw new Error("Webauthn not supported in this browser.");
                     });
                 },
                 get() {
-                    return page_script_awaiter(this, void 0, void 0, function* () {
+                    return fido2_page_script_awaiter(this, void 0, void 0, function* () {
                         throw new Error("Webauthn not supported in this browser.");
                     });
                 },
@@ -452,7 +453,7 @@ var page_script_awaiter = (undefined && undefined.__awaiter) || function (thisAr
      */
     function createWebAuthnCredential(options) {
         var _a, _b;
-        return page_script_awaiter(this, void 0, void 0, function* () {
+        return fido2_page_script_awaiter(this, void 0, void 0, function* () {
             if (!isWebauthnCall(options)) {
                 return yield browserCredentials.create(options);
             }
@@ -485,7 +486,7 @@ var page_script_awaiter = (undefined && undefined.__awaiter) || function (thisAr
      * @returns Promise that resolves to the new credential object.
      */
     function getWebAuthnCredential(options) {
-        return page_script_awaiter(this, void 0, void 0, function* () {
+        return fido2_page_script_awaiter(this, void 0, void 0, function* () {
             if (!isWebauthnCall(options)) {
                 return yield browserCredentials.get(options);
             }
@@ -524,7 +525,7 @@ var page_script_awaiter = (undefined && undefined.__awaiter) || function (thisAr
      * @returns Promise that resolves when window is focused, or rejects if timeout is reached.
      */
     function waitForFocus(fallbackWait = 500, timeout = 5 * 60 * 1000) {
-        return page_script_awaiter(this, void 0, void 0, function* () {
+        return fido2_page_script_awaiter(this, void 0, void 0, function* () {
             try {
                 if (globalContext.top.document.hasFocus()) {
                     return;

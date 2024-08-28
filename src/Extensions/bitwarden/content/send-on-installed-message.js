@@ -1,6 +1,5 @@
 /******/ (function() { // webpackBootstrap
 /******/ 	"use strict";
-var __webpack_exports__ = {};
 
 ;// CONCATENATED MODULE: ../../libs/common/src/vault/enums/vault-onboarding.enum.ts
 const VaultOnboardingMessages = {

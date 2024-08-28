@@ -5,7 +5,7 @@
   "minimum_chrome_version": "102.0",
   "name": "__MSG_extName__",
   "short_name": "__MSG_appName__",
-  "version": "2024.6.2",
+  "version": "2024.8.1",
   "description": "__MSG_extDesc__",
   "default_locale": "en",
   "author": "Bitwarden Inc.",
@@ -48,7 +48,7 @@
     "default_title": "Bitwarden",
     "default_popup": "popup/index.html"
   },
-  "permissions": ["activeTab", "tabs", "contextMenus", "storage", "unlimitedStorage", "clipboardRead", "clipboardWrite", "idle", "scripting", "offscreen", "webRequest", "webRequestAuthProvider"],
+  "permissions": ["activeTab", "tabs", "contextMenus", "storage", "unlimitedStorage", "clipboardRead", "clipboardWrite", "idle", "alarms", "scripting", "offscreen", "webRequest", "webRequestAuthProvider", "webNavigation"],
   "optional_permissions": ["nativeMessaging", "privacy"],
   "host_permissions": ["https://*/*", "http://*/*"],
   "content_security_policy": {
@@ -56,7 +56,7 @@
     "sandbox": "sandbox allow-scripts; script-src 'self'"
   },
   "sandbox": {
-    "pages": ["overlay/button.html", "overlay/list.html"]
+    "pages": ["overlay/menu-button.html", "overlay/menu-list.html", "overlay/button.html", "overlay/list.html"]
   },
   "commands": {
     "_execute_action": {
@@ -70,7 +70,13 @@
       "suggested_key": {
         "default": "Ctrl+Shift+L"
       },
-      "description": "__MSG_commandAutofillDesc__"
+      "description": "__MSG_commandAutofillLoginDesc__"
+    },
+    "autofill_card": {
+      "description": "__MSG_commandAutofillCardDesc__"
+    },
+    "autofill_identity": {
+      "description": "__MSG_commandAutofillIdentityDesc__"
     },
     "generate_password": {
       "suggested_key": {
@@ -83,7 +89,7 @@
     }
   },
   "web_accessible_resources": [{
-    "resources": ["content/fido2/page-script.js", "notification/bar.html", "images/icon38.png", "images/icon38_locked.png", "overlay/button.html", "overlay/list.html", "popup/fonts/*"],
+    "resources": ["content/fido2-page-script.js", "notification/bar.html", "images/icon38.png", "images/icon38_locked.png", "overlay/menu-button.html", "overlay/menu-list.html", "overlay/menu.html", "overlay/button.html", "overlay/list.html", "popup/fonts/*"],
     "matches": ["<all_urls>"]
   }],
   "storage": {
