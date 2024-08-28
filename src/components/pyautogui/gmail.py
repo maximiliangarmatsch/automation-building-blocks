@@ -47,6 +47,7 @@ async def login_via_bitwarden():
         chrome_options.add_argument('--no-default-browser-check')
         chrome_options.add_argument('--profile-directory=Default')
         # chrome_options.add_argument("--load-extension=./src/Extensions/bitwarden")
+        chrome_options.add_argument("--load-extension=./src/Extensions/bitwarden")
         display = SmartDisplay(visible=1, size=(1850, 1050))
         display.start()
 
@@ -104,6 +105,7 @@ async def login_via_bitwarden():
         if cords_image_gmail_continue is not None:
             pyautogui.typewrite(BITWARDEN_PASSWORD)
 
+        time.sleep(2)
         # Locate the Bitwarden master login icon to click
         cords_image_master_password_login = await process_icon(
             "src/assets/master_password_login.png", 2
@@ -112,11 +114,11 @@ async def login_via_bitwarden():
             show_custom_message("Error Message", "Bitwarden Login Error", duration = 2)
         time.sleep(2)
 
-        # # Locate any random position to click
-        # cords_image_random = await process_icon("src/assets/gmail_random.png", 5)
-        # if cords_image_random is None:
-        #     show_custom_message("Error Message", "Bitwarden Login Error", duration = 2)
-        # time.sleep(4)
+        # Locate any random position to click
+        cords_image_random = await process_icon("src/assets/google_random.png", 5)
+        if cords_image_random is None:
+            show_custom_message("Error Message", "Bitwarden Login Error", duration = 2)
+        time.sleep(2)
 
         # # Locate the Bitwarden icon to click
         # cords_image_bitwarden = await process_icon("src/assets/bitwardens.png", 2)
@@ -131,10 +133,10 @@ async def login_via_bitwarden():
         # time.sleep(2)
 
         # Locate any random position to click
-        cords_image_random = await process_icon("src/assets/signin_random.png", 1)
-        if cords_image_random is None:
-            show_custom_message("Error Message", "Account Login Error ", duration = 2)
-        time.sleep(2)
+        # cords_image_random = await process_icon("src/assets/google_random.png", 1)
+        # if cords_image_random is None:
+        #     show_custom_message("Error Message", "Account Login Error ", duration = 2)
+        # time.sleep(2)
 
         # # Locate the login button to click on it
         # cords_center_next = await process_icon("src/assets/gmail_next.png", 2)
