@@ -1,0 +1,20 @@
+Checklist for coffee shop website:
+
+1. index.html - Main HTML file
+2. style.css - Main CSS file
+3. script.js - Main JavaScript file
+4. assets/
+   - images/
+     - logo.png
+     - background.jpg
+   - fonts/
+     - custom-font.woff
+5. components/
+   - header.html
+   - footer.html
+   - menu.html
+6. README.md - Project documentation
+7. .gitignore - Git ignore file
+8. package.json - Node.js project file
+9. webpack.config.js - Webpack configuration file (if using Webpack)
+10. Any other necessary files for the project

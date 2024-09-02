@@ -1,0 +1,108 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background-color: #333;
+  color: white;
+}
+
+header .logo {
+  font-size: 1.5em;
+}
+
+header nav ul {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+}
+
+header nav ul li a {
+  color: white;
+  text-decoration: none;
+}
+
+.main-banner {
+  text-align: center;
+  padding: 50px;
+  background: url('images/coffee_banner.jpg') no-repeat center center/cover;
+  color: white;
+}
+
+.main-banner h1 {
+  font-size: 3em;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #333;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.featured {
+  display: flex;
+  justify-content: space-around;
+  padding: 50px;
+}
+
+.featured .feature {
+  text-align: center;
+}
+
+.featured .feature img {
+  width: 100%;
+  height: auto;
+}
+
+.testimonials {
+  background-color: #f4f4f4;
+  padding: 50px;
+}
+
+.testimonials .testimonial {
+  margin-bottom: 20px;
+}
+
+footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  background-color: #333;
+  color: white;
+}
+
+footer .social-media a,
+footer .quick-links a {
+  color: white;
+  text-decoration: none;
+  margin-right: 10px;
+}
+
+.newsletter form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.newsletter form input {
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+}
+
+.newsletter form button {
+  padding: 10px 20px;
+  background-color: #333;
+  color: white;
+  border: none;
+  cursor: pointer;
+}

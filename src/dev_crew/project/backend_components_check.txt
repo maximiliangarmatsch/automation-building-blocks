@@ -1,0 +1,1 @@
+All backend components are completed and properly organized in the ./coffee_shop_website folder.
