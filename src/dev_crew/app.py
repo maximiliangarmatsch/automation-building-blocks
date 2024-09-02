@@ -49,7 +49,7 @@ class WebsiteDevCrew:
 
 if __name__ == "__main__":
     print("==========================================")
-    project = input("What Project will you like to build please: \n")
+    project = input("What Project would you like to build: \n")
     website_crew = WebsiteDevCrew(project_description=project)
     result = website_crew.run()
     print(result)
