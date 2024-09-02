@@ -89,4 +89,16 @@ $ node ./utils/vision_crew_ai.js
 $ deactivate
 ```
 
+### Start Only "Dev Crew"
+- Output directory is in `src/dev_crew/project`
+- `allow_code_excecution` allows crewAI to "test" code on the fly
+
+#### Run
+```shell
+$ cd src/dev_crew
+$ python app.py
+```
+Then enter the prompt for what you want to build
+
+
 ## See /docs for more
