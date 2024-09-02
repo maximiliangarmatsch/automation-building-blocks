@@ -1,6 +1,6 @@
 # Dev Crew
 
-## How run run
+## Setup & Start
 - `python3 -m venv venv`
 - `source venv/bin/activate`
 - `pip install -r requirements.txt`
