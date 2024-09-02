@@ -77,8 +77,8 @@ python ./src/financial_crew/run_crew.py
 ### Start "Website automation" with Puppetee
 
 ```shell
-$ npm install
-$ node ./utils/vision_crew_ai.js
+npm install
+node ./utils/vision_crew_ai.js
 ```
 
 ## Other
@@ -90,13 +90,14 @@ $ deactivate
 ```
 
 ### Start Only "Dev Crew"
-- Output directory is in `src/dev_crew/project`
+- Output directory is in `src/dev_crew/generated_src`
 - `allow_code_excecution` allows crewAI to "test" code on the fly
 
 #### Run
 ```shell
-$ cd src/dev_crew
-$ python app.py
+source venv/bin/activate
+cd src/dev_crew
+python app.py
 ```
 Then enter the prompt for what you want to build
 
