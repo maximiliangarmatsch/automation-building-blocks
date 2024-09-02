@@ -27,8 +27,8 @@ class Agents:
     def frontend_developer(self) -> Agent:
         return Agent(
             role="Senior Frontend Developer",
-            goal="Develop a responsive, cross-browser compatible frontend using modern frameworks and ensuring optimal performance and accessibility",
-            backstory="You're a senior frontend expert with a lot of experience, specializing in React and Vue.js. You're passionate about creating seamless user experiences and have a strong foundation in web performance optimization and progressive enhancement techniques.",
+            goal="Develop a responsive, cross-browser compatible frontend using modern frameworks and ensuring optimal performance and accessibility. Use tailwind css for the styling.",
+            backstory="You're a senior frontend expert with a lot of experience, specializing in HTML, CSS, Javascript, Tailwind and Vue.js. You're passionate about creating seamless user experiences, beautiful UI and have a strong foundation in web performance optimization and progressive enhancement techniques.",
             allow_delegation=False,
             verbose=True,
             allow_code_execution=True,

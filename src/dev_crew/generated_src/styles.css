@@ -1,0 +1,211 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #333;
+    color: #fff;
+}
+
+.logo img {
+    height: 50px;
+}
+
+.navigation-menu ul {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+}
+
+.navigation-menu a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.cta-button .btn {
+    padding: 10px 20px;
+    color: #fff;
+    background-color: #007BFF;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.cta-button .btn.primary-btn {
+    background-color: #007BFF;
+}
+
+.hero-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #fff;
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+}
+
+.hero-content h1 {
+    font-size: 3em;
+}
+
+.hero-content h2 {
+    font-size: 1.5em;
+}
+
+.hero-content .cta-buttons .btn {
+    margin: 10px;
+}
+
+.about-us-section, .services-section, .case-studies-section, .testimonials-section, .contact-section {
+    padding: 50px 20px;
+    background-color: #f9f9f9;
+}
+
+.two-column-layout {
+    display: flex;
+    gap: 20px;
+}
+
+.two-column-layout .left-column, .two-column-layout .right-column {
+    flex: 1;
+}
+
+.services-section .three-column-layout {
+    display: flex;
+    gap: 20px;
+}
+
+.services-section .service-column {
+    flex: 1;
+    text-align: center;
+}
+
+.services-section .service-column img {
+    height: 100px;
+}
+
+.case-studies-carousel {
+    display: flex;
+    overflow-x: scroll;
+    gap: 20px;
+}
+
+.case-study-slide {
+    flex: 0 0 auto;
+    width: 300px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.testimonials-section blockquote {
+    font-style: italic;
+    margin: 20px 0;
+}
+
+.testimonials-section cite {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.testimonials-section cite img {
+    height: 50px;
+    border-radius: 50%;
+}
+
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.contact-form label {
+    font-weight: bold;
+}
+
+.contact-form input, .contact-form textarea {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.contact-form button {
+    padding: 10px 20px;
+    color: #fff;
+    background-color: #007BFF;
+    border: none;
+    border-radius: 5px;
+}
+
+.contact-details {
+    margin-top: 20px;
+}
+
+.social-media-icons img {
+    height: 30px;
+    margin: 5px;
+}
+
+footer {
+    background-color: #333;
+    color: #fff;
+    padding: 20px;
+}
+
+.footer-columns {
+    display: flex;
+    gap: 20px;
+}
+
+.footer-column {
+    flex: 1;
+}
+
+.footer-column h3 {
+    margin-top: 0;
+}
+
+.footer-column ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-column ul li {
+    margin: 10px 0;
+}
+
+.footer-column ul li a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.newsletter-signup {
+    display: flex;
+    gap: 10px;
+}
+
+.newsletter-signup input {
+    flex: 1;
+    padding: 10px;
+    border-radius: 5px 0 0 5px;
+    border: 1px solid #ccc;
+}
+
+.newsletter-signup button {
+    padding: 10px 20px;
+    background-color: #007BFF;
+    border: none;
+    color: #fff;
+    border-radius: 0 5px 5px 0;
+}
