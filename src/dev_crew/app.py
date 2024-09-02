@@ -16,7 +16,7 @@ class WebsiteDevCrew:
         self.agents = Agents(project_description=project_description)
         self.tasks = Tasks(
             project_description=project_description,
-            output_directory="./project",
+            output_directory="./generated_src",
         )
         self.project_description = project_description
 
