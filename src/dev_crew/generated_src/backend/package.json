@@ -1,57 +1,15 @@
 {
-  "name": "backend",
+  "name": "ai-software-agency-backend",
   "version": "1.0.0",
   "description": "Backend for AI Software Agency Landing Page",
-  "main": "dist/main.js",
+  "main": "server.js",
   "scripts": {
-    "start": "nest start",
-    "start:dev": "nest start --watch",
-    "build": "nest build",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "lint": "eslint \"{src, test}/**/*.ts\" --fix",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "start": "node src/server.js",
   },
   "dependencies": {
-    "@nestjs/common": "^7.0.0",
-    "@nestjs/core": "^7.0.0",
-    "@nestjs/platform-express": "^7.0.0",
-    "reflect-metadata": "^0.1.13",
-    "rimraf": "^3.0.2",
-    "rxjs": "^6.5.4"
+    "express": "^4.17.1"
   },
   "devDependencies": {
-    "@nestjs/cli": "^7.5.1",
-    "@nestjs/schematics": "^7.0.0",
-    "@nestjs/testing": "^7.0.0",
-    "@types/jest": "^26.0.0",
-    "@types/node": "^14.14.6",
-    "@types/supertest": "^2.0.10",
-    "jest": "^26.5.3",
-    "prettier": "^2.1.2",
-    "ts-jest": "^26.4.1",
-    "ts-loader": "^8.0.7",
-    "ts-node": "^9.0.0",
-    "tsconfig-paths": "^3.9.0",
-    "typescript": "^4.0.5"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "ts",
-      "js",
-      "json"
-    ],
-    "rootDir": "src",
-    "testRegex": ".*\\.spec\\.ts$",
-    "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
-    },
-    "collectCoverageFrom": [
-      "**/*.(t|j)s"
-    ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "nodemon": "^2.0.7"
   }
 }

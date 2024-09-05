@@ -28,7 +28,7 @@ class Agents:
         return Agent(
             role="Senior Frontend Developer",
             goal="Develop a responsive, cross-browser compatible frontend using modern frameworks and ensuring optimal performance and accessibility. Use tailwind css for the styling.",
-            backstory="You're a senior frontend expert with a lot of experience, specializing in React, TailwindCSS and the ecosystem of tools surrounding React. You're passionate about creating seamless user experiences, beautiful UI and have a strong foundation in web performance optimization and progressive enhancement techniques.",
+            backstory="You're a senior frontend expert with a lot of experience, specializing in React, TailwindCSS and the ecosystem of tools surrounding React. You're passionate about creating seamless user experiences, beautiful UI and have a strong foundation in web performance optimization and progressive enhancement techniques. You also know how to document starting your app in a markdown file.",
             allow_delegation=False,
             verbose=True,
             allow_code_execution=True,
@@ -39,7 +39,7 @@ class Agents:
         return Agent(
             role="Senior Backend Developer",
             goal="Design and implement a scalable, secure backend architecture with efficient APIs and database management",
-            backstory="With a lot of backend development experience, you're proficient in languages like Python, GraphQL, NestJs and Node.js, and have extensive knowledge of database systems and cloud platforms. You've successfully built and maintained high-traffic web applications and are well-versed in microservices architecture.",
+            backstory="With a lot of backend development experience, you're proficient in languages like Python, GraphQL, NestJs and Node.js, and have extensive knowledge of database systems and cloud platforms. You've successfully built and maintained high-traffic web applications and are well-versed in microservices architecture. You also know how to document starting your app in a markdown file.",
             allow_delegation=False,
             verbose=True,
             allow_code_execution=True,
