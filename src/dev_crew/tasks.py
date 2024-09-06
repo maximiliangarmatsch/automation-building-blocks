@@ -1,4 +1,5 @@
 from crewai import Task
+from textwrap import dedent
 
 
 class Tasks:
@@ -8,9 +9,16 @@ class Tasks:
 
     def design_ui_task(self, agent) -> Task:
         return Task(
-            description=f"Design the user interface for the {self.project_description}. Include layouts for the necessary pages",
+            description=dedent(
+                f"""\
+                    Design the user interface for the {self.project_description}. Include layouts for the necessary pages.
+                    Generate a sample image of the main interface.
+                    Make sure to check with a human if the draft is good before finalizing your answer.
+                """
+            ),
             agent=agent,
-            expected_output="Detailed UI design specifications including color schemes, layout descriptions, and user flow diagrams.",
+            expected_output="Detailed UI design specifications including color schemes, layout descriptions, and user flow diagrams, and a generated sample image of the main interface.",
+            human_input=True,
         )
 
     def write_content_task(self, agent) -> Task:
