@@ -90,16 +90,14 @@ $ deactivate
 ```
 
 ### Start Only "Dev Crew"
-- Output directory is in `src/dev_crew/generated_src`
-- `allow_code_excecution` allows crewAI to "test" code on the fly
-
-#### Run
 ```shell
 source venv/bin/activate
 cd src/dev_crew
 python app.py
 ```
-Then enter the prompt for what you want to build
+Example prompt "build a landingpage for an AI software agency"
+- Output directory is in `src/dev_crew/generated_src`
+- `allow_code_excecution` is activated in file "...". It allows crewAI to "test" code on the fly
 
 
 ## See /docs for more
