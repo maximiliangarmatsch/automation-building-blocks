@@ -71,7 +71,7 @@ async def login_via_bitwarden():
         print(pos)
         time.sleep(2)
         # Locate the Gmail icon on the main page to click on it
-        cords_center_next = await process_icon("src/assets/move_to_inbox.png", 5)
+        cords_center_next = await process_icon("src/components/pyautogui/assets/move_to_inbox.png", 5)
         if cords_center_next is None:
             show_custom_message("Error Message", "Error during opening inbox.", duration = 2)
         time.sleep(10)
