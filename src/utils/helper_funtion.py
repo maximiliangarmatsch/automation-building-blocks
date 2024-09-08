@@ -173,7 +173,11 @@ def download_email_attachment(browser, link):
 def process_unread_emails(browser, unread_emails):
     final_response = ""
     global screenshot_path  # pylint: disable=global-variable-not-assigned
+    count = 1
     for email in unread_emails:
+        if count>1:
+            break
+        count+=1
         email.click()  # Open the email
         time.sleep(3)  # Wait for the email to load
 

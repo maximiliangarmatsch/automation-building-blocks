@@ -7,7 +7,7 @@ from crewai_tools import SerperDevTool, ScrapeWebsiteTool, PDFSearchTool
 from src.components.pyautogui.gmail import openai_key, serp_api_key
 load_dotenv()
 os.environ['OPENAI_API_KEY'] = openai_key
-os.environ['SERPAPI_API_KEY'] = serp_api_key
+os.environ['SERPER_API_KEY'] = serp_api_key
 
 file_path = None
 llm = ChatOpenAI(model="gpt-4o-mini")
@@ -20,6 +20,12 @@ pdf_search_tool = PDFSearchTool(
 	pdf = file_path,
 )
 
+inernet_search_tool = SerperDevTool(
+    country = "usa",
+    locale = "usa",
+    location = "Florida, USA"
+)
+
 @CrewBase 
 class FinnaceCrew():
 	agents_config = './config/agents.yaml'
@@ -29,7 +35,7 @@ class FinnaceCrew():
 	def admin_research_manager(self) -> Agent:
 		return Agent(
 			config=self.agents_config['admin_research_assistant'],
-			tools=[SerperDevTool(), ScrapeWebsiteTool(), pdf_search_tool],
+			tools=[inernet_search_tool, ScrapeWebsiteTool(), pdf_search_tool],
 			verbose=True,
 			memory=False,
 			 llm=llm,
@@ -39,7 +45,7 @@ class FinnaceCrew():
 	def chief_finance_officer(self) -> Agent:
 		return Agent(
 			config=self.agents_config['chief_finance_officer'],
-			tools=[SerperDevTool(), ScrapeWebsiteTool()],
+			tools=[inernet_search_tool, ScrapeWebsiteTool()],
 			verbose=True,
 			memory=False,
 			 llm=llm,

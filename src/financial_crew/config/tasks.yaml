@@ -3,7 +3,7 @@ admin_research_assistant_task:
     Please conduct a comprehensive analysis of the bank account reports and available investments in the real estate business in Florida on today's date.  
     The analysis should include the following key points: 
     Bank report key points: Provide the opening balance, every transaction, and closing balance in the report.
-    Business Overview: Briefly describe each business model found for investment, its services, and its target market.
+    Business Overview: Briefly describe each business model found for investment.
     Risk Factors: Identify and discuss the major risk factors for investing in that business.
     Competitive Landscape: Discuss the competitive position in the industry and how it compares to its major competitors.
     Future Outlook: Based on the information and your analysis, provide a brief outlook on future performance.
@@ -19,10 +19,12 @@ chief_finance_officer_task:
     How much money do we need to invest given all options including key points for each?
     Is there sufficient money to invest in a plan that has been approved by the CEO?
     What are the methods to obtain a loan for more money?
-    Provide a detailed analysis of each of the questions. To take further steps, it is important to obtain approval for each question from the CEO.
+    Provide a detailed analysis of each of the questions with links. To take further steps, it is important to obtain approval for each question from the CEO.
     For an investment loan, do an internet search for the best available loan plan. 
   expected_output: >
-    A report that analyzes and provides deeper insights, including actual human capabilities.
+    Create compelling and innovative reports that analyzes and provides deeper insights that contain latest real estate investment links, Amount of investment, investment categorey
+    and if load requird then loan provider links with minimum interest and thier terms and conditions.
+    Ensure each answer is concise, emphasizing key concerns. Include reference links to support the information presented.
 chief_executive_officer_task:
   description: >
     Using the insights provided by the Admin Research Assistant and Chief Finance Officer, please craft an expert-styled decision 

@@ -14,7 +14,9 @@ def run_crew():
 
 async def train_crew():
     try:
-        final_response = FinnaceCrew().crew().train(n_iterations=int(sys.argv[1]))
+        # final_response = FinnaceCrew().crew().train(n_iterations=int(sys.argv[1]))
+        final_response = FinnaceCrew().crew().train(n_iterations = 1, filename = "src/financial_crew/trained_data.pkl")
         return final_response
     except Exception as e:
         raise Exception(f"An error occurred while training the crew: {e}")
+

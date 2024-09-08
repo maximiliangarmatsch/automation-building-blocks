@@ -23,4 +23,4 @@ browser = uc.Chrome(
     )
 time.sleep(6)
 browser.get("https://mail.google.com/mail/u/0/?tab=rm&ogbl#inbox")
-time.sleep(60)
+time.sleep(20)

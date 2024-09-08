@@ -42,18 +42,6 @@ async def on_ready():
     except Exception as e:
         print(str(e))
 
-@bot.tree.command(name="email")
-@app_commands.describe(query="Type email description here")
-async def email(interaction: discord.Interaction, query: str):
-    await interaction.response.defer()
-    try:
-        response = "Hello Email"
-        await interaction.followup.send(f"{response}")
-    except discord.errors.NotFound as e:
-        print(f"Interaction error: {e}")
-    except Exception as e:
-        print(f"An unexpected error occurred: {e}")
-
 async def send_message(message: discord.Message, user_message: str) -> None:
     if not user_message:
         print("(Message was empty because intents were not enabled probably)")
@@ -77,7 +65,7 @@ async def send_message(message: discord.Message, user_message: str) -> None:
                     if is_private:
                         await message.author.send(chunk)
                     else:
-                        await message.channel.send(chunk) 
+                        await message.channel.send(chunk)
             else:
                 crew_response = str(crew.run_crew())
                 response = response + "\n\n" + "------------------------" + "\n" + crew_response
@@ -90,17 +78,60 @@ async def send_message(message: discord.Message, user_message: str) -> None:
     except Exception as e:
         print(f"An error occurred while sending a message: {e}")
 
+async def run_finance_crew(message: discord.Message, user_message: str) -> None:
+    if not user_message:
+        print("(Message was empty because intents were not enabled probably)")
+        return
+    is_private = user_message[0] == "?"
+    if is_private:
+        user_message = user_message[1:]
+    try:
+        crew_response = str(crew.run_crew())
+        response = crew_response
+        chunks = [response[i: i + 2000] for i in range(0, len(response), 2000)]
+        for chunk in chunks:
+            if is_private:
+                await message.author.send(chunk)
+            else:
+                await message.channel.send(chunk)
+    except Exception as e:
+        print(f"An error occurred while sending a message: {e}")
+
+async def train_finance_crew(message: discord.Message, user_message: str) -> None:
+    if not user_message:
+        print("(Message was empty because intents were not enabled probably)")
+        return
+    is_private = user_message[0] == "?"
+    if is_private:
+        user_message = user_message[1:]
+    try:
+        response = await crew.train_crew()
+        await message.author.send(response)
+    except Exception as e:
+        print(f"An error occurred while sending a message: {e}")
+
 @bot.event
 async def on_message(message: discord.Message) -> None:
     if message.author == bot.user:
         return
     user_message = message.content
-    if not user_message.startswith("!crew"):
+    if user_message.startswith("!crew"):
+        username = str(message.author)
+        channel = str(message.channel)
+        print(f'[{channel}] {username}: "{user_message}"')
+        await send_message(message, user_message[len("!crew"):].strip())
+    elif user_message.startswith("!run"):
+        username = str(message.author)
+        channel = str(message.channel)
+        print(f'[{channel}] {username}: "{user_message}"')
+        await run_finance_crew(message, user_message[len("!run"):].strip())
+    elif user_message.startswith("!train"):
+        username = str(message.author)
+        channel = str(message.channel)
+        print(f'[{channel}] {username}: "{user_message}"')
+        await train_finance_crew(message, user_message[len("!train"):].strip())
+    else:
         return
-    username = str(message.author)
-    channel = str(message.channel)
-    print(f'[{channel}] {username}: "{user_message}"')
-    await send_message(message, user_message[len("!crew"):].strip())
 
 # Watchdog event handler for detecting changes in .py files
 class ReloadHandler(FileSystemEventHandler):
