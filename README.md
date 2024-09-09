@@ -21,6 +21,9 @@ Install Python (newest version, currently 3.11.0)
 ## (MacOS Only) Pre-Setup
 
 ```shell
+#General Fixes:
+export HNSWLIB_NO_NATIVE=1
+
 #For Certificates
 /Applications/Python\ 3.12/Install\ Certificates.command
 pip install --upgrade certifi
@@ -38,8 +41,8 @@ python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
-### create .env
-Create .env in main project.
+
+### Create ./.env file
 
 ```
 OPENAI_API_KEY = ""
@@ -49,6 +52,8 @@ BITWARDEN_EMAIL = ""
 BITWARDEN_PASSWORD = ""
 DISCORD_TOKEN = ""
 ```
+```
+
 ### Start "Python App"
 
 ```shell
@@ -58,16 +63,24 @@ python start_discord.py
 
 ```
 
-## Setup for Javascript
+
+### Start ONLY "Financial Crew"
+#### Requires ./src/fincancial_crew/assets/Bank-of-America-Bank-Statement-TemplateLab.com_.pdf to exist
+#### fix some imports
+#### replace the keys in pyautogui.gmail
+
+```shell
+python3 ./src/financial_crew/run_crew.py
+      OR
+python ./src/financial_crew/run_crew.py
+
+```
+
+### Start "Website automation" with Puppetee
 
 ```shell
 npm install
-```
-
-### Start "Website automation"
-
-```shell
-$ node ./utils/vision_crew_ai.js
+node ./utils/vision_crew_ai.js
 ```
 
 ## Other
@@ -77,5 +90,16 @@ $ node ./utils/vision_crew_ai.js
 ```shell
 $ deactivate
 ```
+
+### Start Only "Dev Crew"
+```shell
+source venv/bin/activate
+cd src/dev_crew
+python app.py
+```
+Example prompt "build a landingpage for an AI software agency"
+- Output directory is in `src/dev_crew/generated_src`
+- `allow_code_excecution` is activated in file "...". It allows crewAI to "test" code on the fly
+
 
 ## See /docs for more

@@ -1,6 +1,7 @@
 """
 module to login to google account using bitwarden 
 """
+
 import os
 import time
 import pyautogui
@@ -26,12 +27,17 @@ from src.utils.helper.is_osx import is_osx
 load_dotenv()
 openai_key = os.getenv("OPENAI_API_KEY")
 serp_api_key = os.getenv("SERPAPI_API_KEY")
+openai_key = os.getenv("OPENAI_API_KEY")
+serp_api_key = os.getenv("SERPAPI_API_KEY")
 model = OpenAI()
 model.timeout = 10
 BITWARDEN_EMAIL = os.getenv("BITWARDEN_EMAIL")
 BITWARDEN_PASSWORD = os.getenv("BITWARDEN_PASSWORD")
 
 
+# pylint: disable=fixme
+# TODO code cleanup please
+# pylint: disable=too-many-branches
 async def login_via_bitwarden():
     try:
         # Create a ChromeOptions object
