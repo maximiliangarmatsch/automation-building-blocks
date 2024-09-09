@@ -1,0 +1,3 @@
+- `cd generated_src/frontend`
+- `npm install`
+- `npm run start`
