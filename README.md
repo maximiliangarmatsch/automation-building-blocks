@@ -17,6 +17,7 @@ Install Python (newest version, currently 3.11.0)
 
 - https://www.python.org/downloads/
 
+
 ## (MacOS Only) Pre-Setup
 
 ```shell
@@ -50,6 +51,7 @@ CHANNEL_ID = ""
 BITWARDEN_EMAIL = ""
 BITWARDEN_PASSWORD = ""
 DISCORD_TOKEN = ""
+```
 ```
 
 ### Start "Python App"

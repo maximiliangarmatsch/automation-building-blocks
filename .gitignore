@@ -6,3 +6,4 @@ __pycache__
 /db/*
 !/db/*/
 !/db/*
+/src/components/pyautogui/screenshots/*.png

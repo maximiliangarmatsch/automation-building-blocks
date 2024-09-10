@@ -1,6 +1,5 @@
 /******/ (function() { // webpackBootstrap
 /******/ 	"use strict";
-var __webpack_exports__ = {};
 
 ;// CONCATENATED MODULE: ./src/tools/enums/fileless-import.enums.ts
 const FilelessImportType = {

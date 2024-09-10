@@ -18,4 +18,5 @@ selenium
 crewai
 hnswlib
 crewai_tools
-pylint
+watchdog
+

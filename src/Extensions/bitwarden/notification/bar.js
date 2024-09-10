@@ -2,7 +2,7 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 265:
+/***/ 97321:
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
@@ -51,8 +51,6 @@ __webpack_require__.r(__webpack_exports__);
 /******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
-!function() {
 
 ;// CONCATENATED MODULE: ../../libs/common/src/platform/enums/encryption-type.enum.ts
 var EncryptionType;
@@ -112,96 +110,12 @@ var HtmlStorageLocation;
     HtmlStorageLocation["Session"] = "session";
 })(HtmlStorageLocation || (HtmlStorageLocation = {}));
 
-;// CONCATENATED MODULE: ../../libs/common/src/auth/models/domain/kdf-config.ts
-
-/**
- * Password-Based Key Derivation Function 2 (PBKDF2) KDF configuration.
- */
-class PBKDF2KdfConfig {
-    constructor(iterations) {
-        this.kdfType = kdf_type_enum_KdfType.PBKDF2_SHA256;
-        this.iterations = iterations !== null && iterations !== void 0 ? iterations : PBKDF2_ITERATIONS.defaultValue;
-    }
-    /**
-     * Validates the PBKDF2 KDF configuration.
-     * A Valid PBKDF2 KDF configuration has KDF iterations between the 600_000 and 2_000_000.
-     */
-    validateKdfConfig() {
-        if (!PBKDF2_ITERATIONS.inRange(this.iterations)) {
-            throw new Error(`PBKDF2 iterations must be between ${PBKDF2_ITERATIONS.min} and ${PBKDF2_ITERATIONS.max}`);
-        }
-    }
-    static fromJSON(json) {
-        return new PBKDF2KdfConfig(json.iterations);
-    }
-}
-/**
- * Argon2 KDF configuration.
- */
-class Argon2KdfConfig {
-    constructor(iterations, memory, parallelism) {
-        this.kdfType = KdfType.Argon2id;
-        this.iterations = iterations !== null && iterations !== void 0 ? iterations : ARGON2_ITERATIONS.defaultValue;
-        this.memory = memory !== null && memory !== void 0 ? memory : ARGON2_MEMORY.defaultValue;
-        this.parallelism = parallelism !== null && parallelism !== void 0 ? parallelism : ARGON2_PARALLELISM.defaultValue;
-    }
-    /**
-     * Validates the Argon2 KDF configuration.
-     * A Valid Argon2 KDF configuration has iterations between 2 and 10, memory between 16mb and 1024mb, and parallelism between 1 and 16.
-     */
-    validateKdfConfig() {
-        if (!ARGON2_ITERATIONS.inRange(this.iterations)) {
-            throw new Error(`Argon2 iterations must be between ${ARGON2_ITERATIONS.min} and ${ARGON2_ITERATIONS.max}`);
-        }
-        if (!ARGON2_MEMORY.inRange(this.memory)) {
-            throw new Error(`Argon2 memory must be between ${ARGON2_MEMORY.min}mb and ${ARGON2_MEMORY.max}mb`);
-        }
-        if (!ARGON2_PARALLELISM.inRange(this.parallelism)) {
-            throw new Error(`Argon2 parallelism must be between ${ARGON2_PARALLELISM.min} and ${ARGON2_PARALLELISM.max}.`);
-        }
-    }
-    static fromJSON(json) {
-        return new Argon2KdfConfig(json.iterations, json.memory, json.parallelism);
-    }
-}
-
-;// CONCATENATED MODULE: ../../libs/common/src/platform/misc/range-with-default.ts
-/**
- * A range with a default value.
- *
- * Enforces constraints to ensure min > default > max.
- */
-class RangeWithDefault {
-    constructor(min, max, defaultValue) {
-        this.min = min;
-        this.max = max;
-        this.defaultValue = defaultValue;
-        if (min > max) {
-            throw new Error(`${min} is greater than ${max}.`);
-        }
-        if (this.inRange(defaultValue) === false) {
-            throw new Error("Default value is not in range.");
-        }
-    }
-    inRange(value) {
-        return value >= this.min && value <= this.max;
-    }
-}
-
 ;// CONCATENATED MODULE: ../../libs/common/src/platform/enums/kdf-type.enum.ts
-
-
-var kdf_type_enum_KdfType;
+var KdfType;
 (function (KdfType) {
     KdfType[KdfType["PBKDF2_SHA256"] = 0] = "PBKDF2_SHA256";
     KdfType[KdfType["Argon2id"] = 1] = "Argon2id";
-})(kdf_type_enum_KdfType || (kdf_type_enum_KdfType = {}));
-const kdf_type_enum_ARGON2_MEMORY = new RangeWithDefault(16, 1024, 64);
-const kdf_type_enum_ARGON2_PARALLELISM = new RangeWithDefault(1, 16, 4);
-const kdf_type_enum_ARGON2_ITERATIONS = new RangeWithDefault(2, 10, 3);
-const DEFAULT_KDF_TYPE = kdf_type_enum_KdfType.PBKDF2_SHA256;
-const PBKDF2_ITERATIONS = new RangeWithDefault(600000, 2000000, 600000);
-const DEFAULT_KDF_CONFIG = new PBKDF2KdfConfig(PBKDF2_ITERATIONS.defaultValue);
+})(KdfType || (KdfType = {}));
 
 ;// CONCATENATED MODULE: ../../libs/common/src/platform/enums/key-suffix-options.enum.ts
 var KeySuffixOptions;
@@ -313,7 +227,7 @@ const FilelessImportPort = {
 
 
 
-__webpack_require__(265);
+__webpack_require__(97321);
 const logService = new ConsoleLogService(false);
 let notificationBarIframeInitData = {};
 let windowMessageOrigin;
@@ -625,6 +539,5 @@ function postMessageToParent(message) {
     globalThis.parent.postMessage(message, windowMessageOrigin || "*");
 }
 
-}();
 /******/ })()
 ;

@@ -3,9 +3,11 @@ helper funtions
 """
 
 import os
+import sys
 import time
 import shutil
 import base64
+import tkinter as tk
 import pyautogui
 from openai import OpenAI
 import undetected_chromedriver as uc
@@ -21,6 +23,46 @@ screenshot_path = "screenshot.jpg"
 
 
 chrome_options = uc.ChromeOptions()
+
+def get_chrome_profile_path():
+    if sys.platform.startswith("win"):
+        base_path = os.path.join(os.getenv("LOCALAPPDATA"), "Google", "Chrome", "User Data")
+    elif sys.platform.startswith("darwin"):
+        base_path = os.path.expanduser("~/Library/Application Support/Google/Chrome")
+    elif sys.platform.startswith("linux"):
+        base_path = os.path.expanduser("~/.config/google-chrome")
+    else:
+        return None
+    
+    default_profile = os.path.join(base_path, "Default")    
+    # Check if the path exists
+    if os.path.exists(default_profile):
+        return default_profile
+    else:
+        # If "Default" does not exist, check if another profile (e.g., "Profile 1") exists
+        other_profiles = [p for p in os.listdir(base_path) if p.startswith("Profile")]
+        if other_profiles:
+            return os.path.join(base_path, other_profiles[0])
+    return None
+
+def show_custom_message(title, text, duration = 3):
+    def countdown(count):
+        label.config(text=f"{text}\nClosing in {count} seconds...")
+        if count > 0:
+            custom_box.after(1000, countdown, count - 1)
+        else:
+            custom_box.destroy()
+
+    custom_box = tk.Tk()
+    custom_box.title(title)
+    custom_box.geometry('300x150')
+    custom_box.configure(bg='orange')  # Border color
+    frame = tk.Frame(custom_box, bg='white', padx=10, pady=10)
+    frame.pack(padx=5, pady=5, expand=True, fill='both')
+    label = tk.Label(frame, text=text, bg='white', font=('Arial', 12))
+    label.pack(pady=10)
+    countdown(duration)
+    custom_box.mainloop()
 
 def move_pdf_to_finance_assets():
     source_dir = "./data"
@@ -131,7 +173,11 @@ def download_email_attachment(browser, link):
 def process_unread_emails(browser, unread_emails):
     final_response = ""
     global screenshot_path  # pylint: disable=global-variable-not-assigned
+    count = 1
     for email in unread_emails:
+        if count>1:
+            break
+        count+=1
         email.click()  # Open the email
         time.sleep(3)  # Wait for the email to load
 
