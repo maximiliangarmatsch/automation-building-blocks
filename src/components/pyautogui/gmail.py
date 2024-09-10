@@ -14,7 +14,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from pyvirtualdisplay.smartdisplay import SmartDisplay
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from dotenv import load_dotenv
-from src.utils.helper_funtion import (
+from components.pyautogui.pyautogui_automation_helper import (
     check_unread_email,
     process_unread_emails,
     process_icon,
@@ -22,7 +22,7 @@ from src.utils.helper_funtion import (
     get_chrome_profile_path
 )
 
-from src.utils.helper.is_osx import is_osx
+from utils.helper.is_osx import is_osx
 
 load_dotenv()
 openai_key = os.getenv("OPENAI_API_KEY")
@@ -53,7 +53,7 @@ async def login_via_bitwarden():
 
         chrome_options.add_argument('--no-default-browser-check')
         chrome_options.add_argument('--profile-directory=Default')
-        chrome_options.add_argument("--load-extension=./src/Extensions/bitwarden")
+        chrome_options.add_argument("--load-extension=./components/bitwarden_extension")
         display = SmartDisplay(visible=1, size=(1850, 1050))
         display.start()
 
@@ -65,7 +65,7 @@ async def login_via_bitwarden():
             desired_capabilities=DesiredCapabilities.CHROME
             )
         browser.maximize_window()
-        browser.save_screenshot("./src/components/pyautogui/screenshots/1.png")
+        browser.save_screenshot("./components/pyautogui/screenshots/1.png")
 
         if not is_osx():
             # mouse moves in SmartDisplay
@@ -75,13 +75,12 @@ async def login_via_bitwarden():
 
         pos = pyautogui.position()
         print(pos)
-        time.sleep(2)
+        time.sleep(5)
         # Locate the Gmail icon on the main page to click on it
-        cords_center_next = await process_icon("src/components/pyautogui/assets/move_to_inbox.png", 5)
+        cords_center_next = await process_icon("./components/pyautogui/assets/move_to_inbox.png", 5)
         if cords_center_next is None:
             show_custom_message("Error Message", "Error during opening inbox.", duration = 2)
-        time.sleep(10)
-
+        time.sleep(5)
         # Check all unread emails
         unread_emails = check_unread_email(browser)
         if not unread_emails:
@@ -97,7 +96,7 @@ async def login_via_bitwarden():
     except Exception as e:
         # Take a screenshot after the action
         screenshot = pyautogui.screenshot()
-        screenshot.save("./src/components/pyautogui/screenshots/error_screenshot.png")
+        screenshot.save("./components/pyautogui/screenshots/error_screenshot.png")
         show_custom_message("Error Message", "Something Went Wrong!", duration = 2)
         browser.quit()
         display.stop()

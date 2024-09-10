@@ -1,10 +1,9 @@
 import os
-import sys
-from src.financial_crew.crew import FinnaceCrew
+from financial_crew.crew import FinnaceCrew
 
 def run_crew():
     final_response = FinnaceCrew().crew().kickoff()
-    folder_path = "./src/financial_crew/assets"
+    folder_path = "./financial_crew/assets"
     files = os.listdir(folder_path)
     for file in files:
         file_path = os.path.join(folder_path, file)
@@ -15,7 +14,7 @@ def run_crew():
 async def train_crew():
     try:
         # final_response = FinnaceCrew().crew().train(n_iterations=int(sys.argv[1]))
-        final_response = FinnaceCrew().crew().train(n_iterations = 1, filename = "src/financial_crew/trained_data.pkl")
+        final_response = FinnaceCrew().crew().train(n_iterations = 1, filename = "./financial_crew/trained_data.pkl")
         return final_response
     except Exception as e:
         raise Exception(f"An error occurred while training the crew: {e}")
