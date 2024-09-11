@@ -47,17 +47,17 @@ def login_via_bitwarden():
         time.sleep(2)
 
         # Locate the bitwarden icon to click
-        cords_image = detect_icon("src/assets/bitwarden.png")
+        cords_image = detect_icon("assets/bitwarden.png")
         if cords_image is not None:
             time.sleep(1)
 
         # Locate credentials in bitwarden
-        cords_image_secret = detect_icon("src/assets/secret.png")
+        cords_image_secret = detect_icon("assets/secret.png")
         if cords_image_secret is not None:
             time.sleep(1)
 
         # Locate the login button to click on it
-        cords_center_login = detect_icon("src/assets/login.png")
+        cords_center_login = detect_icon("assets/login.png")
         if cords_center_login is not None:
             time.sleep(1)
 
