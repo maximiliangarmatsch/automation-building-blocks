@@ -2,7 +2,7 @@ import os
 from langchain.tools import BaseTool
 
 
-class FileWriteTool(BaseTool):
+class FileWrite(BaseTool):
     """File Write Tool"""
 
     name = "File Write Tool"

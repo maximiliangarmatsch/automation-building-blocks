@@ -1,5 +1,5 @@
 from crewai import Agent
-from dev_crew.tools.file_write_tool import FileWriteTool
+from tools.file_write import FileWrite
 
 
 class Agents:
@@ -32,7 +32,7 @@ class Agents:
             allow_delegation=False,
             verbose=True,
             allow_code_execution=True,
-            tools=[FileWriteTool()],
+            tools=[FileWrite()],
         )
 
     def backend_developer(self) -> Agent:
@@ -43,7 +43,7 @@ class Agents:
             allow_delegation=False,
             verbose=True,
             allow_code_execution=True,
-            tools=[FileWriteTool()],
+            tools=[FileWrite()],
         )
 
     def content_writer(self) -> Agent:
