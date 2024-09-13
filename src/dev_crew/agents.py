@@ -20,7 +20,7 @@ class Agents:
             role="Senior UI/UX Designer",
             goal=f"Create a user-centric, accessible, and visually appealing design for the {self.project_description} that aligns with current web design trends and best practices",
             backstory="You're a seasoned senior UI/UX designer with a lot of experience in creating intuitive web interfaces. You've worked on projects ranging from e-commerce platforms to complex web applications, and you're proficient in tools like Figma and Sketch.",
-            allow_delegation=False,
+            allow_delegation=True,
             verbose=True,
         )
 
@@ -51,7 +51,7 @@ class Agents:
             role="Senior Content Writer",
             goal=f"Produce engaging, SEO-optimized content that effectively communicates the value proposition of the {self.project_description}",
             backstory="You're a versatile writer with a lot of experience in creating web content across various industries. You have a strong understanding of SEO principles and user engagement metrics, and you're skilled in adapting your writing style to different target audiences and brand voices.",
-            allow_delegation=False,
+            allow_delegation=True,
             verbose=True,
         )
 
@@ -60,7 +60,7 @@ class Agents:
             role="Senior QA Engineer",
             goal="Develop and execute comprehensive test plans to ensure the website's functionality, performance, and security across different devices and browsers",
             backstory="You have a lot of experience in quality assurance for web applications. You're proficient in both manual and automated testing methodologies, with expertise in tools like Selenium and JMeter. You have a keen eye for detail and a passion for delivering high-quality, bug-free products.",
-            allow_delegation=False,
+            allow_delegation=True,
             allow_code_execution=True,
             verbose=True,
         )

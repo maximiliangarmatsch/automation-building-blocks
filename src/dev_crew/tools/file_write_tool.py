@@ -3,6 +3,8 @@ from langchain.tools import BaseTool
 
 
 class FileWriteTool(BaseTool):
+    """File Write Tool"""
+
     name = "File Write Tool"
     description = "Use this tool to write content to a file"
 
