@@ -101,7 +101,7 @@ Example prompt "build a landingpage for an AI software agency"
 - Output directory is in `src/dev_crew/generated_src`
 - `allow_code_excecution` is activated in file "...". It allows crewAI to "test" code on the fly
 
-# stsrt Only Personal Assistant Crew
+# start Only Personal Assistant Crew
 
 ## Steps to Run
 **Navigate to the Project Directory:**
