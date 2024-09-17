@@ -11,6 +11,7 @@ class BusinessCrew:
 
     def __init__(self, project_description: str):
         self.project_description = project_description
+        self.output_directory = "./generated_src"
 
     def run(self):
         crew = Crew(
@@ -22,6 +23,7 @@ class BusinessCrew:
                 prepare_document(
                     agent=project_manager(),
                     project_description=self.project_description,
+                    output_directory=self.output_directory,
                 ),
                 define_product_vision(agent=business_analyst()),
             ],

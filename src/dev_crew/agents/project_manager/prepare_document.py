@@ -3,7 +3,10 @@ from textwrap import dedent
 from crewai import Task, Agent
 
 
-def prepare_document(agent: Agent, project_description) -> Task:
+def prepare_document(
+    agent: Agent, project_description: str, output_directory: str
+) -> Task:
+    output_directory = output_directory + "/docs"
     return Task(
         description=dedent(
             f"""\
@@ -29,11 +32,21 @@ def prepare_document(agent: Agent, project_description) -> Task:
                     which will guide the development team in delivering the project as per specifications.
 
                     Make sure to check with a human if the draft is good before finalizing your answer.
+
+                    Create only these files:
+                    1. frontend_requirements.txt - to contain all frontend pages, color schemes, content requirements and all necessary information.
+                    2. backend_requirements.txt - to contain all backend apis, api responses and all necessary information to help the backend function effectively and efficiently.
+
+                    Each file should be well documented and simple so other crews can pick them and work on them easily.
+
+                    Save all files in the {output_directory} folder.
                 """
         ),
         agent=agent,
         expected_output=dedent(
-            """
+            """\
+                    Neccessary files saved in the {self.output_directory} folder
+
                     A completed product requirements document that includes:
 
                     - A defined color scheme with branding guidelines.
