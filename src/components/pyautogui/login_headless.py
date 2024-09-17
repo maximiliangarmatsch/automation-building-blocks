@@ -22,7 +22,7 @@ BITWARDEN_PASSWORD = os.getenv("BITWARDEN_PASSWORD")
 chrome_options = uc.ChromeOptions()
 
 # Add the extension to ChromeOptions
-chrome_options.add_argument("--load-extension=./Extensions/bitwarden")
+chrome_options.add_argument("--load-extension=./components/bitwarden_extension")
 display = SmartDisplay(visible=0, size=(1850, 1050))
 display.start()
 
@@ -59,28 +59,28 @@ def login_via_bitwarden():
         time.sleep(2)
 
         # Locate the extensions icon to click
-        cords_image = detect_icon("src/assets/extension.png")
+        cords_image = detect_icon("assets/extension.png")
         if cords_image is not None:
             time.sleep(2)
 
         # Locate the pin extension to task bar icon to click
-        cords_image_pin = detect_icon("src/assets/pins.png")
+        cords_image_pin = detect_icon("assets/pins.png")
         if cords_image_pin is not None:
             time.sleep(1)
 
         # Locate the bitwarden extension on task bar icon to click
-        cords_image_before_login = detect_icon("src/assets/bitwarden_before_login.png")
+        cords_image_before_login = detect_icon("assets/bitwarden_before_login.png")
         if cords_image_before_login is not None:
             time.sleep(1)
 
         # Locate the bitwarden email text field icon to click
-        cords_image_enter_gmail = detect_icon("src/assets/enter_gmail.png")
+        cords_image_enter_gmail = detect_icon("assets/enter_gmail.png")
         if cords_image_enter_gmail is not None:
             time.sleep(1)
         pyautogui.typewrite(BITWARDEN_EMAIL)
 
         # Locate the bitwarden continue icon to click
-        cords_image_gmail_continue = detect_icon("src/assets/gmail_continue.png")
+        cords_image_gmail_continue = detect_icon("assets/gmail_continue.png")
         if cords_image_gmail_continue is not None:
             time.sleep(2)
 
@@ -88,43 +88,43 @@ def login_via_bitwarden():
 
         # Locate the bitwarden master login icon to click
         cords_image_master_password_login = detect_icon(
-            "src/assets/master_password_login.png"
+            "assets/master_password_login.png"
         )
         if cords_image_master_password_login is not None:
             time.sleep(5)
 
         # Locate the any random position to click
-        cords_image_random = detect_icon("src/assets/gmail_random.png")
+        cords_image_random = detect_icon("assets/gmail_random.png")
         if cords_image_random is not None:
             time.sleep(2)
 
         # Locate the bitwarden icon to click
-        cords_image_bitwarden = detect_icon("src/assets/bitwardens.png")
+        cords_image_bitwarden = detect_icon("assets/bitwardens.png")
         if cords_image_bitwarden is not None:
             time.sleep(2)
 
         # Locate credentials in bitwarden
-        cords_image_gmail = detect_icon("src/assets/select_gmail.png")
+        cords_image_gmail = detect_icon("assets/select_gmail.png")
         if cords_image_gmail is not None:
             time.sleep(2)
 
         # Locate the login button to click on it
-        cords_center_next = detect_icon("src/assets/gmail_next.png")
+        cords_center_next = detect_icon("assets/gmail_next.png")
         if cords_center_next is not None:
             time.sleep(2)
 
         # Locate the bitwarden icon to click
-        cords_image_bitwarden = detect_icon("src/assets/bitwardens.png")
+        cords_image_bitwarden = detect_icon("assets/bitwardens.png")
         if cords_image_bitwarden is not None:
             time.sleep(2)
 
         # Locate credentials in bitwarden
-        cords_image_password = detect_icon("src/assets/select_gmail.png")
+        cords_image_password = detect_icon("assets/select_gmail.png")
         if cords_image_password is not None:
             time.sleep(2)
 
         # Locate the login button to click on it
-        cords_center_next = detect_icon("src/assets/gmail_next.png")
+        cords_center_next = detect_icon("assets/gmail_next.png")
         if cords_center_next is not None:
             time.sleep(10)
         # Take a screenshot after the action

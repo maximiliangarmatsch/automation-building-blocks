@@ -4,14 +4,14 @@ from crewai import Agent, Crew, Process, Task
 from langchain_openai import ChatOpenAI
 from crewai.project import CrewBase, agent, crew, task
 from crewai_tools import SerperDevTool, ScrapeWebsiteTool, PDFSearchTool
-from src.components.pyautogui.gmail import openai_key, serp_api_key
+from components.pyautogui.gmail import openai_key, serp_api_key
 load_dotenv()
 os.environ['OPENAI_API_KEY'] = openai_key
 os.environ['SERPER_API_KEY'] = serp_api_key
 
 file_path = None
 llm = ChatOpenAI(model="gpt-4o-mini")
-folder_path = "./src/financial_crew/assets"
+folder_path = "./financial_crew/assets"
 files = os.listdir(folder_path)
 for file in files:
 	file_path = os.path.join(folder_path, file)

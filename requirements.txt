@@ -19,4 +19,5 @@ crewai
 hnswlib
 crewai_tools
 watchdog
-
+composio-crewai
+langchain-openai
