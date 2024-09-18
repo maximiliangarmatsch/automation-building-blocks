@@ -3,8 +3,6 @@ from langchain.tools import BaseTool
 
 
 class FileRead(BaseTool):
-    """File Read Tool"""
-
     name = "File Read Tool"
     description = "Use this tool to read content from a file"
 

@@ -10,8 +10,6 @@ os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
 
 
 class WebsiteDevCrew:
-    """Website Development Crew"""
-
     def __init__(self, project_description):
         self.agents = Agents(project_description=project_description)
         self.tasks = Tasks(
