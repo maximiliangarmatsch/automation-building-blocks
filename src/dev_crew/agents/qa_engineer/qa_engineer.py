@@ -1,7 +1,12 @@
+import os
 from textwrap import dedent
-
 from crewai import Agent
+from langchain_groq import ChatGroq
+from dotenv import load_dotenv
+load_dotenv()
 
+api_key = os.getenv("GROQ_API_KEY")
+llm = ChatGroq(model = "llama-3.1-70b-versatile", api_key = api_key)
 
 def qa_engineer() -> Agent:
     return Agent(
@@ -46,4 +51,5 @@ def qa_engineer() -> Agent:
         allow_delegation=True,
         allow_code_execution=True,
         verbose=True,
+        llm = llm,
     )
