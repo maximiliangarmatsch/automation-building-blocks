@@ -5,9 +5,8 @@ from crewai import Task, Agent
 
 def define_product_vision(agent: Agent) -> Task:
     return Task(
-        title="Define Product Vision and Prioritize Features",
         description=dedent(
-            """
+            """\
             Your task is to define the product vision and prioritize features for the project. 
             The document should include:
 
@@ -29,8 +28,8 @@ def define_product_vision(agent: Agent) -> Task:
             Ensure that the document provides clear and actionable guidance for the project team to deliver maximum value.
             """
         ),
-        expected_goal=dedent(
-            """
+        expected_output=dedent(
+            """\
             A completed product vision and feature prioritization document that includes:
 
             - A well-defined product vision statement that captures the project’s goals and value proposition.
