@@ -21,3 +21,5 @@ crewai_tools
 watchdog
 composio-crewai
 langchain-openai
+groq
+langchain-groq
