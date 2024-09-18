@@ -33,9 +33,13 @@ def prepare_document(
 
                     Make sure to check with a human if the draft is good before finalizing your answer.
 
-                    Create only these files:
+                    Create a reasonable decison-making overview document, called report.txt, that a human CTO can approve before design/frontend/backend start development.
+
+                    Also create these files:
                     1. frontend_requirements.txt - to contain all frontend pages, color schemes, content requirements and all necessary information.
                     2. backend_requirements.txt - to contain all backend apis, api responses and all necessary information to help the backend function effectively and efficiently.
+
+                    Generate other files as needed to properly report the decision to an human CTO and also assist developers crew to build the requirements.
 
                     Each file should be well documented and simple so other crews can pick them and work on them easily.
 

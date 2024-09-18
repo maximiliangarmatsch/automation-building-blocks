@@ -1,0 +1,41 @@
+Overview Report for E-commerce Website for Drawings
+
+This document outlines the comprehensive requirements for developing an e-commerce website specializing in drawings. It covers the color schemes, frontend pages, content requirements, backend APIs, and expected API responses.
+
+1. Color Schemes:
+- Primary Color: #3498db (Blue)
+- Secondary Color: #2ecc71 (Green)
+- Accent Color: #e74c3c (Red)
+- Background Color: #ecf0f1 (Light Grey)
+- Text Color: #2c3e50 (Dark Grey)
+- Branding Guidelines: Use the primary color for headers and important buttons, secondary color for secondary buttons and links, and accent color for alerts and notifications.
+
+2. Frontend Pages:
+  a. Home Page: Hero section with featured drawings, categories section, latest drawings section, and footer.
+  b. Shop Page: Grid of drawings with filters for categories, price range, and ratings.
+  c. Drawing Detail Page: Image carousel, drawing details, price, add to cart button, and related drawings section.
+  d. Cart Page: List of added drawings, quantity selector, total price, and checkout button.
+  e. Checkout Page: Billing details form, order summary, payment options, and place order button.
+  f. About Us Page: Company history, mission statement, team members section, and footer.
+  g. Contact Us Page: Contact form, company address, map, and footer.
+
+3. Content Requirements:
+- Text: Product descriptions, company information, blog posts, and FAQs.
+- Images: High-resolution images of drawings, team members, and office.
+- Videos: Tutorials, artist interviews, and promotional material.
+
+4. Backend APIs:
+  a. Authentication API: Endpoint for user login.
+  b. Registration API: Endpoint for new user registration.
+  c. Get Drawings API: Endpoint to fetch drawings based on filters.
+  d. Drawing Detail API: Endpoint to fetch detailed information about a drawing.
+  e. Add to Cart API: Endpoint to add a drawing to the cart.
+  f. Get Cart API: Endpoint to fetch the contents of the cart.
+  g. Checkout API: Endpoint to process the checkout.
+
+5. API Responses:
+  a. Success Response: Status code 200 with a success message and data.
+  b. Error Response: Status codes 4xx/5xx with an error message.
+  c. Common Error Messages: 400 (Bad Request), 401 (Unauthorized), 403 (Forbidden), 404 (Not Found), 500 (Internal Server Error).
+
+The detailed frontend and backend requirements documents are available for further reference. These documents provide all necessary details to guide the development team in delivering the project as per specifications.

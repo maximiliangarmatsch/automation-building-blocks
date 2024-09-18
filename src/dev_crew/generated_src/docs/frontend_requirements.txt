@@ -1,71 +1,44 @@
-## Color Schemes
+Frontend Requirements Document
 
-### Primary Colors
-- Hex: #FF5733 (Orange)
-- Hex: #C70039 (Red)
+1. Color Schemes:
+- Primary Color: #3498db (Blue)
+- Secondary Color: #2ecc71 (Green)
+- Accent Color: #e74c3c (Red)
+- Background Color: #ecf0f1 (Light Grey)
+- Text Color: #2c3e50 (Dark Grey)
+- Branding Guidelines: Use the primary color for headers and important buttons, secondary color for secondary buttons and links, and accent color for alerts and notifications.
 
-### Secondary Colors
-- Hex: #900C3F (Dark Red)
-- Hex: #581845 (Purple)
+2. Frontend Pages:
+  a. Home Page
+     - Layout: Hero section with featured drawings, categories section, latest drawings section, and footer.
+     - Navigation: Menu with links to Home, Shop, About Us, Contact Us, and Cart.
+     - Content: High-quality images of drawings, short descriptions, and call-to-action buttons.
+  b. Shop Page
+     - Layout: Grid of drawings with filters for categories, price range, and ratings.
+     - Navigation: Breadcrumbs for easy navigation, links to individual drawing pages.
+     - Content: Thumbnails of drawings, titles, prices, and ratings.
+  c. Drawing Detail Page
+     - Layout: Image carousel, drawing details, price, add to cart button, and related drawings section.
+     - Navigation: Back to shop link, breadcrumbs.
+     - Content: High-resolution images, detailed description, artist information, and reviews.
+  d. Cart Page
+     - Layout: List of added drawings, quantity selector, total price, and checkout button.
+     - Navigation: Links to continue shopping and proceed to checkout.
+     - Content: Drawing thumbnails, titles, prices, quantity inputs, and total amount.
+  e. Checkout Page
+     - Layout: Billing details form, order summary, payment options, and place order button.
+     - Navigation: Links to cart page and order confirmation.
+     - Content: Input fields for billing details, summary of ordered items, and payment options.
+  f. About Us Page
+     - Layout: Company history, mission statement, team members section, and footer.
+     - Navigation: Links to Home, Shop, and Contact Us.
+     - Content: Text, images of team members, and company milestones.
+  g. Contact Us Page
+     - Layout: Contact form, company address, map, and footer.
+     - Navigation: Links to Home, Shop, and About Us.
+     - Content: Input fields for name, email, message, and contact details.
 
-### Accent Colors
-- Hex: #FFC300 (Yellow)
-- Hex: #DAF7A6 (Light Green)
-
-### Branding Guidelines
-- Use primary colors for main elements like headers, footers, and buttons.
-- Use secondary colors for backgrounds and secondary elements.
-- Use accent colors for highlights, links, and interactive elements.
-
-## Frontend Pages
-
-### 1. Home Page
-**Layout**: Header, main banner, featured drawings, categories, footer.
-**Navigation**: Menu with links to Home, Shop, About Us, Contact, and Cart.
-**Content**: Main banner image, featured drawings gallery, category thumbnails.
-
-### 2. Shop Page
-**Layout**: Sidebar filters, grid/list view of drawings, pagination, header, footer.
-**Navigation**: Menu with links to Home, Shop, About Us, Contact, and Cart.
-**Content**: Drawings thumbnails, filters for categories, price, and ratings.
-
-### 3. Product Detail Page
-**Layout**: Image gallery, product details, price, add to cart button, related products, header, footer.
-**Navigation**: Breadcrumbs, menu with links to Home, Shop, About Us, Contact, and Cart.
-**Content**: High-resolution images, product description, price, reviews, related products.
-
-### 4. Cart Page
-**Layout**: List of selected products, totals, checkout button, header, footer.
-**Navigation**: Menu with links to Home, Shop, About Us, Contact, and Cart.
-**Content**: Product thumbnails, names, prices, quantities, subtotal, total, checkout button.
-
-### 5. Checkout Page
-**Layout**: Billing details form, shipping details form, payment method selection, order summary, place order button, header, footer.
-**Navigation**: Menu with links to Home, Shop, About Us, Contact, and Cart.
-**Content**: Form fields for billing and shipping details, payment methods, order summary.
-
-### 6. About Us Page
-**Layout**: Team photos, company history, mission statement, header, footer.
-**Navigation**: Menu with links to Home, Shop, About Us, Contact, and Cart.
-**Content**: Text about the company, team member photos and bios, mission statement.
-
-### 7. Contact Page
-**Layout**: Contact form, contact details, map, header, footer.
-**Navigation**: Menu with links to Home, Shop, About Us, Contact, and Cart.
-**Content**: Form fields for name, email, subject, message, company contact details, embedded map.
-
-## Content Requirements
-
-### Text
-- Product descriptions
-- Company history and mission
-- Team member bios
-
-### Images
-- High-resolution product images
-- Team photos
-- Banners and promotional graphics
-
-### Videos
-- Product demonstration videos
-- Company introduction video
+3. Content Requirements:
+- Text: Product descriptions, company information, blog posts, and FAQs.
+- Images: High-resolution images of drawings, team members, and office.
+- Videos: Tutorials, artist interviews, and promotional material.

@@ -1,101 +1,59 @@
-## Backend APIs
+Backend Requirements Document
 
-### 1. User Authentication API
-**Endpoint**: `/api/auth/login`
-**Method**: POST
-**Inputs**: { "username": "string", "password": "string" }
-**Outputs**: { "token": "string", "user_id": "string" }
-**Authentication**: None
+1. Backend APIs:
+  a. Authentication API
+     - Endpoint: /api/auth/login
+     - Method: POST
+     - Inputs: {"email": "string", "password": "string"}
+     - Outputs: {"token": "string", "user": {"id": "int", "name": "string", "email": "string"}}
+     - Authentication: None (login)
+  b. Registration API
+     - Endpoint: /api/auth/register
+     - Method: POST
+     - Inputs: {"name": "string", "email": "string", "password": "string"}
+     - Outputs: {"token": "string", "user": {"id": "int", "name": "string", "email": "string"}}
+     - Authentication: None (registration)
+  c. Get Drawings API
+     - Endpoint: /api/drawings
+     - Method: GET
+     - Inputs: {"category": "string", "price_range": "string", "rating": "int"}
+     - Outputs: [{"id": "int", "title": "string", "price": "float", "rating": "int", "image_url": "string"}]
+     - Authentication: Optional (for personalized recommendations)
+  d. Drawing Detail API
+     - Endpoint: /api/drawings/:id
+     - Method: GET
+     - Inputs: None
+     - Outputs: {"id": "int", "title": "string", "description": "string", "price": "float", "rating": "int", "image_urls": ["string"], "artist": {"name": "string", "bio": "string"}, "reviews": [{"user": "string", "rating": "int", "comment": "string"}]}
+     - Authentication: Optional (for personalized recommendations)
+  e. Add to Cart API
+     - Endpoint: /api/cart
+     - Method: POST
+     - Inputs: {"drawing_id": "int", "quantity": "int"}
+     - Outputs: {"message": "string"}
+     - Authentication: Required
+  f. Get Cart API
+     - Endpoint: /api/cart
+     - Method: GET
+     - Inputs: None
+     - Outputs: [{"drawing_id": "int", "title": "string", "price": "float", "quantity": "int", "total_price": "float"}]
+     - Authentication: Required
+  g. Checkout API
+     - Endpoint: /api/checkout
+     - Method: POST
+     - Inputs: {"billing_details": {"name": "string", "address": "string", "city": "string", "country": "string", "postal_code": "string"}, "payment_info": {"card_number": "string", "expiry_date": "string", "cvv": "string"}}
+     - Outputs: {"order_id": "int", "message": "string"}
+     - Authentication: Required
 
-**Endpoint**: `/api/auth/register`
-**Method**: POST
-**Inputs**: { "username": "string", "password": "string", "email": "string" }
-**Outputs**: { "user_id": "string", "message": "string" }
-**Authentication**: None
-
-### 2. Product Management API
-**Endpoint**: `/api/products`
-**Method**: GET
-**Inputs**: None
-**Outputs**: { "products": [ { "id": "string", "name": "string", "price": "number", "image": "string" } ] }
-**Authentication**: None
-
-**Endpoint**: `/api/products/{id}`
-**Method**: GET
-**Inputs**: { "id": "string" }
-**Outputs**: { "id": "string", "name": "string", "price": "number", "description": "string", "images": [ "string" ] }
-**Authentication**: None
-
-**Endpoint**: `/api/products`
-**Method**: POST
-**Inputs**: { "name": "string", "price": "number", "description": "string", "images": [ "string" ] }
-**Outputs**: { "id": "string", "message": "string" }
-**Authentication**: Bearer Token
-
-### 3. Cart Management API
-**Endpoint**: `/api/cart`
-**Method**: GET
-**Inputs**: None
-**Outputs**: { "cart": [ { "product_id": "string", "quantity": "number" } ], "total": "number" }
-**Authentication**: Bearer Token
-
-**Endpoint**: `/api/cart`
-**Method**: POST
-**Inputs**: { "product_id": "string", "quantity": "number" }
-**Outputs**: { "message": "string" }
-**Authentication**: Bearer Token
-
-**Endpoint**: `/api/cart/{product_id}`
-**Method**: DELETE
-**Inputs**: { "product_id": "string" }
-**Outputs**: { "message": "string" }
-**Authentication**: Bearer Token
-
-### 4. Order Management API
-**Endpoint**: `/api/orders`
-**Method**: POST
-**Inputs**: { "cart": [ { "product_id": "string", "quantity": "number" } ], "payment_method": "string", "shipping_address": "string" }
-**Outputs**: { "order_id": "string", "message": "string" }
-**Authentication**: Bearer Token
-
-### 5. Contact API
-**Endpoint**: `/api/contact`
-**Method**: POST
-**Inputs**: { "name": "string", "email": "string", "subject": "string", "message": "string" }
-**Outputs**: { "message": "string" }
-**Authentication**: None
-
-## API Responses
-
-### Success Response Structure
-```
-{
-    "status": "success",
-    "data": { ... }
-}
-```
-
-### Error Response Structure
-```
-{
-    "status": "error",
-    "message": "string",
-    "code": "number"
-}
-```
-
-### Status Codes
-- 200: OK
-- 201: Created
-- 400: Bad Request
-- 401: Unauthorized
-- 403: Forbidden
-- 404: Not Found
-- 500: Internal Server Error
-
-### Error Messages
-- "Invalid credentials"
-- "User not found"
-- "Product not found"
-- "Insufficient stock"
-- "Internal server error"
+2. API Responses:
+  a. Success Response
+     - Status Code: 200
+     - Structure: {"status": "success", "data": {}}
+  b. Error Response
+     - Status Code: 4xx/5xx
+     - Structure: {"status": "error", "message": "string"}
+  c. Common Error Messages
+     - 400: "Bad Request"
+     - 401: "Unauthorized"
+     - 403: "Forbidden"
+     - 404: "Not Found"
+     - 500: "Internal Server Error"
