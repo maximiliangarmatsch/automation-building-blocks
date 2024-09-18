@@ -4,13 +4,14 @@ from crewai import Task, Agent
 
 
 def develop_frontend(
-    agent: Agent, project_description: str, output_directory: str
+    agent: Agent, output_directory: str
 ) -> Task:
     return Task(
         description=dedent(
             f"""
-                Implement the designed UI for the {project_description} using React, 
-                TailwindCSS, and any necessary tools to ensure a clean, functional, 
+                Read the requirements in {output_directory}/docs/frontend_requirements.txt and
+                implement the application for using React, 
+                TailwindCSS, and/or any necessary tools to ensure a clean, functional, 
                 and responsive frontend. Focus on creating modular, reusable components 
                 that follow best practices for maintainability and scalability. Ensure 
                 accessibility (a11y) and web performance optimization are part of the 
