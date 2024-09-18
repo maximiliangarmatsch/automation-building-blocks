@@ -8,7 +8,7 @@ llm = ChatOpenAI(model="gpt-4o-mini")
 composio_toolset = ComposioToolSet()
 tools = composio_toolset.get_tools(apps=[App.GOOGLESHEETS], actions=[Action.SHELLTOOL_EXEC_COMMAND])
 
-def invoices_netze_preparation_agent():
+def prepare_invoice():
     agent = Agent(
             role = "Google Sheet Agent",
             goal = """You take action on Google Sheet using Google Sheet APIs""",

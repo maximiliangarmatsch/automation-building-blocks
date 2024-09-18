@@ -1,8 +1,8 @@
 from datetime import datetime
 from crewai import Task, Crew
 from dotenv import load_dotenv
-from agents.invoices_netze_preparation_agent import invoices_netze_preparation_agent
-from tasks.invoices_netze_preparation_agent_task import invoices_netze_preparation_agent_task
+from agents.prepare_invoice.prepare_invoice_agent import prepare_invoice
+from agents.prepare_invoice.prepare_invoice_task import invoice_preparation
 # Load environment variables
 load_dotenv()
 
@@ -12,7 +12,7 @@ timezone = datetime.now().astimezone().tzinfo
 
 # Create and Execute Agent.
 def run_crew():
-    crew = Crew(agents=[invoices_netze_preparation_agent()], tasks=[invoices_netze_preparation_agent_task()])
+    crew = Crew(agents=[prepare_invoice()], tasks=[invoice_preparation()])
     result = crew.kickoff()
     print(result)
     return "Crew run initiated", 200
