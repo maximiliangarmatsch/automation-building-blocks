@@ -7,8 +7,6 @@ from agents.business_analyst.define_product_vision import define_product_vision
 
 
 class BusinessCrew:
-    """Business Team Crew"""
-
     def __init__(self, project_description: str):
         self.project_description = project_description
         self.output_directory = "./generated_src"
