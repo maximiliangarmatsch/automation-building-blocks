@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "noImplicitAny": false, //todo
     "target": "es5",
     "lib": [
       "dom",
