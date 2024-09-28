@@ -13,6 +13,8 @@ from helper import (generate_unique_id, analyze_image_video,
                         hash_password, get_db_connection,
                         save_uploaded_file, get_attractiveness_score)
 from user_profile_helper import (extract_profile_data, check_mandatory_fields)
+from distance_calculator_helper import get_distance, get_user_address
+load_dotenv()
 # Module
 app = Flask(__name__)
 cors = CORS(app)
@@ -29,7 +31,7 @@ def __init__():
     load_dotenv()
     api_key = os.getenv("GOOGLE_API_KEY")
     genai.configure(api_key = api_key)
-
+google_distance_api = os.getenv("GOOGLE_DISTANCE_API")
 @app.route('/auth', methods=['POST'])
 @cross_origin()
 def authenticate():
@@ -77,7 +79,7 @@ def extract_features():
         return jsonify(analysis_insights), 200
     return jsonify({"error": "File processing failed."}), 500
 
-@app.route('//attractiveness', methods=['POST'])
+@app.route('/attractiveness', methods=['POST'])
 def atractiveness():
     if 'file' not in request.files:
         return jsonify({"error": "No file part"}), 400
@@ -113,6 +115,73 @@ def get_profile():
     profile_data = dict(zip(column_names, profile)) 
     conn.close()
     return jsonify(profile_data), 200
+
+@app.route('/match_profile', methods=['POST'])
+def match_profile():
+    data = request.get_json()
+    user_preferences = data.get('user_preferences', {})
+    # Mandatory filters
+    attractiveness_min = user_preferences.get('attractiveness_min')
+    attractiveness_max = user_preferences.get('attractiveness_max')
+    relationship_type = user_preferences.get('relationship_type')
+    family_planning = user_preferences.get('family_planning')
+    user_gender = user_preferences.get('gender')
+    age_min = user_preferences.get('age_min')
+    age_max = user_preferences.get('age_max')
+
+    # Optional filters
+    hair_length = user_preferences.get('hair_length')
+    max_distance = user_preferences.get('max_distance')
+    unique_id = user_preferences.get('unique_id')
+    query = """
+        SELECT * FROM User_profile
+        WHERE CAST(attractiveness AS INTEGER) BETWEEN ? AND ?
+        AND relationship_type = ?
+        AND family_planning = ?
+        AND age BETWEEN ? AND ?
+    """
+    params = [
+        attractiveness_min,
+        attractiveness_max,
+        relationship_type,
+        family_planning,
+        age_min,
+        age_max
+    ]
+    if user_gender == 'male':
+        query += " AND gender = ?"
+        params.append('female')
+    elif user_gender == 'female':
+        query += " AND gender = ?"
+        params.append('male')
+    if hair_length:
+        query += " AND hair_length = ?"
+        params.append(hair_length)
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute(query, params)
+    rows = cursor.fetchall()
+    conn.close()
+    if not rows:
+        return jsonify({'profiles': []})
+    final_profiles = []
+    print(rows)    
+    if max_distance:
+        conn = get_db_connection()
+        user_address = get_user_address(unique_id, conn)
+        columns = [column[0] for column in cursor.description]
+        for row in rows:
+            profile_dict = {columns[i]: row[i] for i in range(len(columns))}
+            profile_address = profile_dict['living_address']
+            distance = get_distance(google_distance_api, user_address, profile_address)
+            distance_value = float(distance.split()[0]) 
+            if distance_value <= float(max_distance):
+                final_profiles.append(profile_dict) 
+        conn.close()
+    else:
+        final_profiles = [dict(row) for row in rows]
+    return jsonify({'profiles': final_profiles})
+
 
 @app.route('/create_profile', methods=['POST'])
 @cross_origin()
