@@ -5,7 +5,6 @@ import {
   TextField,
   Typography,
   Paper,
-  FormControlLabel,
   FormControl,
   RadioGroup,
   Radio,
