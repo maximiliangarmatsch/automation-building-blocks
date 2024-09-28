@@ -14,6 +14,7 @@ from helper import (generate_unique_id, analyze_image_video,
                         save_uploaded_file, get_attractiveness_score)
 from user_profile_helper import (extract_profile_data, check_mandatory_fields)
 from distance_calculator_helper import get_distance, get_user_address
+from match_profile_helper import save_match_profile, get_match_profiles
 load_dotenv()
 # Module
 app = Flask(__name__)
@@ -116,6 +117,17 @@ def get_profile():
     conn.close()
     return jsonify(profile_data), 200
 
+@app.route('/get_match_profiles', methods=['POST'])
+def get_profiles():
+    conn = get_db_connection()
+    data = request.get_json()
+    unique_id = data.get('unique_id')
+    if unique_id is None:
+        return jsonify({'error': 'unique_id is required'}), 400
+    profiles = get_match_profiles(unique_id, conn=conn)
+    conn.close()
+    return profiles
+
 @app.route('/match_profile', methods=['POST'])
 def match_profile():
     data = request.get_json()
@@ -161,7 +173,6 @@ def match_profile():
     cursor = conn.cursor()
     cursor.execute(query, params)
     rows = cursor.fetchall()
-    conn.close()
     if not rows:
         return jsonify({'profiles': []})
     final_profiles = []
@@ -177,9 +188,14 @@ def match_profile():
             distance_value = float(distance.split()[0]) 
             if distance_value <= float(max_distance):
                 final_profiles.append(profile_dict) 
+                save_match_profile(your_unique_id=unique_id, match_unique_id=profile_dict['unique_id'], conn = conn)
         conn.close()
     else:
-        final_profiles = [dict(row) for row in rows]
+        columns = [column[0] for column in cursor.description]
+        final_profiles = [dict(zip(columns, row)) for row in rows]
+        for profile in final_profiles:
+            save_match_profile(your_unique_id=unique_id, match_unique_id=profile['unique_id'], conn=conn)
+        conn.close()
     return jsonify({'profiles': final_profiles})
 
 

@@ -9,7 +9,7 @@ def create_users_table():
     cursor = conn.cursor()
 
     # SQL command to create the users table
-    cursor.execute('SELECT * FROM User_profile;')
+    cursor.execute('SELECT * FROM Match_profile;')
     unique_ids = cursor.fetchall()  # Fetch all results
     print(unique_ids)
     # cursor.execute('''
@@ -76,7 +76,15 @@ def create_users_table():
     #         FOREIGN KEY (unique_id) REFERENCES User(unique_id)
     #     );
     #     """)
-
+    # cursor.execute('''
+    #     CREATE TABLE IF NOT EXISTS Match_profile (
+    #         id INTEGER PRIMARY KEY AUTOINCREMENT,
+    #         your_unique_id INTEGER,
+    #         match_unique_id INTEGER,
+    #         FOREIGN KEY (your_unique_id) REFERENCES User(unique_id),
+    #         FOREIGN KEY (match_unique_id) REFERENCES User(unique_id)
+    #     );
+    #     ''')
     conn.commit()
     conn.close()
     print("User_profile table created successfully!")
