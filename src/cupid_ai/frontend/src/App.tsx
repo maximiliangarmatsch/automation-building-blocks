@@ -4,6 +4,7 @@ import { PATHS } from "./utils";
 import { Profile } from "./pages/profile";
 import { Matches } from "./pages/matches";
 import { BottomNavigation } from "./components/BottomNavigation";
+import { TopNavigation } from "./components/TopNavigation";
 
 function App() {
   const matchesData = [
@@ -14,8 +15,9 @@ function App() {
   ];
 
   return (
-    <Container maxWidth="sm">
-      <BrowserRouter>
+    <BrowserRouter>
+      <TopNavigation />
+      <Container maxWidth="sm">
         <Routes>
           <Route path={PATHS.PROFILE} element={<Profile />} />
           <Route
@@ -23,9 +25,9 @@ function App() {
             element={<Matches data={matchesData} />}
           />
         </Routes>
-        <BottomNavigation />
-      </BrowserRouter>
-    </Container>
+      </Container>
+      <BottomNavigation />
+    </BrowserRouter>
   );
 }
 
