@@ -1,15 +1,12 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Box,
   Fab,
   TextField,
   Typography,
   Paper,
-  FormControlLabel,
-  Checkbox,
   FormControl,
   RadioGroup,
-  FormLabel,
   Radio,
 } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
