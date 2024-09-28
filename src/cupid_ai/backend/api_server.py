@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 
 from helper import (generate_unique_id, analyze_image_video, 
                         hash_password, get_db_connection,
-                        save_uploaded_file)
+                        save_uploaded_file, get_attractiveness_score)
 from user_profile_helper import (extract_profile_data, check_mandatory_fields)
 # Module
 app = Flask(__name__)
@@ -62,8 +62,8 @@ def authenticate():
 
         return make_response(jsonify({"message": "User created successfully!", "unique_id": unique_id}), 201)
     
-@app.route('/analyze', methods=['POST'])
-def analyze():
+@app.route('/extract_features', methods=['POST'])
+def extract_features():
     if 'file' not in request.files:
         return jsonify({"error": "No file part"}), 400
     uploaded_file = request.files['file']
@@ -74,7 +74,22 @@ def analyze():
         analysis_insights = analyze_image_video(file_path)
         if os.path.exists(file_path):
             os.remove(file_path)
-        return jsonify({"features": analysis_insights}), 200
+        return jsonify(analysis_insights), 200
+    return jsonify({"error": "File processing failed."}), 500
+
+@app.route('//attractiveness', methods=['POST'])
+def atractiveness():
+    if 'file' not in request.files:
+        return jsonify({"error": "No file part"}), 400
+    uploaded_file = request.files['file']
+    if uploaded_file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+    if uploaded_file:
+        file_path = save_uploaded_file(uploaded_file, MEDIA_FOLDER)
+        analysis_insights = get_attractiveness_score(file_path)
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        return jsonify(analysis_insights), 200
     return jsonify({"error": "File processing failed."}), 500
 
 @app.route('/get_profile', methods=['GET'])

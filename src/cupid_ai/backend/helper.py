@@ -8,9 +8,8 @@ import google.generativeai as genai
 
 DB_PATH = 'db/cupid_ai.db'
 
-def get_prompt() -> str:
-    """Make prompt for generating insights."""
-    file_path = "./src/cupid_ai/backend/prompts/feature_extraction.txt"
+def get_prompt(file_path) -> str:
+    file_path = file_path
     with open(file_path, "r", encoding="utf8") as file:
         prompt = file.read()
     return prompt
@@ -39,11 +38,31 @@ def analyze_image_video(video_path):
         video_file = genai.get_file(video_file.name)
     if video_file.state.name == "FAILED":
         return {"error": "Video processing failed."}
-    prompt = get_prompt()
-    model = genai.GenerativeModel('gemini-1.5-flash-latest')    
+    prompt = get_prompt("./src/cupid_ai/backend/prompts/feature_extraction.txt")
+    model = genai.GenerativeModel('gemini-1.5-flash-latest')
     response = model.generate_content([prompt, video_file], request_options={"timeout": 600})
     genai.delete_file(video_file.name)
-    json_response = response.text.lstrip('```json').rstrip('```')
+    json_response = response.text.lstrip('`json').rstrip('`')
+    if not json_response:
+        return {"error": "No response received from GenAI model."}
     data = json.loads(json_response)
     print(data.get('HairColor'))
-    return json_response
+    return data
+
+def get_attractiveness_score(video_path):
+    video_file = genai.upload_file(path=video_path)
+    while video_file.state.name == "PROCESSING":
+        time.sleep(10)
+        video_file = genai.get_file(video_file.name)
+    if video_file.state.name == "FAILED":
+        return {"error": "Video processing failed."}
+    prompt = get_prompt("./src/cupid_ai/backend/prompts/attractiveness.txt")
+    model = genai.GenerativeModel('gemini-1.5-flash-latest')
+    response = model.generate_content([prompt, video_file], request_options={"timeout": 600})
+    genai.delete_file(video_file.name)
+    json_response = response.text.lstrip('`json').rstrip('`')
+    if not json_response:
+        return {"error": "No response received from GenAI model."}
+    data = json.loads(json_response)
+    print(data)
+    return data

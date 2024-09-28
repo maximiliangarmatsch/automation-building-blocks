@@ -1,0 +1,21 @@
+Analyze the provided 15-25 second video or image and extract key features of the person to evaluate their attractiveness score 
+for a dating app. The evaluation should be based on physical appearance, body language, facial expressions, and any other visible 
+or audible traits. If it is a video, capture speech details, including name and approximate age based on their voice, and detect 
+any visible hobbies or interests (e.g., holding a guitar, cooking, etc.).
+
+Output Format (JSON):
+
+{
+  "attractiveness_score": Attactiveness score,
+  "features_description": [
+    {
+      "feature": "feature_name_used_to_find_attractiveness",
+      "description": "description about the feature and how it contributes to attractiveness"
+    }
+  ],
+  "comments": "description summarizing strengths and areas for improvement"
+}
+
+For each feature, provide a one line or sentnce description of how it contributes to the attractiveness score, focusing on factors 
+most relevant to interpersonal attraction and compatibility in a dating context.
+At the end, provide a conclusion summarizing.
