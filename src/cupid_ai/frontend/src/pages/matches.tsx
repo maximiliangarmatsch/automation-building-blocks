@@ -1,8 +1,8 @@
 import {List, ListItemButton,ListItemText}  from "@mui/material";
 import MatchesSort from "./matches_sort";
 
-export const Matches = ({data}) => {
-
+export const Matches = (props: any) => {
+  const {data} = props;
   return (
     <>
       <MatchesSort />
