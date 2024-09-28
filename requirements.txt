@@ -21,3 +21,10 @@ crewai_tools
 watchdog
 composio-crewai
 langchain-openai
+# here
+flask
+flask-cors
+asgiref
+google-generativeai 
+python-dotenv
+openai

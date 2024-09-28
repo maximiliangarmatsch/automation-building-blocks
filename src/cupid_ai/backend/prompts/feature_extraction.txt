@@ -1,0 +1,27 @@
+Please analyze the provided image or video clip (15 to 25 seconds) to extract the following facial features. 
+Return the results in JSON format:
+
+Gender: (Male or Female)
+Eye Color: (e.g., blue, brown)
+Eye Type: (e.g., almond, round)
+Hair Color: (e.g., blonde, black)
+Hair Length: (e.g., short, medium, long)
+Hair Style: (e.g., straight, curly, wavy)
+Nose: (e.g., straight, hooked)
+Facial Form: (e.g., oval, round)
+Cheekbones: (e.g., high, low)
+Eyebrows: (e.g., arched, straight)
+Output Format (JSON):
+{
+  "Gender": "M/W",
+  "EyeColor": "color",
+  "EyeType": "type",
+  "HairColor": "color",
+  "HairLength": "length",
+  "HairStyle": "style",
+  "Nose": "description",
+  "FacialForm": "form",
+  "Cheekbones": "description",
+  "Eyebrows": "description"
+}
+This prompt should help in extracting the specified features effectively and structuring the results in a clear JSON format.
