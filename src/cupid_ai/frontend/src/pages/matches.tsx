@@ -1,16 +1,8 @@
 import { List, ListItemButton, ListItemText } from "@mui/material";
 import MatchesSort from "./matches_sort";
 
-interface Match {
-  title: string;
-  message: string;
-}
-
-interface MatchesProps {
-  data: Match[];
-}
-
-export const Matches = ({ data }: MatchesProps) => {
+export const Matches = (props: any) => {
+  const { data } = props;
   return (
     <>
       <MatchesSort />
