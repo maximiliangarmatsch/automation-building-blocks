@@ -4,6 +4,7 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { createTheme, ThemeProvider } from "@mui/material";
+import CssBaseline from "@mui/material/CssBaseline";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -19,6 +20,7 @@ const theme = createTheme({
 
 root.render(
   <React.StrictMode>
+    <CssBaseline />
     <ThemeProvider theme={theme}>
       <App />
     </ThemeProvider>
