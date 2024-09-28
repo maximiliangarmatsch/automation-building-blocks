@@ -1,5 +1,5 @@
 import { List, ListItemButton, ListItemText } from "@mui/material";
-import MatchesSort from "./matches_sort";
+import MatchesSort from "../components/MatchesSort";
 
 export const Matches = (props: any) => {
   const { data } = props;
