@@ -5,6 +5,11 @@ import { Profile } from "./pages/profile";
 import { Matches } from "./pages/matches";
 import { BottomNavigation } from "./components/BottomNavigation";
 import { TopNavigation } from "./components/TopNavigation";
+import { Login } from "./pages/login";
+import { useMemo } from "react";
+import PrivateRoute from "./components/ProtectedRoutes";
+import AuthProvider from "./contexts/AuthContext";
+import { Register } from "./pages/register";
 
 function App() {
   const matchesData = [
@@ -14,19 +19,34 @@ function App() {
     },
   ];
 
+  const hideNavigation = useMemo(() => {
+    return window.location.pathname === PATHS.LOGIN;
+  }, []);
+
   return (
     <BrowserRouter>
-      <TopNavigation />
-      <Container maxWidth="sm">
-        <Routes>
-          <Route path={PATHS.PROFILE} element={<Profile />} />
-          <Route
-            path={PATHS.MATCHES}
-            element={<Matches data={matchesData} />}
-          />
-        </Routes>
-      </Container>
-      <BottomNavigation />
+      <AuthProvider>
+        <TopNavigation />
+        <Container maxWidth="sm">
+          <Routes>
+            {/* Private Routes */}
+            <Route element={<PrivateRoute />}>
+              <Route path={PATHS.PROFILE} element={<Profile />} />
+            </Route>
+            <Route element={<PrivateRoute />}>
+              <Route
+                path={PATHS.MATCHES}
+                element={<Matches data={matchesData} />}
+              />
+            </Route>
+
+            {/* Public Routes */}
+            <Route path={PATHS.LOGIN} element={<Login />} />
+            <Route path={PATHS.REGISTER} element={<Register />} />
+          </Routes>
+        </Container>
+        <BottomNavigation />
+      </AuthProvider>
     </BrowserRouter>
   );
 }
