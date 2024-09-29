@@ -1,0 +1,42 @@
+[
+  {
+    "key": "straight",
+    "label": "Straight"
+  },
+  {
+    "key": "wavy",
+    "label": "Wavy"
+  },
+  {
+    "key": "curly",
+    "label": "Curly"
+  },
+  {
+    "key": "coily",
+    "label": "Coily"
+  },
+  {
+    "key": "braided",
+    "label": "Braided"
+  },
+  {
+    "key": "dreadlocks",
+    "label": "Dreadlocks"
+  },
+  {
+    "key": "buzzcut",
+    "label": "Buzzcut"
+  },
+  {
+    "key": "mohawk",
+    "label": "Mohawk"
+  },
+  {
+    "key": "afro",
+    "label": "Afro"
+  },
+  {
+    "key": "other",
+    "label": "Other"
+  }
+]

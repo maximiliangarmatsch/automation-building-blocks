@@ -1,0 +1,50 @@
+[
+  {
+    "key": "black",
+    "label": "Black"
+  },
+  {
+    "key": "brown",
+    "label": "Brown"
+  },
+  {
+    "key": "blonde",
+    "label": "Blonde"
+  },
+  {
+    "key": "red",
+    "label": "Red"
+  },
+  {
+    "key": "gray",
+    "label": "Gray"
+  },
+  {
+    "key": "white",
+    "label": "White"
+  },
+  {
+    "key": "auburn",
+    "label": "Auburn"
+  },
+  {
+    "key": "chestnut",
+    "label": "Chestnut"
+  },
+  {
+    "key": "strawberry_blonde",
+    "label": "Strawberry Blonde"
+  },
+  {
+    "key": "salt_and_pepper",
+    "label": "Salt and Pepper"
+  },
+  {
+    "key": "multicolored",
+    "label": "Multicolored"
+  },
+  {
+    "key": "other",
+    "label": "Other"
+  }
+]
