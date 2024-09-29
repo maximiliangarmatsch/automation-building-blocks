@@ -9,7 +9,7 @@ def create_users_table():
     cursor = conn.cursor()
 
     # SQL command to create the users table
-    cursor.execute('SELECT * FROM Match_profile;')
+    cursor.execute('SELECT * FROM Accepted_match;')
     unique_ids = cursor.fetchall()  # Fetch all results
     print(unique_ids)
     # cursor.execute('''
@@ -85,6 +85,58 @@ def create_users_table():
     #         FOREIGN KEY (match_unique_id) REFERENCES User(unique_id)
     #     );
     #     ''')
+    # cursor.execute('''
+    #     CREATE TABLE IF NOT EXISTS Accepted_match (
+    #     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    #     your_unique_id INTEGER,
+    #     match_unique_id INTEGER,
+    #     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    #     status TEXT,
+    #     your_q1 TEXT,
+    #     your_a1 TEXT,
+    #     your_q2 TEXT,
+    #     your_a2 TEXT,
+    #     your_q3 TEXT,
+    #     your_a3 TEXT,
+    #     your_q4 TEXT,
+    #     your_a4 TEXT,
+    #     your_q5 TEXT,
+    #     your_a5 TEXT,
+    #     your_q6 TEXT,
+    #     your_a6 TEXT,
+    #     your_q7 TEXT,
+    #     your_a7 TEXT,
+    #     your_q8 TEXT,
+    #     your_a8 TEXT,
+    #     your_q9 TEXT,
+    #     your_a9 TEXT,
+    #     your_q10 TEXT,
+    #     your_a10 TEXT,
+    #     partner_q1 TEXT,
+    #     partner_a1 TEXT,
+    #     partner_q2 TEXT,
+    #     partner_a2 TEXT,
+    #     partner_q3 TEXT,
+    #     partner_a3 TEXT,
+    #     partner_q4 TEXT,
+    #     partner_a4 TEXT,
+    #     partner_q5 TEXT,
+    #     partner_a5 TEXT,
+    #     partner_q6 TEXT,
+    #     partner_a6 TEXT,
+    #     partner_q7 TEXT,
+    #     partner_a7 TEXT,
+    #     partner_q8 TEXT,
+    #     partner_a8 TEXT,
+    #     partner_q9 TEXT,
+    #     partner_a9 TEXT,
+    #     partner_q10 TEXT,
+    #     partner_a10 TEXT,
+    #     FOREIGN KEY (your_unique_id) REFERENCES User(unique_id),
+    #     FOREIGN KEY (match_unique_id) REFERENCES User(unique_id)
+    #     );
+    # ''')
+
     conn.commit()
     conn.close()
     print("User_profile table created successfully!")

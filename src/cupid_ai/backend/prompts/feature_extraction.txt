@@ -13,7 +13,7 @@ Cheekbones: (e.g., high, low)
 Eyebrows: (e.g., arched, straight)
 Output Format (JSON):
 {
-  "Gender": "M/W",
+  "Gender": "Male/Female",
   "EyeColor": "color",
   "EyeType": "type",
   "HairColor": "color",
