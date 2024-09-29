@@ -8,11 +8,16 @@ import { Box, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import { PATHS } from "../utils";
 import { BottomNavigation_FabButton } from "./BottomNavigation_FabButtons";
+import { useAuth } from "../contexts/AuthContext";
 
 export function BottomNavigation() {
   const [currentPath, setCurrentPath] = useState(
     () => window.location.pathname
   );
+
+  const auth = useAuth();
+
+  if (!auth?.user) return null;
 
   return (
     <React.Fragment>
