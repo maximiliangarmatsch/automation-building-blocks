@@ -17,7 +17,7 @@ export function BottomNavigation() {
 
   const auth = useAuth();
 
-  if (!auth?.user) return null;
+  if (!auth?.uniqueID) return null;
 
   return (
     <React.Fragment>

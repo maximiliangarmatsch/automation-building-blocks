@@ -25,26 +25,26 @@ export function TopNavigation() {
       <AppBar position="static" color="primary">
         <Toolbar
           className={`flex ${
-            auth?.user ? "justify-between" : "justify-center"
+            auth?.uniqueID ? "justify-between" : "justify-center"
           }`}
         >
-          {auth?.user && (
+          {auth?.uniqueID && (
             <IconButton
               size="large"
               edge="start"
               color="inherit"
               aria-label="menu"
               onClick={() => {
-                window.history.back();
+                // window.history.back();
               }}
             >
-              <KeyboardBackspaceIcon />
+              {/* <KeyboardBackspaceIcon /> */}
             </IconButton>
           )}
 
           <img src="/logo.svg" alt="Cupid AI Logo" />
 
-          {auth?.user && (
+          {auth?.uniqueID && (
             <>
               <IconButton
                 size="large"
@@ -71,8 +71,9 @@ export function TopNavigation() {
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
               >
-                <MenuItem onClick={handleClose}>Profile</MenuItem>
-                <MenuItem onClick={handleClose}>Logout</MenuItem>
+                <MenuItem onClick={auth.logOut}>
+                  <p className="text-red-700	">Logout</p>
+                </MenuItem>
               </Menu>
             </>
           )}
