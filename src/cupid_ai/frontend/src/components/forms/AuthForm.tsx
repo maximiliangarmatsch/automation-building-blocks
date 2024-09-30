@@ -4,8 +4,8 @@ import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { PATHS } from "../../utils";
 import { useForm } from "react-hook-form";
-import { useAuth } from "../../contexts/AuthContext";
-import useYupValidationResolver from "../../hooks/useYupValidationResolver";
+import { useAuth } from "../../utils/contexts/AuthContext";
+import useYupValidationResolver from "../../utils/hooks/useYupValidationResolver";
 import CircularProgress from "@mui/material/CircularProgress";
 
 const formValidationSchema = Yup.object({

@@ -6,7 +6,7 @@ import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import SettingsIcon from "@mui/icons-material/Settings";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../utils/contexts/AuthContext";
 
 export function TopNavigation() {
   const auth = useAuth();

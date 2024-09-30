@@ -1,7 +1,7 @@
 import { useContext, createContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { PATHS } from "../utils";
-import api, { API_ENDPOINTS, BASE_API } from "../services/api";
+import { PATHS } from "../../utils";
+import api, { API_ENDPOINTS, BASE_API } from "../../services/api";
 
 const AuthContext = createContext<{
   user: any;
