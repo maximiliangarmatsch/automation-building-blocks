@@ -3,7 +3,7 @@ import { Container } from "@mui/material";
 import { PATHS } from "./utils";
 import { Profile } from "./pages/profile";
 import { Matches } from "./pages/matches";
-import { BottomNavigation } from "./components/BottomNavigation";
+import { BottomNavigation } from "./components/BottomNavigation/BottomNavigation";
 import { TopNavigation } from "./components/TopNavigation";
 import { Login } from "./pages/login";
 import { useMemo } from "react";
