@@ -20,6 +20,7 @@ from helper import (
 )
 from user_profile_helper import extract_profile_data, check_mandatory_fields
 from distance_calculator_helper import get_distance, get_user_address
+
 from match_profile_helper import (
     save_match_profile,
     get_match_profiles,
@@ -159,6 +160,16 @@ def get_profiles():
     if unique_id is None:
         return jsonify({"error": "unique_id is required"}), 400
     profiles = get_match_profiles(unique_id, conn=conn)
+    return profiles
+
+@app.route('/get_accepted_profiles', methods=['POST'])
+def accepted_profiles():
+    connection = get_db_connection()
+    data = request.get_json()
+    unique_id = data.get('unique_id')
+    if unique_id is None:
+        return jsonify({'error': 'unique_id is required'}), 400
+    profiles = get_accepted_profiles(unique_id, connection)
     return profiles
 
 
@@ -602,7 +613,80 @@ def match_accepted():
     return jsonify({"message": "success"}), 200
 
 
-@app.route("/delete_user", methods=["DELETE"])
+@app.route('/match_accepted', methods=['POST'])
+def match_accepted():
+    data = request.json    
+    your_unique_id = data.get('your_unique_id')
+    match_partner_unique_id = data.get('match_partner_unique_id')    
+    status = data.get('status', 'No')
+    your_q1 = data.get('your_q1')
+    your_a1 = data.get('your_a1')
+    your_q2 = data.get('your_q2')
+    your_a2 = data.get('your_a2')
+    your_q3 = data.get('your_q3')
+    your_a3 = data.get('your_a3')
+    your_q4 = data.get('your_q4')
+    your_a4 = data.get('your_a4')
+    your_q5 = data.get('your_q5')
+    your_a5 = data.get('your_a5')
+    your_q6 = data.get('your_q6')
+    your_a6 = data.get('your_a6')
+    your_q7 = data.get('your_q7')
+    your_a7 = data.get('your_a7')
+    your_q8 = data.get('your_q8')
+    your_a8 = data.get('your_a8')
+    your_q9 = data.get('your_q9')
+    your_a9 = data.get('your_a9')
+    your_q10 = data.get('your_q10')
+    your_a10 = data.get('your_a10')
+    
+    # Optional fields for partner's questions and answers
+    partner_q1 = data.get('partner_q1')
+    partner_a1 = data.get('partner_a1')
+    partner_q2 = data.get('partner_q2')
+    partner_a2 = data.get('partner_a2')
+    partner_q3 = data.get('partner_q3')
+    partner_a3 = data.get('partner_a3')
+    partner_q4 = data.get('partner_q4')
+    partner_a4 = data.get('partner_a4')
+    partner_q5 = data.get('partner_q5')
+    partner_a5 = data.get('partner_a5')
+    partner_q6 = data.get('partner_q6')
+    partner_a6 = data.get('partner_a6')
+    partner_q7 = data.get('partner_q7')
+    partner_a7 = data.get('partner_a7')
+    partner_q8 = data.get('partner_q8')
+    partner_a8 = data.get('partner_a8')
+    partner_q9 = data.get('partner_q9')
+    partner_a9 = data.get('partner_a9')
+    partner_q10 = data.get('partner_q10')
+    partner_a10 = data.get('partner_a10')
+    if not your_unique_id or not match_partner_unique_id:
+        return jsonify({"error": "your_unique_id and match_partner_unique_id are required"}), 400
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
+        INSERT INTO Accepted_match (
+            your_unique_id, match_unique_id, status,
+            your_q1, your_a1, your_q2, your_a2, your_q3, your_a3, your_q4, your_a4, your_q5, your_a5, 
+            your_q6, your_a6, your_q7, your_a7, your_q8, your_a8, your_q9, your_a9, your_q10, your_a10,
+            partner_q1, partner_a1, partner_q2, partner_a2, partner_q3, partner_a3, partner_q4, partner_a4, 
+            partner_q5, partner_a5, partner_q6, partner_a6, partner_q7, partner_a7, partner_q8, partner_a8, 
+            partner_q9, partner_a9, partner_q10, partner_a10
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ''', (
+        your_unique_id, match_partner_unique_id, status,
+        your_q1, your_a1, your_q2, your_a2, your_q3, your_a3, your_q4, your_a4, your_q5, your_a5, your_q6, your_a6, your_q7, your_a7, 
+        your_q8, your_a8, your_q9, your_a9, your_q10, your_a10,
+        partner_q1, partner_a1, partner_q2, partner_a2, partner_q3, partner_a3, partner_q4, partner_a4, partner_q5, partner_a5, 
+        partner_q6, partner_a6, partner_q7, partner_a7, partner_q8, partner_a8, partner_q9, partner_a9, partner_q10, partner_a10
+    ))
+    conn.commit()
+    conn.close()
+    return jsonify({"message": "success"}), 200
+
+@app.route('/delete_user', methods=["DELETE"])
 @cross_origin()
 def delete_user():
     data = request.json
