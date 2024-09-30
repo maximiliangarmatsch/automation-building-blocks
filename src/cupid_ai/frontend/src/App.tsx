@@ -6,10 +6,10 @@ import { Matches } from "./pages/matches";
 import { BottomNavigation } from "./components/BottomNavigation/BottomNavigation";
 import { TopNavigation } from "./components/TopNavigation";
 import { Login } from "./pages/login";
-import { useMemo } from "react";
 import PrivateRoute from "./components/ProtectedRoutes";
 import AuthProvider from "./utils/contexts/AuthContext";
 import { Register } from "./pages/register";
+import { CreateProfile } from "./pages/create-profile";
 
 function App() {
   const matchesData = [
@@ -19,10 +19,6 @@ function App() {
       message: "Chat-Date on Friday at 18:30, 29.09.2024",
     },
   ];
-
-  const hideNavigation = useMemo(() => {
-    return window.location.pathname === PATHS.LOGIN;
-  }, []);
 
   return (
     <BrowserRouter>
@@ -39,6 +35,10 @@ function App() {
                 path={PATHS.MATCHES}
                 element={<Matches data={matchesData} />}
               />
+            </Route>
+
+            <Route element={<PrivateRoute withUserProfile={false} />}>
+              <Route path={PATHS.CREATE_PROFILE} element={<CreateProfile />} />
             </Route>
 
             {/* Public Routes */}

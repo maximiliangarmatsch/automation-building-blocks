@@ -3,10 +3,18 @@ import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../utils/contexts/AuthContext";
 import { isLocalhost } from "../utils";
 
-const PrivateRoute = () => {
+interface PrivateRouteInterface {
+  withUserProfile?: boolean;
+}
+
+const PrivateRoute = ({ withUserProfile = true }: PrivateRouteInterface) => {
   const auth = useAuth();
 
-  if (!auth?.uniqueID && !isLocalhost) return <Navigate to="/login" />;
+  const protection = withUserProfile ? auth?.user : auth?.uniqueID;
+
+  console.log(protection);
+
+  if (!protection && !isLocalhost) return <Navigate to="/login" />;
   return <Outlet />;
 };
 
