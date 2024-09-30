@@ -6,7 +6,7 @@ import Groups2Icon from "@mui/icons-material/Groups2";
 import PersonIcon from "@mui/icons-material/Person";
 import { Box, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
-import { PATHS } from "../../utils";
+import { isLocalhost, PATHS } from "../../utils";
 import { BottomNavigationFilterButton } from "./BottomNavigationFilterButton";
 import { useAuth } from "../../contexts/AuthContext";
 
@@ -17,7 +17,7 @@ export function BottomNavigation() {
 
   const auth = useAuth();
 
-  if (!auth?.uniqueID) return null;
+  if (!auth?.uniqueID && !isLocalhost) return null;
 
   return (
     <React.Fragment>
