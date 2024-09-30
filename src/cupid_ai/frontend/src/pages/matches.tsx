@@ -1,8 +1,17 @@
 import { List, ListItemButton, ListItemText } from "@mui/material";
 import MatchesSort from "../components/MatchesSort";
+import { PATHS } from "../utils";
+import { useNavigate } from "react-router-dom";
 
 export const Matches = (props: any) => {
+  const navigate = useNavigate();
   const { data } = props;
+
+  const handleNavigate = (userId) => {
+    // Navigate to the "About" page
+    navigate(PATHS.PROFILE);
+  };
+
   return (
     <>
       <MatchesSort />
@@ -12,7 +21,12 @@ export const Matches = (props: any) => {
         aria-labelledby="nested-list-subheader"
       >
         {data.map((match) => (
-          <ListItemButton key={match.title}>
+          <ListItemButton
+            key={match.title}
+            onClick={() => {
+              handleNavigate(match.id);
+            }}
+          >
             <ListItemText primary={match.title} secondary={match.message} />
           </ListItemButton>
         ))}

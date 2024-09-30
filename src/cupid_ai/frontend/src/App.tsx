@@ -3,7 +3,7 @@ import { Container } from "@mui/material";
 import { PATHS } from "./utils";
 import { Profile } from "./pages/profile";
 import { Matches } from "./pages/matches";
-import { BottomNavigation } from "./components/BottomNavigation";
+import { BottomNavigation } from "./components/BottomNavigation/BottomNavigation";
 import { TopNavigation } from "./components/TopNavigation";
 import { Login } from "./pages/login";
 import { useMemo } from "react";
@@ -14,6 +14,7 @@ import { Register } from "./pages/register";
 function App() {
   const matchesData = [
     {
+      id: 1,
       title: "24yo | Bartender | Berlin",
       message: "Chat-Date on Friday at 18:30, 29.09.2024",
     },

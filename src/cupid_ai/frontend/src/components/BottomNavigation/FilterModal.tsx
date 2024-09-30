@@ -1,7 +1,5 @@
-import { useState } from "react";
 import {
   Box,
-  Fab,
   TextField,
   Typography,
   Paper,
@@ -10,7 +8,6 @@ import {
   Radio,
   FormControlLabel,
 } from "@mui/material";
-import FilterListIcon from "@mui/icons-material/FilterList";
 import Modal from "@mui/material/Modal";
 import Grid from "@mui/material/Grid2";
 
@@ -26,35 +23,11 @@ const style = {
   p: 4,
 };
 
-export function BottomNavigation_FabButton() {
-  const [open, setOpen] = useState(false);
-
-  const onOpen = () => {
-    setOpen(true);
-  };
-
-  const onClose = () => {
-    setOpen(false);
-  };
+export function FilterModal(props: any) {
+  const { onClose, onOpen, open } = props;
 
   return (
     <>
-      <Fab
-        color="primary"
-        aria-label="add"
-        onClick={onOpen}
-        sx={{
-          position: "absolute",
-          zIndex: 9999,
-          transform: "translateY(-50%)",
-          left: 0,
-          right: 0,
-          margin: "0 auto",
-        }}
-      >
-        <FilterListIcon />
-      </Fab>
-
       <Modal
         open={open}
         onClose={onClose}
