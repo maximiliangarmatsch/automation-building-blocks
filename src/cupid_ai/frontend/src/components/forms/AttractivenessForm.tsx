@@ -34,7 +34,12 @@ export const AttractivenessForm = () => {
         <Button
           variant="contained"
           component="span"
-          onClick={() => document.querySelector('input[type="file"]').click()}
+          onClick={() => {
+            const fileInput = document.querySelector('input[type="file"]');
+            if (fileInput instanceof HTMLInputElement) {
+              fileInput.click();
+            }
+          }}
         >
           Choose File
         </Button>
