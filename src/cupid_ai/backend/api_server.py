@@ -128,7 +128,7 @@ def atractiveness():
     return jsonify({"error": "File processing failed."}), 500
 
 
-@app.route("/get_profile", methods=["GET"])
+@app.route("/get_profile", methods=["POST"])
 @cross_origin()
 def get_profile():
     data = request.json
