@@ -6,9 +6,9 @@ import Groups2Icon from "@mui/icons-material/Groups2";
 import PersonIcon from "@mui/icons-material/Person";
 import { Box, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
-import { PATHS } from "../utils";
-import { BottomNavigation_FabButton } from "./BottomNavigation_FabButtons";
-import { useAuth } from "../contexts/AuthContext";
+import { PATHS } from "../../utils";
+import { BottomNavigationFilterButton } from "./BottomNavigationFilterButton";
+import { useAuth } from "../../contexts/AuthContext";
 
 export function BottomNavigation() {
   const [currentPath, setCurrentPath] = useState(
@@ -43,7 +43,7 @@ export function BottomNavigation() {
                 </Typography>
               </IconButton>
             </Link>
-            <BottomNavigation_FabButton />
+            <BottomNavigationFilterButton />
             <Link
               to={PATHS.PROFILE}
               onClick={() => setCurrentPath(PATHS.PROFILE)}
