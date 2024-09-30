@@ -1,12 +1,11 @@
 import { Box, Button, TextField, Typography } from "@mui/material";
 import * as Yup from "yup";
-import api, { API_ENDPOINTS } from "../services/api";
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
-import { PATHS } from "../utils";
+import { PATHS } from "../../utils";
 import { useForm } from "react-hook-form";
-import { useAuth } from "../contexts/AuthContext";
-import useYupValidationResolver from "../hooks/useYupValidationResolver";
+import { useAuth } from "../../contexts/AuthContext";
+import useYupValidationResolver from "../../hooks/useYupValidationResolver";
 import CircularProgress from "@mui/material/CircularProgress";
 
 const formValidationSchema = Yup.object({
