@@ -1,0 +1,18 @@
+[
+    {
+        "key": "friendship",
+        "label": "Friendship"
+    },
+    {
+        "key": "ons",
+        "label": "ONS"
+    },
+    {
+        "key": "relationship",
+        "label": "Relationship"
+    },
+    {
+        "key": "family",
+        "label": "Family"
+    }
+]

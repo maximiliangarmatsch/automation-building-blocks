@@ -1,0 +1,972 @@
+[
+  {
+    "key": "afghanistan",
+    "label": "AFGHANISTAN",
+    "countryCode": "AF"
+  },
+  {
+    "key": "albania",
+    "label": "ALBANIA",
+    "countryCode": "AL"
+  },
+  {
+    "key": "algeria",
+    "label": "ALGERIA",
+    "countryCode": "DZ"
+  },
+  {
+    "key": "andorra",
+    "label": "ANDORRA",
+    "countryCode": "AD"
+  },
+  {
+    "key": "angola",
+    "label": "ANGOLA",
+    "countryCode": "AO"
+  },
+  {
+    "key": "antigua and barbuda",
+    "label": "ANTIGUA AND BARBUDA",
+    "countryCode": "AG"
+  },
+  {
+    "key": "argentina",
+    "label": "ARGENTINA",
+    "countryCode": "AR"
+  },
+  {
+    "key": "armenia",
+    "label": "ARMENIA",
+    "countryCode": "AM"
+  },
+  {
+    "key": "australia",
+    "label": "AUSTRALIA",
+    "countryCode": "AU"
+  },
+  {
+    "key": "austria",
+    "label": "AUSTRIA",
+    "countryCode": "AT"
+  },
+  {
+    "key": "azerbaijan",
+    "label": "AZERBAIJAN",
+    "countryCode": "AZ"
+  },
+  {
+    "key": "bahamas",
+    "label": "BAHAMAS",
+    "countryCode": "BS"
+  },
+  {
+    "key": "bahrain",
+    "label": "BAHRAIN",
+    "countryCode": "BH"
+  },
+  {
+    "key": "bangladesh",
+    "label": "BANGLADESH",
+    "countryCode": "BD"
+  },
+  {
+    "key": "barbados",
+    "label": "BARBADOS",
+    "countryCode": "BB"
+  },
+  {
+    "key": "belarus",
+    "label": "BELARUS",
+    "countryCode": "BY"
+  },
+  {
+    "key": "belgium",
+    "label": "BELGIUM",
+    "countryCode": "BE"
+  },
+  {
+    "key": "belize",
+    "label": "BELIZE",
+    "countryCode": "BZ"
+  },
+  {
+    "key": "benin",
+    "label": "BENIN",
+    "countryCode": "BJ"
+  },
+  {
+    "key": "bhutan",
+    "label": "BHUTAN",
+    "countryCode": "BT"
+  },
+  {
+    "key": "bolivia",
+    "label": "BOLIVIA",
+    "countryCode": "BO"
+  },
+  {
+    "key": "bosnia and herzegovina",
+    "label": "BOSNIA AND HERZEGOVINA",
+    "countryCode": "BA"
+  },
+  {
+    "key": "botswana",
+    "label": "BOTSWANA",
+    "countryCode": "BW"
+  },
+  {
+    "key": "brazil",
+    "label": "BRAZIL",
+    "countryCode": "BR"
+  },
+  {
+    "key": "brunei",
+    "label": "BRUNEI",
+    "countryCode": "BN"
+  },
+  {
+    "key": "bulgaria",
+    "label": "BULGARIA",
+    "countryCode": "BG"
+  },
+  {
+    "key": "burkina faso",
+    "label": "BURKINA FASO",
+    "countryCode": "BF"
+  },
+  {
+    "key": "burundi",
+    "label": "BURUNDI",
+    "countryCode": "BI"
+  },
+  {
+    "key": "cambodia",
+    "label": "CAMBODIA",
+    "countryCode": "KH"
+  },
+  {
+    "key": "cameroon",
+    "label": "CAMEROON",
+    "countryCode": "CM"
+  },
+  {
+    "key": "canada",
+    "label": "CANADA",
+    "countryCode": "CA"
+  },
+  {
+    "key": "cape verde",
+    "label": "CAPE VERDE",
+    "countryCode": "CV"
+  },
+  {
+    "key": "central african republic",
+    "label": "CENTRAL AFRICAN REPUBLIC",
+    "countryCode": "CF"
+  },
+  {
+    "key": "chad",
+    "label": "CHAD",
+    "countryCode": "TD"
+  },
+  {
+    "key": "chile",
+    "label": "CHILE",
+    "countryCode": "CL"
+  },
+  {
+    "key": "china",
+    "label": "CHINA",
+    "countryCode": "CN"
+  },
+  {
+    "key": "colombia",
+    "label": "COLOMBIA",
+    "countryCode": "CO"
+  },
+  {
+    "key": "comoros",
+    "label": "COMOROS",
+    "countryCode": "KM"
+  },
+  {
+    "key": "congo",
+    "label": "CONGO",
+    "countryCode": "CG"
+  },
+  {
+    "key": "costa rica",
+    "label": "COSTA RICA",
+    "countryCode": "CR"
+  },
+  {
+    "key": "croatia",
+    "label": "CROATIA",
+    "countryCode": "HR"
+  },
+  {
+    "key": "cuba",
+    "label": "CUBA",
+    "countryCode": "CU"
+  },
+  {
+    "key": "cyprus",
+    "label": "CYPRUS",
+    "countryCode": "CY"
+  },
+  {
+    "key": "czech republic",
+    "label": "CZECH REPUBLIC",
+    "countryCode": "CZ"
+  },
+  {
+    "key": "denmark",
+    "label": "DENMARK",
+    "countryCode": "DK"
+  },
+  {
+    "key": "djibouti",
+    "label": "DJIBOUTI",
+    "countryCode": "DJ"
+  },
+  {
+    "key": "dominica",
+    "label": "DOMINICA",
+    "countryCode": "DM"
+  },
+  {
+    "key": "dominican republic",
+    "label": "DOMINICAN REPUBLIC",
+    "countryCode": "DO"
+  },
+  {
+    "key": "east timor",
+    "label": "EAST TIMOR",
+    "countryCode": "TL"
+  },
+  {
+    "key": "ecuador",
+    "label": "ECUADOR",
+    "countryCode": "EC"
+  },
+  {
+    "key": "egypt",
+    "label": "EGYPT",
+    "countryCode": "EG"
+  },
+  {
+    "key": "el salvador",
+    "label": "EL SALVADOR",
+    "countryCode": "SV"
+  },
+  {
+    "key": "equatorial guinea",
+    "label": "EQUATORIAL GUINEA",
+    "countryCode": "GQ"
+  },
+  {
+    "key": "eritrea",
+    "label": "ERITREA",
+    "countryCode": "ER"
+  },
+  {
+    "key": "estonia",
+    "label": "ESTONIA",
+    "countryCode": "EE"
+  },
+  {
+    "key": "ethiopia",
+    "label": "ETHIOPIA",
+    "countryCode": "ET"
+  },
+  {
+    "key": "fiji",
+    "label": "FIJI",
+    "countryCode": "FJ"
+  },
+  {
+    "key": "finland",
+    "label": "FINLAND",
+    "countryCode": "FI"
+  },
+  {
+    "key": "france",
+    "label": "FRANCE",
+    "countryCode": "FR"
+  },
+  {
+    "key": "gabon",
+    "label": "GABON",
+    "countryCode": "GA"
+  },
+  {
+    "key": "gambia",
+    "label": "GAMBIA",
+    "countryCode": "GM"
+  },
+  {
+    "key": "georgia",
+    "label": "GEORGIA",
+    "countryCode": "GE"
+  },
+  {
+    "key": "germany",
+    "label": "GERMANY",
+    "countryCode": "DE"
+  },
+  {
+    "key": "ghana",
+    "label": "GHANA",
+    "countryCode": "GH"
+  },
+  {
+    "key": "greece",
+    "label": "GREECE",
+    "countryCode": "GR"
+  },
+  {
+    "key": "grenada",
+    "label": "GRENADA",
+    "countryCode": "GD"
+  },
+  {
+    "key": "guatemala",
+    "label": "GUATEMALA",
+    "countryCode": "GT"
+  },
+  {
+    "key": "guinea",
+    "label": "GUINEA",
+    "countryCode": "GN"
+  },
+  {
+    "key": "guinea-bissau",
+    "label": "GUINEA-BISSAU",
+    "countryCode": "GW"
+  },
+  {
+    "key": "guyana",
+    "label": "GUYANA",
+    "countryCode": "GY"
+  },
+  {
+    "key": "haiti",
+    "label": "HAITI",
+    "countryCode": "HT"
+  },
+  {
+    "key": "honduras",
+    "label": "HONDURAS",
+    "countryCode": "HN"
+  },
+  {
+    "key": "hungary",
+    "label": "HUNGARY",
+    "countryCode": "HU"
+  },
+  {
+    "key": "iceland",
+    "label": "ICELAND",
+    "countryCode": "IS"
+  },
+  {
+    "key": "india",
+    "label": "INDIA",
+    "countryCode": "IN"
+  },
+  {
+    "key": "indonesia",
+    "label": "INDONESIA",
+    "countryCode": "ID"
+  },
+  {
+    "key": "iran",
+    "label": "IRAN",
+    "countryCode": "IR"
+  },
+  {
+    "key": "iraq",
+    "label": "IRAQ",
+    "countryCode": "IQ"
+  },
+  {
+    "key": "ireland",
+    "label": "IRELAND",
+    "countryCode": "IE"
+  },
+  {
+    "key": "israel",
+    "label": "ISRAEL",
+    "countryCode": "IL"
+  },
+  {
+    "key": "italy",
+    "label": "ITALY",
+    "countryCode": "IT"
+  },
+  {
+    "key": "ivory coast",
+    "label": "IVORY COAST",
+    "countryCode": "CI"
+  },
+  {
+    "key": "jamaica",
+    "label": "JAMAICA",
+    "countryCode": "JM"
+  },
+  {
+    "key": "japan",
+    "label": "JAPAN",
+    "countryCode": "JP"
+  },
+  {
+    "key": "jordan",
+    "label": "JORDAN",
+    "countryCode": "JO"
+  },
+  {
+    "key": "kazakhstan",
+    "label": "KAZAKHSTAN",
+    "countryCode": "KZ"
+  },
+  {
+    "key": "kenya",
+    "label": "KENYA",
+    "countryCode": "KE"
+  },
+  {
+    "key": "kiribati",
+    "label": "KIRIBATI",
+    "countryCode": "KI"
+  },
+  {
+    "key": "north korea",
+    "label": "NORTH KOREA",
+    "countryCode": "KP"
+  },
+  {
+    "key": "south korea",
+    "label": "SOUTH KOREA",
+    "countryCode": "KR"
+  },
+  {
+    "key": "kuwait",
+    "label": "KUWAIT",
+    "countryCode": "KW"
+  },
+  {
+    "key": "kyrgyzstan",
+    "label": "KYRGYZSTAN",
+    "countryCode": "KG"
+  },
+  {
+    "key": "laos",
+    "label": "LAOS",
+    "countryCode": "LA"
+  },
+  {
+    "key": "latvia",
+    "label": "LATVIA",
+    "countryCode": "LV"
+  },
+  {
+    "key": "lebanon",
+    "label": "LEBANON",
+    "countryCode": "LB"
+  },
+  {
+    "key": "lesotho",
+    "label": "LESOTHO",
+    "countryCode": "LS"
+  },
+  {
+    "key": "liberia",
+    "label": "LIBERIA",
+    "countryCode": "LR"
+  },
+  {
+    "key": "libya",
+    "label": "LIBYA",
+    "countryCode": "LY"
+  },
+  {
+    "key": "liechtenstein",
+    "label": "LIECHTENSTEIN",
+    "countryCode": "LI"
+  },
+  {
+    "key": "lithuania",
+    "label": "LITHUANIA",
+    "countryCode": "LT"
+  },
+  {
+    "key": "luxembourg",
+    "label": "LUXEMBOURG",
+    "countryCode": "LU"
+  },
+  {
+    "key": "macedonia",
+    "label": "MACEDONIA",
+    "countryCode": "MK"
+  },
+  {
+    "key": "madagascar",
+    "label": "MADAGASCAR",
+    "countryCode": "MG"
+  },
+  {
+    "key": "malawi",
+    "label": "MALAWI",
+    "countryCode": "MW"
+  },
+  {
+    "key": "malaysia",
+    "label": "MALAYSIA",
+    "countryCode": "MY"
+  },
+  {
+    "key": "maldives",
+    "label": "MALDIVES",
+    "countryCode": "MV"
+  },
+  {
+    "key": "mali",
+    "label": "MALI",
+    "countryCode": "ML"
+  },
+  {
+    "key": "malta",
+    "label": "MALTA",
+    "countryCode": "MT"
+  },
+  {
+    "key": "marshall islands",
+    "label": "MARSHALL ISLANDS",
+    "countryCode": "MH"
+  },
+  {
+    "key": "mauritania",
+    "label": "MAURITANIA",
+    "countryCode": "MR"
+  },
+  {
+    "key": "mauritius",
+    "label": "MAURITIUS",
+    "countryCode": "MU"
+  },
+  {
+    "key": "mexico",
+    "label": "MEXICO",
+    "countryCode": "MX"
+  },
+  {
+    "key": "micronesia",
+    "label": "MICRONESIA",
+    "countryCode": "FM"
+  },
+  {
+    "key": "moldova",
+    "label": "MOLDOVA",
+    "countryCode": "MD"
+  },
+  {
+    "key": "monaco",
+    "label": "MONACO",
+    "countryCode": "MC"
+  },
+  {
+    "key": "mongolia",
+    "label": "MONGOLIA",
+    "countryCode": "MN"
+  },
+  {
+    "key": "montenegro",
+    "label": "MONTENEGRO",
+    "countryCode": "ME"
+  },
+  {
+    "key": "morocco",
+    "label": "MOROCCO",
+    "countryCode": "MA"
+  },
+  {
+    "key": "mozambique",
+    "label": "MOZAMBIQUE",
+    "countryCode": "MZ"
+  },
+  {
+    "key": "myanmar",
+    "label": "MYANMAR",
+    "countryCode": "MM"
+  },
+  {
+    "key": "namibia",
+    "label": "NAMIBIA",
+    "countryCode": "NA"
+  },
+  {
+    "key": "nauru",
+    "label": "NAURU",
+    "countryCode": "NR"
+  },
+  {
+    "key": "nepal",
+    "label": "NEPAL",
+    "countryCode": "NP"
+  },
+  {
+    "key": "netherlands",
+    "label": "NETHERLANDS",
+    "countryCode": "NL"
+  },
+  {
+    "key": "new zealand",
+    "label": "NEW ZEALAND",
+    "countryCode": "NZ"
+  },
+  {
+    "key": "nicaragua",
+    "label": "NICARAGUA",
+    "countryCode": "NI"
+  },
+  {
+    "key": "niger",
+    "label": "NIGER",
+    "countryCode": "NE"
+  },
+  {
+    "key": "nigeria",
+    "label": "NIGERIA",
+    "countryCode": "NG"
+  },
+  {
+    "key": "norway",
+    "label": "NORWAY",
+    "countryCode": "NO"
+  },
+  {
+    "key": "oman",
+    "label": "OMAN",
+    "countryCode": "OM"
+  },
+  {
+    "key": "pakistan",
+    "label": "PAKISTAN",
+    "countryCode": "PK"
+  },
+  {
+    "key": "palau",
+    "label": "PALAU",
+    "countryCode": "PW"
+  },
+  {
+    "key": "panama",
+    "label": "PANAMA",
+    "countryCode": "PA"
+  },
+  {
+    "key": "papua new guinea",
+    "label": "PAPUA NEW GUINEA",
+    "countryCode": "PG"
+  },
+  {
+    "key": "paraguay",
+    "label": "PARAGUAY",
+    "countryCode": "PY"
+  },
+  {
+    "key": "peru",
+    "label": "PERU",
+    "countryCode": "PE"
+  },
+  {
+    "key": "philippines",
+    "label": "PHILIPPINES",
+    "countryCode": "PH"
+  },
+  {
+    "key": "poland",
+    "label": "POLAND",
+    "countryCode": "PL"
+  },
+  {
+    "key": "portugal",
+    "label": "PORTUGAL",
+    "countryCode": "PT"
+  },
+  {
+    "key": "qatar",
+    "label": "QATAR",
+    "countryCode": "QA"
+  },
+  {
+    "key": "romania",
+    "label": "ROMANIA",
+    "countryCode": "RO"
+  },
+  {
+    "key": "russia",
+    "label": "RUSSIA",
+    "countryCode": "RU"
+  },
+  {
+    "key": "rwanda",
+    "label": "RWANDA",
+    "countryCode": "RW"
+  },
+  {
+    "key": "saint kitts and nevis",
+    "label": "SAINT KITTS AND NEVIS",
+    "countryCode": "KN"
+  },
+  {
+    "key": "saint lucia",
+    "label": "SAINT LUCIA",
+    "countryCode": "LC"
+  },
+  {
+    "key": "saint vincent and the grenadines",
+    "label": "SAINT VINCENT AND THE GRENADINES",
+    "countryCode": "VC"
+  },
+  {
+    "key": "samoa",
+    "label": "SAMOA",
+    "countryCode": "WS"
+  },
+  {
+    "key": "san marino",
+    "label": "SAN MARINO",
+    "countryCode": "SM"
+  },
+  {
+    "key": "sao tome and principe",
+    "label": "SAO TOME AND PRINCIPE",
+    "countryCode": "ST"
+  },
+  {
+    "key": "saudi arabia",
+    "label": "SAUDI ARABIA",
+    "countryCode": "SA"
+  },
+  {
+    "key": "senegal",
+    "label": "SENEGAL",
+    "countryCode": "SN"
+  },
+  {
+    "key": "serbia",
+    "label": "SERBIA",
+    "countryCode": "RS"
+  },
+  {
+    "key": "seychelles",
+    "label": "SEYCHELLES",
+    "countryCode": "SC"
+  },
+  {
+    "key": "sierra leone",
+    "label": "SIERRA LEONE",
+    "countryCode": "SL"
+  },
+  {
+    "key": "singapore",
+    "label": "SINGAPORE",
+    "countryCode": "SG"
+  },
+  {
+    "key": "slovakia",
+    "label": "SLOVAKIA",
+    "countryCode": "SK"
+  },
+  {
+    "key": "slovenia",
+    "label": "SLOVENIA",
+    "countryCode": "SI"
+  },
+  {
+    "key": "solomon islands",
+    "label": "SOLOMON ISLANDS",
+    "countryCode": "SB"
+  },
+  {
+    "key": "somalia",
+    "label": "SOMALIA",
+    "countryCode": "SO"
+  },
+  {
+    "key": "south africa",
+    "label": "SOUTH AFRICA",
+    "countryCode": "ZA"
+  },
+  {
+    "key": "south sudan",
+    "label": "SOUTH SUDAN",
+    "countryCode": "SS"
+  },
+  {
+    "key": "spain",
+    "label": "SPAIN",
+    "countryCode": "ES"
+  },
+  {
+    "key": "sri lanka",
+    "label": "SRI LANKA",
+    "countryCode": "LK"
+  },
+  {
+    "key": "sudan",
+    "label": "SUDAN",
+    "countryCode": "SD"
+  },
+  {
+    "key": "suriname",
+    "label": "SURINAME",
+    "countryCode": "SR"
+  },
+  {
+    "key": "swaziland",
+    "label": "SWAZILAND",
+    "countryCode": "SZ"
+  },
+  {
+    "key": "sweden",
+    "label": "SWEDEN",
+    "countryCode": "SE"
+  },
+  {
+    "key": "switzerland",
+    "label": "SWITZERLAND",
+    "countryCode": "CH"
+  },
+  {
+    "key": "syria",
+    "label": "SYRIA",
+    "countryCode": "SY"
+  },
+  {
+    "key": "taiwan",
+    "label": "TAIWAN",
+    "countryCode": "TW"
+  },
+  {
+    "key": "tajikistan",
+    "label": "TAJIKISTAN",
+    "countryCode": "TJ"
+  },
+  {
+    "key": "tanzania",
+    "label": "TANZANIA",
+    "countryCode": "TZ"
+  },
+  {
+    "key": "thailand",
+    "label": "THAILAND",
+    "countryCode": "TH"
+  },
+  {
+    "key": "togo",
+    "label": "TOGO",
+    "countryCode": "TG"
+  },
+  {
+    "key": "tonga",
+    "label": "TONGA",
+    "countryCode": "TO"
+  },
+  {
+    "key": "trinidad and tobago",
+    "label": "TRINIDAD AND TOBAGO",
+    "countryCode": "TT"
+  },
+  {
+    "key": "tunisia",
+    "label": "TUNISIA",
+    "countryCode": "TN"
+  },
+  {
+    "key": "turkey",
+    "label": "TURKEY",
+    "countryCode": "TR"
+  },
+  {
+    "key": "turkmenistan",
+    "label": "TURKMENISTAN",
+    "countryCode": "TM"
+  },
+  {
+    "key": "tuvalu",
+    "label": "TUVALU",
+    "countryCode": "TV"
+  },
+  {
+    "key": "uganda",
+    "label": "UGANDA",
+    "countryCode": "UG"
+  },
+  {
+    "key": "ukraine",
+    "label": "UKRAINE",
+    "countryCode": "UA"
+  },
+  {
+    "key": "united arab emirates",
+    "label": "UNITED ARAB EMIRATES",
+    "countryCode": "AE"
+  },
+  {
+    "key": "united kingdom",
+    "label": "UNITED KINGDOM",
+    "countryCode": "GB"
+  },
+  {
+    "key": "united states",
+    "label": "UNITED STATES",
+    "countryCode": "US"
+  },
+  {
+    "key": "uruguay",
+    "label": "URUGUAY",
+    "countryCode": "UY"
+  },
+  {
+    "key": "uzbekistan",
+    "label": "UZBEKISTAN",
+    "countryCode": "UZ"
+  },
+  {
+    "key": "vanuatu",
+    "label": "VANUATU",
+    "countryCode": "VU"
+  },
+  {
+    "key": "vatican city",
+    "label": "VATICAN CITY",
+    "countryCode": "VA"
+  },
+  {
+    "key": "venezuela",
+    "label": "VENEZUELA",
+    "countryCode": "VE"
+  },
+  {
+    "key": "vietnam",
+    "label": "VIETNAM",
+    "countryCode": "VN"
+  },
+  {
+    "key": "yemen",
+    "label": "YEMEN",
+    "countryCode": "YE"
+  },
+  {
+    "key": "zambia",
+    "label": "ZAMBIA",
+    "countryCode": "ZM"
+  },
+  {
+    "key": "zimbabwe",
+    "label": "ZIMBABWE",
+    "countryCode": "ZW"
+  }
+]

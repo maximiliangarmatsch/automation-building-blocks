@@ -1,0 +1,26 @@
+[
+  {
+    "key": "bald",
+    "label": "Bald"
+  },
+  {
+    "key": "very_short",
+    "label": "Very Short"
+  },
+  {
+    "key": "short",
+    "label": "Short"
+  },
+  {
+    "key": "medium",
+    "label": "Medium"
+  },
+  {
+    "key": "long",
+    "label": "Long"
+  },
+  {
+    "key": "very_long",
+    "label": "Very Long"
+  }
+]
