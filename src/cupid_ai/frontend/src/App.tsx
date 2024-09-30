@@ -8,7 +8,7 @@ import { TopNavigation } from "./components/TopNavigation";
 import { Login } from "./pages/login";
 import { useMemo } from "react";
 import PrivateRoute from "./components/ProtectedRoutes";
-import AuthProvider from "./contexts/AuthContext";
+import AuthProvider from "./utils/contexts/AuthContext";
 import { Register } from "./pages/register";
 
 function App() {

@@ -8,7 +8,7 @@ import { Box, Typography } from "@mui/material";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { isLocalhost, PATHS } from "../../utils";
 import { BottomNavigationFilterButton } from "./BottomNavigationFilterButton";
-import { useAuth } from "../../contexts/AuthContext";
+import { useAuth } from "../../utils/contexts/AuthContext";
 
 export function FloatNavigation(props: any) {
   const { currentPath } = props;
