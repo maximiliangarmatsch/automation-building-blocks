@@ -1,7 +1,8 @@
 import sqlite3
 
 # Path to your SQLite database
-DB_PATH = 'db/cupid_ai.db'
+DB_PATH = "db/cupid_ai.db"
+
 
 def create_users_table():
     # Connect to the SQLite database
@@ -9,7 +10,7 @@ def create_users_table():
     cursor = conn.cursor()
 
     # SQL command to create the users table
-    cursor.execute('SELECT * FROM Accepted_match;')
+    cursor.execute("SELECT * FROM User;")
     unique_ids = cursor.fetchall()  # Fetch all results
     print(unique_ids)
     # cursor.execute('''
@@ -136,10 +137,15 @@ def create_users_table():
     #     FOREIGN KEY (match_unique_id) REFERENCES User(unique_id)
     #     );
     # ''')
-
+    # cursor.execute(
+    #     """
+    #     DELETE FROM User_profile;
+    #     """
+    # )
     conn.commit()
     conn.close()
     print("User_profile table created successfully!")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     create_users_table()
