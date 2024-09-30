@@ -8,6 +8,7 @@ import { Box, Typography } from "@mui/material";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { isLocalhost, PATHS } from "../../utils";
 import { BottomNavigationFilterButton } from "./BottomNavigationFilterButton";
+import { BottomNavigationMatchButtons } from "./BottomNavigationMatchButtons";
 import { useAuth } from "../../contexts/AuthContext";
 
 export function FloatNavigation(props: any) {
@@ -18,7 +19,7 @@ export function FloatNavigation(props: any) {
       return <BottomNavigationFilterButton />;
       break;
     case PATHS.PROFILE:
-      return <BottomNavigationFilterButton />;
+      return <BottomNavigationMatchButtons />;
       break;
     default:
       return null;
@@ -50,7 +51,9 @@ export function BottomNavigation() {
                 </Typography>
               </IconButton>
             </Link>
-            <FloatNavigation currentPath={location.pathname} />
+            <Box marginTop={-12}>
+              <FloatNavigation currentPath={location.pathname} />
+            </Box>
             <Link to={PATHS.PROFILE} onClick={() => navigate(PATHS.PROFILE)}>
               <IconButton color="inherit" aria-label="Me">
                 <Typography>
