@@ -43,7 +43,6 @@ if not os.path.exists(MEDIA_FOLDER):
 api_key = os.getenv("GOOGLE_API_KEY")
 genai.configure(api_key=api_key)
 
-
 google_distance_api = os.getenv("GOOGLE_DISTANCE_API")
 
 
@@ -639,6 +638,123 @@ def match_accepted():
     conn.commit()
     conn.close()
     return jsonify({"message": "success"}), 200
+
+
+@app.route("/schedule_date", methods=["POST"])
+def add_user_date():
+    data = request.get_json()
+    required_fields = [
+        "your_unique_id",
+        "partner_unique_id",
+        "date_selected",
+        "time_selected",
+        "contact_method",
+        "type_of_date",
+        "duration",
+    ]
+    for field in required_fields:
+        if field not in data or data[field] is None:
+            return jsonify({"error": f"'{field}' is required."}), 400
+
+    your_unique_id = data["your_unique_id"]
+    partner_unique_id = data["partner_unique_id"]
+    date_selected = data["date_selected"]
+    time_selected = data["time_selected"]
+    contact_method = data["contact_method"]
+    type_of_date = data["type_of_date"]
+    duration = data["duration"]
+    try:
+        if not (5 <= int(duration) <= 120):
+            return (
+                jsonify({"error": "Duration must be between 5 and 120 minutes."}),
+                400,
+            )
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            SELECT COUNT(*) FROM User_dates 
+            WHERE your_unique_id = ? AND partner_unique_id = ?
+            """,
+            (your_unique_id, partner_unique_id),
+        )
+        exists = cursor.fetchone()[0]
+        if exists > 0:
+            return jsonify({"message": "Date already scheduled."}), 200
+        cursor.execute(
+            """
+            INSERT INTO User_dates (your_unique_id, partner_unique_id, date_selected, time_selected, contact_method, type_of_date, duration)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                your_unique_id,
+                partner_unique_id,
+                date_selected,
+                time_selected,
+                contact_method,
+                type_of_date,
+                duration,
+            ),
+        )
+        conn.commit()
+        conn.close()
+        return jsonify({"message": "Date added successfully!"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/get_schedule_date", methods=["POST"])
+def get_schedule_date():
+    data = request.get_json()
+    unique_id = data.get("unique_id")
+    if not unique_id:
+        return jsonify({"error": "'unique_id' is required."}), 400
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            SELECT partner_unique_id, date_selected, time_selected, contact_method, type_of_date, duration
+            FROM User_dates
+            WHERE your_unique_id = ?
+            """,
+            (unique_id,),
+        )
+        schedules = cursor.fetchall()
+        if not schedules:
+            cursor.execute(
+                """
+                SELECT your_unique_id, date_selected, time_selected, contact_method, type_of_date, duration
+                FROM User_dates
+                WHERE partner_unique_id = ?
+                """,
+                (unique_id,),
+            )
+            schedules = cursor.fetchall()
+        if not schedules:
+            return (
+                jsonify(
+                    {"message": "No scheduling data found for the provided unique ID."}
+                ),
+                404,
+            )
+        schedule_list = []
+        for schedule in schedules:
+            schedule_list.append(
+                {
+                    "partner_unique_id": schedule[0],
+                    "date_selected": schedule[1],
+                    "time_selected": schedule[2],
+                    "contact_method": schedule[3],
+                    "type_of_date": schedule[4],
+                    "duration": schedule[5],
+                }
+            )
+        conn.close()
+        return jsonify(schedule_list), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/delete_user", methods=["DELETE"])

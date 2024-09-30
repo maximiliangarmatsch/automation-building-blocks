@@ -10,7 +10,7 @@ def create_users_table():
     cursor = conn.cursor()
 
     # SQL command to create the users table
-    cursor.execute("SELECT * FROM User;")
+    cursor.execute("SELECT * FROM Accepted_match;")
     unique_ids = cursor.fetchall()  # Fetch all results
     print(unique_ids)
     # cursor.execute('''
@@ -141,6 +141,23 @@ def create_users_table():
     #     """
     #     DELETE FROM User_profile;
     #     """
+    # )
+    # cursor.execute(
+    #     """
+    #     CREATE TABLE IF NOT EXISTS User_dates (
+    #         id INTEGER PRIMARY KEY AUTOINCREMENT,
+    #         your_unique_id INTEGER,
+    #         partner_unique_id INTEGER,
+    #         date_selected DATE NOT NULL,
+    #         time_selected TIME NOT NULL,
+    #         contact_method TEXT NOT NULL,
+    #         type_of_date TEXT NOT NULL,
+    #         duration INTEGER NOT NULL CHECK (duration BETWEEN 5 AND 120),
+    #         created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    #         FOREIGN KEY (your_unique_id) REFERENCES User(unique_id),
+    #         FOREIGN KEY (partner_unique_id) REFERENCES User(unique_id)
+    #     );
+    # """
     # )
     conn.commit()
     conn.close()
