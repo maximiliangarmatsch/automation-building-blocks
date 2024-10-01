@@ -38,14 +38,10 @@ api_cors = {
 }
 MEDIA_FOLDER = "uploads"
 
-
-def __init__():
-    if not os.path.exists(MEDIA_FOLDER):
-        os.makedirs(MEDIA_FOLDER)
-    load_dotenv()
-    api_key = os.getenv("GOOGLE_API_KEY")
-    genai.configure(api_key=api_key)
-
+if not os.path.exists(MEDIA_FOLDER):
+    os.makedirs(MEDIA_FOLDER)
+api_key = os.getenv("GOOGLE_API_KEY")
+genai.configure(api_key=api_key)
 
 google_distance_api = os.getenv("GOOGLE_DISTANCE_API")
 
@@ -162,15 +158,35 @@ def get_profiles():
     profiles = get_match_profiles(unique_id, conn=conn)
     return profiles
 
-@app.route('/get_accepted_profiles', methods=['POST'])
-def accepted_profiles():
-    connection = get_db_connection()
-    data = request.get_json()
-    unique_id = data.get('unique_id')
-    if unique_id is None:
-        return jsonify({'error': 'unique_id is required'}), 400
-    profiles = get_accepted_profiles(unique_id, connection)
-    return profiles
+
+@app.route("/reject_profile", methods=["DELETE"])
+def reject_profile():
+    data = request.json
+    your_unique_id = data.get("your_unique_id")
+    match_unique_id = data.get("match_unique_id")
+    if not your_unique_id or not match_unique_id:
+        return (
+            jsonify({"error": "Both your_unique_id and match_unique_id are required"}),
+            400,
+        )
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            DELETE FROM Match_profile 
+            WHERE your_unique_id = ? AND match_unique_id = ?
+        """,
+            (your_unique_id, match_unique_id),
+        )
+        conn.commit()
+        conn.close()
+        if cursor.rowcount == 0:
+            return jsonify({"message": "No matching profile found"}), 404
+        else:
+            return jsonify({"message": "Profile rejected successfully"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/get_accepted_profiles", methods=["POST"])
@@ -548,9 +564,20 @@ def match_accepted():
             ),
             400,
         )
-
     conn = get_db_connection()
     cursor = conn.cursor()
+    cursor.execute(
+        """
+        SELECT 1 FROM Accepted_match 
+        WHERE your_unique_id = ? AND match_unique_id = ?
+        """,
+        (your_unique_id, match_partner_unique_id),
+    )
+    existing_match = cursor.fetchone()
+
+    if existing_match:
+        conn.close()
+        return jsonify({"message": "already exists"}), 200
     cursor.execute(
         """
         INSERT INTO Accepted_match (
@@ -613,80 +640,124 @@ def match_accepted():
     return jsonify({"message": "success"}), 200
 
 
-@app.route('/match_accepted', methods=['POST'])
-def match_accepted():
-    data = request.json    
-    your_unique_id = data.get('your_unique_id')
-    match_partner_unique_id = data.get('match_partner_unique_id')    
-    status = data.get('status', 'No')
-    your_q1 = data.get('your_q1')
-    your_a1 = data.get('your_a1')
-    your_q2 = data.get('your_q2')
-    your_a2 = data.get('your_a2')
-    your_q3 = data.get('your_q3')
-    your_a3 = data.get('your_a3')
-    your_q4 = data.get('your_q4')
-    your_a4 = data.get('your_a4')
-    your_q5 = data.get('your_q5')
-    your_a5 = data.get('your_a5')
-    your_q6 = data.get('your_q6')
-    your_a6 = data.get('your_a6')
-    your_q7 = data.get('your_q7')
-    your_a7 = data.get('your_a7')
-    your_q8 = data.get('your_q8')
-    your_a8 = data.get('your_a8')
-    your_q9 = data.get('your_q9')
-    your_a9 = data.get('your_a9')
-    your_q10 = data.get('your_q10')
-    your_a10 = data.get('your_a10')
-    
-    # Optional fields for partner's questions and answers
-    partner_q1 = data.get('partner_q1')
-    partner_a1 = data.get('partner_a1')
-    partner_q2 = data.get('partner_q2')
-    partner_a2 = data.get('partner_a2')
-    partner_q3 = data.get('partner_q3')
-    partner_a3 = data.get('partner_a3')
-    partner_q4 = data.get('partner_q4')
-    partner_a4 = data.get('partner_a4')
-    partner_q5 = data.get('partner_q5')
-    partner_a5 = data.get('partner_a5')
-    partner_q6 = data.get('partner_q6')
-    partner_a6 = data.get('partner_a6')
-    partner_q7 = data.get('partner_q7')
-    partner_a7 = data.get('partner_a7')
-    partner_q8 = data.get('partner_q8')
-    partner_a8 = data.get('partner_a8')
-    partner_q9 = data.get('partner_q9')
-    partner_a9 = data.get('partner_a9')
-    partner_q10 = data.get('partner_q10')
-    partner_a10 = data.get('partner_a10')
-    if not your_unique_id or not match_partner_unique_id:
-        return jsonify({"error": "your_unique_id and match_partner_unique_id are required"}), 400
+@app.route("/schedule_date", methods=["POST"])
+def add_user_date():
+    data = request.get_json()
+    required_fields = [
+        "your_unique_id",
+        "partner_unique_id",
+        "date_selected",
+        "time_selected",
+        "contact_method",
+        "type_of_date",
+        "duration",
+    ]
+    for field in required_fields:
+        if field not in data or data[field] is None:
+            return jsonify({"error": f"'{field}' is required."}), 400
 
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute('''
-        INSERT INTO Accepted_match (
-            your_unique_id, match_unique_id, status,
-            your_q1, your_a1, your_q2, your_a2, your_q3, your_a3, your_q4, your_a4, your_q5, your_a5, 
-            your_q6, your_a6, your_q7, your_a7, your_q8, your_a8, your_q9, your_a9, your_q10, your_a10,
-            partner_q1, partner_a1, partner_q2, partner_a2, partner_q3, partner_a3, partner_q4, partner_a4, 
-            partner_q5, partner_a5, partner_q6, partner_a6, partner_q7, partner_a7, partner_q8, partner_a8, 
-            partner_q9, partner_a9, partner_q10, partner_a10
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    ''', (
-        your_unique_id, match_partner_unique_id, status,
-        your_q1, your_a1, your_q2, your_a2, your_q3, your_a3, your_q4, your_a4, your_q5, your_a5, your_q6, your_a6, your_q7, your_a7, 
-        your_q8, your_a8, your_q9, your_a9, your_q10, your_a10,
-        partner_q1, partner_a1, partner_q2, partner_a2, partner_q3, partner_a3, partner_q4, partner_a4, partner_q5, partner_a5, 
-        partner_q6, partner_a6, partner_q7, partner_a7, partner_q8, partner_a8, partner_q9, partner_a9, partner_q10, partner_a10
-    ))
-    conn.commit()
-    conn.close()
-    return jsonify({"message": "success"}), 200
+    your_unique_id = data["your_unique_id"]
+    partner_unique_id = data["partner_unique_id"]
+    date_selected = data["date_selected"]
+    time_selected = data["time_selected"]
+    contact_method = data["contact_method"]
+    type_of_date = data["type_of_date"]
+    duration = data["duration"]
+    try:
+        if not (5 <= int(duration) <= 120):
+            return (
+                jsonify({"error": "Duration must be between 5 and 120 minutes."}),
+                400,
+            )
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            SELECT COUNT(*) FROM User_dates 
+            WHERE your_unique_id = ? AND partner_unique_id = ?
+            """,
+            (your_unique_id, partner_unique_id),
+        )
+        exists = cursor.fetchone()[0]
+        if exists > 0:
+            return jsonify({"message": "Date already scheduled."}), 200
+        cursor.execute(
+            """
+            INSERT INTO User_dates (your_unique_id, partner_unique_id, date_selected, time_selected, contact_method, type_of_date, duration)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                your_unique_id,
+                partner_unique_id,
+                date_selected,
+                time_selected,
+                contact_method,
+                type_of_date,
+                duration,
+            ),
+        )
+        conn.commit()
+        conn.close()
+        return jsonify({"message": "Date added successfully!"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
-@app.route('/delete_user', methods=["DELETE"])
+
+@app.route("/get_schedule_date", methods=["POST"])
+def get_schedule_date():
+    data = request.get_json()
+    unique_id = data.get("unique_id")
+    if not unique_id:
+        return jsonify({"error": "'unique_id' is required."}), 400
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            SELECT partner_unique_id, date_selected, time_selected, contact_method, type_of_date, duration
+            FROM User_dates
+            WHERE your_unique_id = ?
+            """,
+            (unique_id,),
+        )
+        schedules = cursor.fetchall()
+        if not schedules:
+            cursor.execute(
+                """
+                SELECT your_unique_id, date_selected, time_selected, contact_method, type_of_date, duration
+                FROM User_dates
+                WHERE partner_unique_id = ?
+                """,
+                (unique_id,),
+            )
+            schedules = cursor.fetchall()
+        if not schedules:
+            return (
+                jsonify(
+                    {"message": "No scheduling data found for the provided unique ID."}
+                ),
+                404,
+            )
+        schedule_list = []
+        for schedule in schedules:
+            schedule_list.append(
+                {
+                    "partner_unique_id": schedule[0],
+                    "date_selected": schedule[1],
+                    "time_selected": schedule[2],
+                    "contact_method": schedule[3],
+                    "type_of_date": schedule[4],
+                    "duration": schedule[5],
+                }
+            )
+        conn.close()
+        return jsonify(schedule_list), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/delete_user", methods=["DELETE"])
 @cross_origin()
 def delete_user():
     data = request.json
@@ -715,5 +786,4 @@ def delete_user():
 
 
 if __name__ == "__main__":
-    __init__()
     app.run(host="0.0.0.0", port=8000)
