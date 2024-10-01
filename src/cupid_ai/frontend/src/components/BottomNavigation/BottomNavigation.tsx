@@ -32,7 +32,7 @@ export function BottomNavigation() {
   const navigate = useNavigate();
   const auth = useAuth();
 
-  if (!auth?.uniqueID && !isLocalhost) return null;
+  if (!auth?.user && !isLocalhost) return null;
 
   return (
     <React.Fragment>

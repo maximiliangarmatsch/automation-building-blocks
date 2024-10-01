@@ -6,6 +6,8 @@ export const API_ENDPOINTS = {
   AUTH: "/auth",
   GET_PROFILE: "/get_profile",
   ATTRACTIVENESS: "/attractiveness",
+  EXTRACT_FEATURES: "/extract_features",
+  CREATE_PROFILE: "/create_profile",
 };
 
 export default axios.create({
