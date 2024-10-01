@@ -1,22 +1,14 @@
-import {
-  Box,
-  TextField,
-  Typography,
-  Paper,
-  FormControl,
-  RadioGroup,
-  Radio,
-  FormControlLabel,
-} from "@mui/material";
+import { Box, List, ListItem, Typography } from "@mui/material";
 import Modal from "@mui/material/Modal";
-import Grid from "@mui/material/Grid2";
+import { useForm } from "react-hook-form";
+import ScheduledDatePicker from "../ScheduleDatePicker";
 
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 400,
+  width: 600,
   bgcolor: "background.paper",
   border: "2px solid #000",
   boxShadow: 24,
@@ -25,6 +17,13 @@ const style = {
 
 export function ScheduleModal(props: any) {
   const { onClose, onOpen, open } = props;
+
+  const onSubmit = async () => {};
+
+  const availableDates = [
+    { date: "2024-12-04", startTime: "10:00", endTime: "16:00" },
+    { date: "2024-12-05", startTime: "16:00", endTime: "21:00" },
+  ];
 
   return (
     <>
@@ -43,61 +42,19 @@ export function ScheduleModal(props: any) {
           >
             Schedule a Date
           </Typography>
+          <Box marginBottom={2}>
+            <Typography>Her Dating Availability</Typography>
+            <List>
+              {availableDates?.map((availableDate) => (
+                <Typography>
+                  {availableDate.date}: {availableDate.startTime} -{" "}
+                  {availableDate.endTime}
+                </Typography>
+              ))}
+            </List>
+          </Box>
 
-          {/* Just old trash */}
-          {/* <Grid container spacing={2}>
-            <Grid size={12}>
-              <Paper elevation={2}>
-                <Typography variant="h6">Gender</Typography>
-                <FormControl>
-                  <RadioGroup
-                    row
-                    aria-labelledby="demo-row-radio-buttons-group-label"
-                    name="row-radio-buttons-group"
-                  >
-                    <FormControlLabel
-                      value="female"
-                      control={<Radio />}
-                      label="Female"
-                    />
-                    <FormControlLabel
-                      value="male"
-                      control={<Radio />}
-                      label="Male"
-                    />
-                  </RadioGroup>
-                </FormControl>
-              </Paper>
-            </Grid>
-
-            <Grid size={12}>
-              <Paper elevation={2}>
-                <Typography variant="h6">Age</Typography>
-                <Box display="flex" flexDirection="row" gap={0}>
-                  <FormControlLabel
-                    control={<TextField size="small" sx={{ width: "60px" }} />}
-                    label=" To"
-                  />
-                  <FormControlLabel
-                    control={<TextField size="small" sx={{ width: "60px" }} />}
-                    label=""
-                  />
-                </Box>
-              </Paper>
-            </Grid>
-
-            <Grid size={12}>
-              <Paper elevation={2}>
-                <Typography variant="h6">Distance (km)</Typography>
-                <Box display="flex" flexDirection="row" gap={0}>
-                  <FormControlLabel
-                    control={<TextField size="small" sx={{ width: "80px" }} />}
-                    label=""
-                  />
-                </Box>
-              </Paper>
-            </Grid>
-          </Grid> */}
+          <ScheduledDatePicker availableDates={availableDates} />
         </Box>
       </Modal>
     </>
