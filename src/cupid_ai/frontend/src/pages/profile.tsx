@@ -4,20 +4,37 @@ import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import {
-  IconButton,
-  List,
-  ListItem,
-  ListItemText,
-  Typography,
-} from "@mui/material";
+import { IconButton, List, ListItem, ListItemText } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import { UserDataPoints } from "../data/UserDataPoints";
+import ProfileHeader from "../components/ProfileHeader";
+import { MockUser } from "../data/MockUser";
+
+export const Profile = () => {
+  // eslint-disable-next-line
+  const [editMode, setEditMode] = useState(false);
+  const user = MockUser;
+
+  return (
+    <>
+      <ProfileHeader user={user} />
+      <Grid container spacing={2} sx={{ padding: 2 }}>
+        <Grid size={12}>
+          <BasicInformation user={user} editMode={editMode} />
+          <GeneralQuestions user={user} editMode={editMode} />
+          <SpecificQuestions user={user} editMode={editMode} />
+          <TheirQuestions user={user} editMode={editMode} />
+          <PartnershipPreferences user={user} editMode={editMode} />
+        </Grid>
+      </Grid>
+    </>
+  );
+};
 
 const generateListItem = ({ dataPoint, value, editMode }) => {
-  const secondaryAction = editMode ? (
+  const secondaryAction = !editMode ? (
     <>
       <IconButton edge="end" aria-label="dislike">
         <ThumbDownIcon />
@@ -28,34 +45,27 @@ const generateListItem = ({ dataPoint, value, editMode }) => {
     </>
   ) : null;
 
+  // If the dataPoint is a question, we want to display the question and answer
+  if (dataPoint.question) {
+    return (
+      <ListItem key={dataPoint.id} secondaryAction={secondaryAction}>
+        <ListItemText
+          primary={dataPoint.question}
+          secondary={dataPoint.answer}
+        />
+      </ListItem>
+    );
+  }
+
+  // If the dataPoint is a dataPoint, we want to display the label and value
   return (
     <ListItem key={dataPoint.name} secondaryAction={secondaryAction}>
-      <ListItemText primary={dataPoint.label} secondary={value} />
+      <ListItemText primary={dataPoint.label} secondary={dataPoint.value} />
     </ListItem>
   );
 };
 
-const YourFilters = ({ editMode }) => {
-  return (
-    <Accordion>
-      <AccordionSummary
-        expandIcon={<ExpandMoreIcon />}
-        aria-controls="panel1-content"
-        id="panel1-header"
-      >
-        Your Filters
-      </AccordionSummary>
-      <AccordionDetails>
-        <Typography>
-          W, 23-34, German/English, &lt;50km, Relationship/Family,
-          Kids-Maybe/Kids-Soon/Kids-Never
-        </Typography>
-      </AccordionDetails>
-    </Accordion>
-  );
-};
-
-const BasicInformation = ({ editMode }) => {
+const BasicInformation = ({ user, editMode }) => {
   return (
     <Accordion>
       <AccordionSummary
@@ -66,35 +76,23 @@ const BasicInformation = ({ editMode }) => {
         Basic Information
       </AccordionSummary>
       <AccordionDetails>
-        <ListItem>
-          <ListItemText
-            primary="Your Headline"
-            secondary={
-              <Typography>
-                M38, German/English, Budapest
-                <br />
-                We're looking for the same!
-              </Typography>
-            }
-          />
-        </ListItem>
-
         <List>
           {UserDataPoints.filter((dataPoint) =>
             [
-              "gender",
-              "age",
               "languages",
               "location",
               "occupation",
               "living_situation",
               "living_mates",
-              "kids_wanted",
               "smoking",
               "drinking",
             ].includes(dataPoint.name)
           ).map((dataPoint) =>
-            generateListItem({ dataPoint, value: "Sample Value", editMode })
+            generateListItem({
+              dataPoint,
+              value: user[dataPoint.name],
+              editMode,
+            })
           )}
         </List>
       </AccordionDetails>
@@ -102,130 +100,118 @@ const BasicInformation = ({ editMode }) => {
   );
 };
 
-const Physique = ({ editMode }) => {
+export const GeneralQuestions = ({ user, editMode }) => {
   return (
     <Accordion>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
-        aria-controls="panel1-content"
-        id="panel1-header"
+        aria-controls="panel3-content"
+        id="panel3-header"
       >
-        Physique
+        General Questions
+      </AccordionSummary>
+      <AccordionDetails>
+        <List>
+          {user.generalQuestions.map((question) =>
+            generateListItem({
+              dataPoint: question,
+              value: question.answer,
+              editMode,
+            })
+          )}
+        </List>
+      </AccordionDetails>
+    </Accordion>
+  );
+};
+
+export const SpecificQuestions = ({ user, editMode }) => {
+  return (
+    <Accordion>
+      <AccordionSummary
+        expandIcon={<ExpandMoreIcon />}
+        aria-controls="panel4-content"
+        id="panel4-header"
+      >
+        Questions for {user.gender[0]}
+        {user.age}-{user.occupation}
+      </AccordionSummary>
+      <AccordionDetails>
+        <List>
+          {user.specificQuestions.map((question) =>
+            generateListItem({
+              dataPoint: question,
+              value: question.answer,
+              editMode,
+            })
+          )}
+        </List>
+      </AccordionDetails>
+    </Accordion>
+  );
+};
+
+export const TheirQuestions = ({ user, editMode }) => {
+  return (
+    <Accordion>
+      <AccordionSummary
+        expandIcon={<ExpandMoreIcon />}
+        aria-controls="panel5-content"
+        id="panel5-header"
+      >
+        Questions for you
+      </AccordionSummary>
+      <AccordionDetails>
+        <List>
+          {user.theirQuestions.map((question) =>
+            generateListItem({
+              dataPoint: question,
+              value: question.answer,
+              editMode,
+            })
+          )}
+        </List>
+      </AccordionDetails>
+    </Accordion>
+  );
+};
+
+const PartnershipPreferences = ({ user, editMode }) => {
+  return (
+    <Accordion>
+      <AccordionSummary
+        expandIcon={<ExpandMoreIcon />}
+        aria-controls="panel3-content"
+        id="panel3-header"
+      >
+        Partnership Experience & Goals
       </AccordionSummary>
       <AccordionDetails>
         <List>
           {UserDataPoints.filter((dataPoint) =>
             [
-              "height",
-              "weight",
-              "hair_length",
-              "hair_color",
-              "hair_style",
-              "eye_color",
+              "familyPlanning",
+              "kidsWanted",
+              "pets",
+              "livingPreference",
+              "wealthSplitting",
+              "effortSplitting",
+              "religion",
+              "politics",
+              "existingFamilyStructure",
+              "retirementPlans",
+              "workingHours",
+              "otherCommitments",
             ].includes(dataPoint.name)
           ).map((dataPoint) =>
-            generateListItem({ dataPoint, value: "Sample Value", editMode })
+            generateListItem({
+              dataPoint: dataPoint,
+              value: user[dataPoint.name],
+              editMode,
+            })
           )}
         </List>
       </AccordionDetails>
     </Accordion>
-  );
-};
-
-export const QuestionsForYourPartner = ({ editMode }) => {
-  return (
-    <Accordion>
-      <AccordionSummary
-        expandIcon={<ExpandMoreIcon />}
-        aria-controls="panel3-content"
-        id="panel3-header"
-      >
-        Questions for your Partner
-      </AccordionSummary>
-      <AccordionDetails>
-        <List>
-          <ListItem>
-            <ListItemText
-              primary="How many Partners have you had?"
-              secondary={<Typography>[Text Area, 1-1000 words]</Typography>}
-            />
-          </ListItem>
-        </List>
-        <List>
-          <ListItem>
-            <ListItemText
-              primary="Do you have Dept?"
-              secondary={<Typography>[Text Area, 1-1000 words]</Typography>}
-            />
-          </ListItem>
-        </List>
-      </AccordionDetails>
-    </Accordion>
-  );
-};
-
-const FacialFeatures = ({ editMode }) => {
-  return (
-    <Accordion>
-      <AccordionSummary
-        expandIcon={<ExpandMoreIcon />}
-        aria-controls="panel2-content"
-        id="panel2-header"
-      >
-        [Coming soon] Facial Form Featurs
-      </AccordionSummary>
-      <AccordionDetails>[Pending]</AccordionDetails>
-    </Accordion>
-  );
-};
-
-const Wealth = ({ editMode }) => {
-  return (
-    <Accordion>
-      <AccordionSummary
-        expandIcon={<ExpandMoreIcon />}
-        aria-controls="panel3-content"
-        id="panel3-header"
-      >
-        [Coming soon] Wealth
-      </AccordionSummary>
-      <AccordionDetails>[Pending]</AccordionDetails>
-    </Accordion>
-  );
-};
-
-const PartnershipGoals = ({ editMode }) => {
-  return (
-    <Accordion>
-      <AccordionSummary
-        expandIcon={<ExpandMoreIcon />}
-        aria-controls="panel3-content"
-        id="panel3-header"
-      >
-        [Coming soon] Partnership Goals (long-term)
-      </AccordionSummary>
-      <AccordionDetails>[Pending]</AccordionDetails>
-    </Accordion>
-  );
-};
-
-export const Profile = () => {
-  const [editMode, setEditMode] = useState(true);
-
-  return (
-    <>
-      <Typography variant="h3">Your Profile</Typography>
-      <Grid container spacing={2} sx={{ padding: 2 }}>
-        <Grid size={12}>
-          <YourFilters editMode={editMode} />
-          <BasicInformation editMode={editMode} />
-          <Physique editMode={editMode} />
-          <QuestionsForYourPartner editMode={editMode} />
-          <FacialFeatures editMode={editMode} />
-          <Wealth editMode={editMode} />
-          <PartnershipGoals editMode={editMode} />
-        </Grid>
-      </Grid>
-    </>
   );
 };

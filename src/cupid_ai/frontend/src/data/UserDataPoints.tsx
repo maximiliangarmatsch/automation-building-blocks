@@ -18,6 +18,7 @@ export const UserDataPoints = [
     ui_type: "radio",
     filter_type: "radio",
     options: Genders,
+    ratable: false,
   },
   {
     name: "age",
@@ -156,5 +157,79 @@ export const UserDataPoints = [
     ui_type: "select",
     filter_type: "select",
     options: EyeColors,
+  },
+
+  //Partnership Preferences
+  {
+    name: "familyPlanning",
+    label: "Family Planning",
+    ui_type: "input_text",
+    filter_type: "",
+  },
+  {
+    name: "kidsWanted",
+    label: "Kids Wanted",
+    ui_type: "input_text",
+    filter_type: "",
+  },
+  {
+    name: "pets",
+    label: "Pets",
+    ui_type: "input_text",
+    filter_type: "",
+  },
+  {
+    name: "livingPreference",
+    label: "Living Preference",
+    ui_type: "input_text",
+    filter_type: "",
+  },
+  {
+    name: "wealthSplitting",
+    label: "Wealth Splitting",
+    ui_type: "input_text",
+    filter_type: "",
+  },
+  {
+    name: "effortSplitting",
+    label: "Effort Splitting",
+    ui_type: "input_text",
+    filter_type: "",
+  },
+  {
+    name: "religion",
+    label: "Religion",
+    ui_type: "input_text",
+    filter_type: "",
+  },
+  {
+    name: "politics",
+    label: "Politics",
+    ui_type: "input_text",
+    filter_type: "",
+  },
+  {
+    name: "existingFamilyStructure",
+    label: "Existing Family Structure",
+    ui_type: "input_text",
+    filter_type: "",
+  },
+  {
+    name: "retirementPlans",
+    label: "Retirement Plans",
+    ui_type: "input_text",
+    filter_type: "",
+  },
+  {
+    name: "workingHours",
+    label: "Working Hours",
+    ui_type: "input_text",
+    filter_type: "",
+  },
+  {
+    name: "otherCommitments",
+    label: "Other Commitments",
+    ui_type: "input_text",
+    filter_type: "",
   },
 ];
