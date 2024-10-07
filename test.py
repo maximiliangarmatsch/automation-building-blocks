@@ -10,17 +10,19 @@ def create_users_table():
     cursor = conn.cursor()
 
     # SQL command to create the users table
-    cursor.execute("SELECT * FROM Accepted_match;")
+    cursor.execute("SELECT * FROM Match_profile;")
     unique_ids = cursor.fetchall()  # Fetch all results
     print(unique_ids)
-    # cursor.execute('''
+    # cursor.execute(
+    #     """
     #     CREATE TABLE IF NOT EXISTS User (
     #         id INTEGER PRIMARY KEY AUTOINCREMENT,
     #         email TEXT NOT NULL UNIQUE,
     #         password TEXT NOT NULL,
     #         unique_id TEXT UNIQUE
     #     );
-    # ''')
+    # """
+    # )
     # cursor.execute('DROP TABLE IF EXISTS User;')
     # Commit and close connection
     # cursor.execute("""
@@ -77,7 +79,8 @@ def create_users_table():
     #         FOREIGN KEY (unique_id) REFERENCES User(unique_id)
     #     );
     #     """)
-    # cursor.execute('''
+    # cursor.execute(
+    #     """
     #     CREATE TABLE IF NOT EXISTS Match_profile (
     #         id INTEGER PRIMARY KEY AUTOINCREMENT,
     #         your_unique_id INTEGER,
@@ -85,7 +88,8 @@ def create_users_table():
     #         FOREIGN KEY (your_unique_id) REFERENCES User(unique_id),
     #         FOREIGN KEY (match_unique_id) REFERENCES User(unique_id)
     #     );
-    #     ''')
+    #     """
+    # )
     # cursor.execute('''
     #     CREATE TABLE IF NOT EXISTS Accepted_match (
     #     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -159,9 +163,119 @@ def create_users_table():
     #     );
     # """
     # )
+    # cursor.execute(
+    #     """
+    #     CREATE TABLE User_profile (
+    #         id INTEGER PRIMARY KEY AUTOINCREMENT,
+    #         unique_id TEXT,
+    #         attractiveness TEXT NOT NULL,
+    #         relationship_type TEXT NOT NULL,
+    #         family_planning TEXT NOT NULL,
+    #         apartment_style TEXT NOT NULL,
+    #         roommates INTEGER,
+    #         working_hours TEXT NOT NULL,
+    #         other_commitments TEXT NOT NULL,
+    #         dating_availability TEXT NOT NULL,
+    #         gender TEXT NOT NULL,
+    #         height REAL NOT NULL,
+    #         weight REAL NOT NULL,
+    #         age INTEGER NOT NULL,
+    #         city TEXT NOT NULL,
+    #         country TEXT NOT NULL,
+    #         zipcode TEXT NOT NULL,
+    #         occupation TEXT NOT NULL,
+    #         languages TEXT,
+    #         bmi INTEGER,
+    #         eye_color TEXT,
+    #         eye_type TEXT,
+    #         hair_color TEXT,
+    #         hair_length TEXT,
+    #         hair_style TEXT,
+    #         nose TEXT,
+    #         facial_form TEXT,
+    #         cheekbones TEXT,
+    #         eyebrows TEXT,
+    #         dept TEXT,
+    #         assets TEXT,
+    #         income_this_year REAL,
+    #         income_next_year REAL,
+    #         income_over_next_year REAL,
+    #         wealth_goals TEXT,
+    #         kids TEXT,
+    #         pets TEXT,
+    #         living TEXT,
+    #         wealth_splitting TEXT,
+    #         effort_splitting TEXT,
+    #         religion TEXT,
+    #         politics TEXT,
+    #         existing_family_structure TEXT,
+    #         retirement TEXT,
+    #         smoking TEXT,
+    #         drinking TEXT,
+    #         drugs TEXT,
+    #         first_sex TEXT,
+    #         virgin TEXT,
+    #         bodycount INTEGER,
+    #         FOREIGN KEY (unique_id) REFERENCES User(unique_id)
+    #     );
+    # """
+    # )
+    # cursor.execute(
+    #     """
+    #     DROP TABLE IF EXISTS UserProfileGeneralQuestions;
+    #     """
+    # )
+    # Get all user-created table names, excluding system tables
+    # cursor.execute(
+    #     "SELECT name FROM sqlite_master WHERE type='table' AND name != 'sqlite_sequence';"
+    # )
+    # tables = cursor.fetchall()
+
+    # # Drop each table
+    # for table in tables:
+    #     cursor.execute(f"DROP TABLE IF EXISTS {table[0]};")
+    # cursor.execute(
+    #     """
+    #     CREATE TABLE User_profile_general_questions (
+    #         id INTEGER PRIMARY KEY AUTOINCREMENT,
+    #         user_id INTEGER,
+    #         g_q1 TEXT NOT NULL,
+    #         g_q2 TEXT NOT NULL,
+    #         g_q3 TEXT NOT NULL,
+    #         g_q4 TEXT NOT NULL,
+    #         g_q5 TEXT NOT NULL,
+    #         g_q6 TEXT NOT NULL,
+    #         g_q7 TEXT NOT NULL,
+    #         g_q8 TEXT NOT NULL,
+    #         g_q9 TEXT NOT NULL,
+    #         g_q10 TEXT NOT NULL,
+    #         FOREIGN KEY (user_id) REFERENCES User(unique_id)
+    #     );
+    #     """
+    # )
+    # cursor.execute(
+    #     """
+    # DELETE FROM User_profile
+    # WHERE unique_id = ?;
+    # """,
+    #     ("#2100403",),
+    # )
+    # cursor.execute(
+    #     """
+    # SELECT city, country, zipcode FROM User_profile WHERE unique_id = ?
+    # """,
+    #     ("#2100403",),
+    # )
+    # cursor.execute(
+    #     """
+    # DELETE FROM Match_profile;
+    # """
+    # )
     conn.commit()
+    # result = cursor.fetchone()
     conn.close()
     print("User_profile table created successfully!")
+    # return result[0], result[1], result[2]
 
 
 if __name__ == "__main__":
