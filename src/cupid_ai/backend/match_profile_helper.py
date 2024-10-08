@@ -5,11 +5,32 @@ from flask import jsonify
 def save_match_profile(your_unique_id, match_unique_id, conn):
     cursor = conn.cursor()
     try:
+        # cursor.execute(
+        #     """
+        #     SELECT 1 FROM Match_profile
+        #     WHERE (your_unique_id = ? AND match_unique_id = ?)
+        #        OR (your_unique_id = ? AND match_unique_id = ?);
+        #     """,
+        #     (your_unique_id, match_unique_id, match_unique_id, your_unique_id),
+        # )
+
+        cursor.execute(
+            """
+            SELECT 1 FROM Match_profile
+            WHERE (your_unique_id = ? AND match_unique_id = ?);
+            """,
+            (your_unique_id, match_unique_id),
+        )
+        result = cursor.fetchone()
+        if result:
+            return jsonify(
+                {"success": False, "message": "This match profile already exists."}
+            )
         cursor.execute(
             """
             INSERT INTO Match_profile (your_unique_id, match_unique_id)
             VALUES (?, ?);
-        """,
+            """,
             (your_unique_id, match_unique_id),
         )
         conn.commit()
@@ -35,9 +56,9 @@ def get_match_profiles(unique_id, conn):
     print(match_ids)
     cursor.execute(
         """
-        SELECT q1, q2, q3, q4, q5, q6, q7, q8, q9, q10 
-        FROM User_profile
-        WHERE unique_id = ?;
+        SELECT g_q1, g_q2, g_q3, g_q4, g_q5, g_q6, g_q7, g_q8, g_q9, g_q10 
+        FROM User_profile_general_questions
+        WHERE user_id = ?;
     """,
         (unique_id,),
     )

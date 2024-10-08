@@ -14,6 +14,10 @@ from dotenv import load_dotenv
 from api_helpers.create_profile.extract_profile_data import extract_profile_data
 from api_helpers.create_profile.create_profile import insert_user_profile
 from api_helpers.create_profile.update_profile import update_user_profile
+from view_match_profile import get_user_and_profile_data
+from api_helpers.create_profile.insert_general_questions import (
+    insert_user_general_questions,
+)
 from api_helpers.create_profile.helpers import (
     check_mandatory_fields,
     user_profile_exists,
@@ -167,6 +171,51 @@ def get_profiles():
     return profiles
 
 
+@app.route("/view_match_profile", methods=["POST"])
+def view_match_profile():
+    conn = get_db_connection()
+    data = request.get_json()
+    your_unique_id = data.get("your_unique_id")
+    match_unique_id = data.get("match_unique_id")
+    if not your_unique_id or not match_unique_id:
+        return (
+            jsonify({"error": "Both your_unique_id and match_unique_id are required"}),
+            400,
+        )
+    # profiles = get_match_profiles(unique_id, conn=conn)
+
+    return jsonify(
+        get_user_and_profile_data(your_unique_id, match_unique_id, conn), 200
+    )
+
+
+@app.route("/update_question", methods=["PUT"])
+def update_question():
+    user_unique_id = request.json["user_unique_id"]
+    question_number = request.json["question_number"]
+    new_question_text = request.json["new_question_text"]
+    query = f"UPDATE User_profile_general_questions SET g_q{question_number} = ? WHERE user_id = (SELECT unique_id FROM User WHERE unique_id = ?)"
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute(query, (new_question_text, user_unique_id))
+    conn.commit()
+    conn.close()
+    return jsonify({"status": "success", "message": "Question updated successfully"})
+
+
+@app.route("/delete_question", methods=["DELETE"])
+def delete_question():
+    user_unique_id = request.json["user_unique_id"]
+    question_number = request.json["question_number"]
+    query = f"UPDATE User_profile_general_questions SET g_q{question_number} = NULL WHERE user_id = (SELECT unique_id FROM User WHERE unique_id = ?)"
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute(query, (user_unique_id,))
+    conn.commit()
+    conn.close()
+    return jsonify({"status": "success", "message": "Question deleted successfully"})
+
+
 @app.route("/reject_profile", methods=["DELETE"])
 def reject_profile():
     data = request.json
@@ -263,7 +312,10 @@ def match_profile():
         columns = [column[0] for column in cursor.description]
         for row in rows:
             profile_dict = {columns[i]: row[i] for i in range(len(columns))}
-            profile_address = profile_dict["living_address"]
+            city = profile_dict["city"]
+            country = profile_dict["country"]
+            zipcode = profile_dict["zipcode"]
+            profile_address = f"{city}, {country}, {zipcode}"
             distance = get_distance(google_distance_api, user_address, profile_address)
             distance_value = float(distance.split()[0])
             if distance_value <= float(max_distance):
@@ -296,15 +348,19 @@ def create_or_update_user_profile():
         "attractiveness",
         "relationship_type",
         "family_planning",
-        "living_address",
         "apartment_style",
         "roommates",
         "working_hours",
         "other_commitments",
         "dating_availability",
+        "gender",
         "height",
         "weight",
         "age",
+        "city",
+        "country",
+        "zipcode",
+        "occupation",
     ]
     are_fields_present, missing_fields = check_mandatory_fields(data, mandatory_fields)
     if not are_fields_present:
@@ -332,6 +388,7 @@ def create_or_update_user_profile():
         )
     else:
         insert_user_profile(cursor, profile_data)
+        insert_user_general_questions(cursor, profile_data)
         conn.commit()
         conn.close()
         return (
