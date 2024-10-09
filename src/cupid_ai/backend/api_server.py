@@ -10,6 +10,19 @@ from asgiref.wsgi import WsgiToAsgi
 import google.generativeai as genai
 from dotenv import load_dotenv
 
+# Create Profile module imports
+from api_helpers.create_profile.extract_profile_data import extract_profile_data
+from api_helpers.create_profile.create_profile import insert_user_profile
+from api_helpers.create_profile.update_profile import update_user_profile
+from view_match_profile import get_user_and_profile_data
+from api_helpers.create_profile.insert_general_questions import (
+    insert_user_general_questions,
+)
+from api_helpers.create_profile.helpers import (
+    check_mandatory_fields,
+    user_profile_exists,
+)
+
 from helper import (
     generate_unique_id,
     analyze_image_video,
@@ -18,7 +31,6 @@ from helper import (
     save_uploaded_file,
     get_attractiveness_score,
 )
-from user_profile_helper import extract_profile_data, check_mandatory_fields
 from distance_calculator_helper import get_distance, get_user_address
 
 from match_profile_helper import (
@@ -159,6 +171,51 @@ def get_profiles():
     return profiles
 
 
+@app.route("/view_match_profile", methods=["POST"])
+def view_match_profile():
+    conn = get_db_connection()
+    data = request.get_json()
+    your_unique_id = data.get("your_unique_id")
+    match_unique_id = data.get("match_unique_id")
+    if not your_unique_id or not match_unique_id:
+        return (
+            jsonify({"error": "Both your_unique_id and match_unique_id are required"}),
+            400,
+        )
+    # profiles = get_match_profiles(unique_id, conn=conn)
+
+    return jsonify(
+        get_user_and_profile_data(your_unique_id, match_unique_id, conn), 200
+    )
+
+
+@app.route("/update_question", methods=["PUT"])
+def update_question():
+    user_unique_id = request.json["user_unique_id"]
+    question_number = request.json["question_number"]
+    new_question_text = request.json["new_question_text"]
+    query = f"UPDATE User_profile_general_questions SET g_q{question_number} = ? WHERE user_id = (SELECT unique_id FROM User WHERE unique_id = ?)"
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute(query, (new_question_text, user_unique_id))
+    conn.commit()
+    conn.close()
+    return jsonify({"status": "success", "message": "Question updated successfully"})
+
+
+@app.route("/delete_question", methods=["DELETE"])
+def delete_question():
+    user_unique_id = request.json["user_unique_id"]
+    question_number = request.json["question_number"]
+    query = f"UPDATE User_profile_general_questions SET g_q{question_number} = NULL WHERE user_id = (SELECT unique_id FROM User WHERE unique_id = ?)"
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute(query, (user_unique_id,))
+    conn.commit()
+    conn.close()
+    return jsonify({"status": "success", "message": "Question deleted successfully"})
+
+
 @app.route("/reject_profile", methods=["DELETE"])
 def reject_profile():
     data = request.json
@@ -255,7 +312,10 @@ def match_profile():
         columns = [column[0] for column in cursor.description]
         for row in rows:
             profile_dict = {columns[i]: row[i] for i in range(len(columns))}
-            profile_address = profile_dict["living_address"]
+            city = profile_dict["city"]
+            country = profile_dict["country"]
+            zipcode = profile_dict["zipcode"]
+            profile_address = f"{city}, {country}, {zipcode}"
             distance = get_distance(google_distance_api, user_address, profile_address)
             distance_value = float(distance.split()[0])
             if distance_value <= float(max_distance):
@@ -288,15 +348,19 @@ def create_or_update_user_profile():
         "attractiveness",
         "relationship_type",
         "family_planning",
-        "living_address",
         "apartment_style",
         "roommates",
         "working_hours",
         "other_commitments",
         "dating_availability",
+        "gender",
         "height",
         "weight",
         "age",
+        "city",
+        "country",
+        "zipcode",
+        "occupation",
     ]
     are_fields_present, missing_fields = check_mandatory_fields(data, mandatory_fields)
     if not are_fields_present:
@@ -309,119 +373,8 @@ def create_or_update_user_profile():
     profile_data = extract_profile_data(data)
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute(
-        "SELECT * FROM User WHERE unique_id = ?", (profile_data["unique_id"],)
-    )
-    unique_id = cursor.fetchone()
-    if not unique_id:
-        conn.close()
-        return jsonify({"error": "unique_id does not exist in User table"}), 400
-    cursor.execute(
-        "SELECT * FROM User_profile WHERE unique_id = ?", (profile_data["unique_id"],)
-    )
-    user_profile = cursor.fetchone()
-    if user_profile:
-        cursor.execute(
-            """UPDATE User_profile SET
-            attractiveness = ?,
-            relationship_type = ?,
-            family_planning = ?,
-            living_address = ?,
-            apartment_style = ?,
-            roommates = ?,
-            working_hours = ?,
-            other_commitments = ?,
-            dating_availability = ?,
-            height = ?,
-            weight = ?,
-            age = ?,
-            gender = ?,
-            eye_color = ?,
-            eye_type = ?,
-            hair_color = ?,
-            hair_length = ?,
-            hair_style = ?,
-            nose = ?,
-            facial_form = ?,
-            cheekbones = ?,
-            eyebrows = ?,
-            dept = ?,
-            assets = ?,
-            income_this_year = ?,
-            income_next_year = ?,
-            income_over_next_year = ?,
-            wealth_goals = ?,
-            kids = ?,
-            pets = ?,
-            living = ?,
-            wealth_splitting = ?,
-            effort_splitting = ?,
-            religion = ?,
-            politics = ?,
-            existing_family_structure = ?,
-            retirement = ?,
-            q1 = ?,
-            q2 = ?,
-            q3 = ?,
-            q4 = ?,
-            q5 = ?,
-            q6 = ?,
-            q7 = ?,
-            q8 = ?,
-            q9 = ?,
-            q10 = ?
-            WHERE unique_id = ?""",
-            (
-                profile_data["attractiveness"],
-                profile_data["relationship_type"],
-                profile_data["family_planning"],
-                profile_data["living_address"],
-                profile_data["apartment_style"],
-                profile_data["roommates"],
-                profile_data["working_hours"],
-                profile_data["other_commitments"],
-                profile_data["dating_availability"],
-                profile_data["height"],
-                profile_data["weight"],
-                profile_data["age"],
-                profile_data["gender"],
-                profile_data["eye_color"],
-                profile_data["eye_type"],
-                profile_data["hair_color"],
-                profile_data["hair_length"],
-                profile_data["hair_style"],
-                profile_data["nose"],
-                profile_data["facial_form"],
-                profile_data["cheekbones"],
-                profile_data["eyebrows"],
-                profile_data["dept"],
-                profile_data["assets"],
-                profile_data["income_this_year"],
-                profile_data["income_next_year"],
-                profile_data["income_over_next_year"],
-                profile_data["wealth_goals"],
-                profile_data["kids"],
-                profile_data["pets"],
-                profile_data["living"],
-                profile_data["wealth_splitting"],
-                profile_data["effort_splitting"],
-                profile_data["religion"],
-                profile_data["politics"],
-                profile_data["existing_family_structure"],
-                profile_data["retirement"],
-                profile_data["q1"],
-                profile_data["q2"],
-                profile_data["q3"],
-                profile_data["q4"],
-                profile_data["q5"],
-                profile_data["q6"],
-                profile_data["q7"],
-                profile_data["q8"],
-                profile_data["q9"],
-                profile_data["q10"],
-                profile_data["unique_id"],
-            ),
-        )
+    if user_profile_exists(cursor, profile_data["unique_id"]):
+        update_user_profile(cursor, profile_data)
         conn.commit()
         conn.close()
         return (
@@ -434,68 +387,8 @@ def create_or_update_user_profile():
             200,
         )
     else:
-        cursor.execute(
-            """INSERT INTO User_profile (unique_id, attractiveness, relationship_type, 
-            family_planning, living_address, apartment_style, roommates, working_hours, 
-            other_commitments, dating_availability, height, weight, age, gender, eye_color, 
-            eye_type, hair_color, hair_length, hair_style, nose, facial_form, cheekbones, 
-            eyebrows, dept, assets, income_this_year, income_next_year, income_over_next_year, 
-            wealth_goals, kids, pets, living, wealth_splitting, effort_splitting, religion, 
-            politics, existing_family_structure, retirement, q1, q2, q3, q4, q5, q6, q7, q8, 
-            q9, q10) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-            (
-                profile_data["unique_id"],
-                profile_data["attractiveness"],
-                profile_data["relationship_type"],
-                profile_data["family_planning"],
-                profile_data["living_address"],
-                profile_data["apartment_style"],
-                profile_data["roommates"],
-                profile_data["working_hours"],
-                profile_data["other_commitments"],
-                profile_data["dating_availability"],
-                profile_data["height"],
-                profile_data["weight"],
-                profile_data["age"],
-                profile_data["gender"],
-                profile_data["eye_color"],
-                profile_data["eye_type"],
-                profile_data["hair_color"],
-                profile_data["hair_length"],
-                profile_data["hair_style"],
-                profile_data["nose"],
-                profile_data["facial_form"],
-                profile_data["cheekbones"],
-                profile_data["eyebrows"],
-                profile_data["dept"],
-                profile_data["assets"],
-                profile_data["income_this_year"],
-                profile_data["income_next_year"],
-                profile_data["income_over_next_year"],
-                profile_data["wealth_goals"],
-                profile_data["kids"],
-                profile_data["pets"],
-                profile_data["living"],
-                profile_data["wealth_splitting"],
-                profile_data["effort_splitting"],
-                profile_data["religion"],
-                profile_data["politics"],
-                profile_data["existing_family_structure"],
-                profile_data["retirement"],
-                profile_data["q1"],
-                profile_data["q2"],
-                profile_data["q3"],
-                profile_data["q4"],
-                profile_data["q5"],
-                profile_data["q6"],
-                profile_data["q7"],
-                profile_data["q8"],
-                profile_data["q9"],
-                profile_data["q10"],
-            ),
-        )
-
+        insert_user_profile(cursor, profile_data)
+        insert_user_general_questions(cursor, profile_data)
         conn.commit()
         conn.close()
         return (
@@ -505,7 +398,7 @@ def create_or_update_user_profile():
                     "profile_id": profile_data["unique_id"],
                 }
             ),
-            201,
+            200,
         )
 
 
