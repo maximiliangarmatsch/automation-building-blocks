@@ -14,6 +14,10 @@ from dotenv import load_dotenv
 from api_helpers.create_profile.extract_profile_data import extract_profile_data
 from api_helpers.create_profile.create_profile import insert_user_profile
 from api_helpers.create_profile.update_profile import update_user_profile
+from api_helpers.create_profile.attractivenss_score_helper import (
+    get_attractiveness_score,
+)
+from api_helpers.create_profile.image_analysis_helper import analyze_image_video
 from view_match_profile import get_user_and_profile_data
 from api_helpers.create_profile.insert_general_questions import (
     insert_user_general_questions,
@@ -29,30 +33,28 @@ from api_helpers.match_profile.helpers import (
     filter_profiles_by_distance,
     save_matched_profiles,
     fetch_matching_profiles,
+    get_distance,
+    get_user_address,
 )
+from api_helpers.match_profile.extract_user_preferences import extract_user_preferences
+from api_helpers.match_profile.build_match_query import build_match_query
 
 # Create auth module imports
 from api_helpers.auth.helpers import (
-    extract_user_data,
+    extract_user_login_data,
     fetch_user_by_email,
     hash_user_password,
     authenticate_user,
 )
 from api_helpers.auth.create_new_user import create_new_user
 
-from api_helpers.match_profile.extract_user_preferences import extract_user_preferences
-from api_helpers.match_profile.build_match_query import build_match_query
-from helper import (
-    analyze_image_video,
-    get_db_connection,
-    save_uploaded_file,
-    get_attractiveness_score,
-)
-from distance_calculator_helper import get_distance, get_user_address
-
 from match_profile_helper import (
     get_match_profiles,
     get_accepted_profiles,
+)
+from helper import (
+    get_db_connection,
+    save_uploaded_file,
 )
 
 load_dotenv()
@@ -78,7 +80,7 @@ google_distance_api = os.getenv("GOOGLE_DISTANCE_API")
 @cross_origin()
 def authenticate():
     data = request.json
-    user_data, error_message, error_code = extract_user_data(data)
+    user_data, error_message, error_code = extract_user_login_data(data)
     if error_message:
         return jsonify({"error": error_message}), error_code
     email = user_data["email"]
@@ -144,12 +146,21 @@ def get_profile():
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM User_Profile WHERE unique_id = ?", (unique_id,))
     profile = cursor.fetchone()
-    print("Fetched profile:", profile)
     if not profile:
         conn.close()
         return jsonify({"error": "Profile not found for the provided unique_id"}), 404
     column_names = [column[0] for column in cursor.description]
     profile_data = dict(zip(column_names, profile))
+    cursor.execute(
+        """
+        SELECT question FROM User_profile_general_questions
+        WHERE user_id = ?
+        ORDER BY id ASC
+        """,
+        (unique_id,),
+    )
+    questions = cursor.fetchall()
+    profile_data["user_general_questions"] = [question[0] for question in questions]
     conn.close()
     return jsonify(profile_data), 200
 

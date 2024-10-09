@@ -10,9 +10,9 @@ def create_users_table():
     cursor = conn.cursor()
 
     # SQL command to create the users table
-    cursor.execute("SELECT * FROM User_profile_general_questions;")
-    unique_ids = cursor.fetchall()  # Fetch all results
-    print(unique_ids)
+    # cursor.execute("SELECT * FROM User_profile_general_questions;")
+    # unique_ids = cursor.fetchall()  # Fetch all results
+    # print(unique_ids)
     # cursor.execute(
     #     """
     #     CREATE TABLE IF NOT EXISTS User (
@@ -222,7 +222,7 @@ def create_users_table():
     # )
     # cursor.execute(
     #     """
-    #     DROP TABLE IF EXISTS User_profile;
+    #     DROP TABLE IF EXISTS User_profile_general_questions;
     #     """
     # )
     # Get all user-created table names, excluding system tables
@@ -238,17 +238,9 @@ def create_users_table():
     #     """
     #     CREATE TABLE User_profile_general_questions (
     #         id INTEGER PRIMARY KEY AUTOINCREMENT,
-    #         user_id INTEGER,
-    #         g_q1 TEXT NOT NULL,
-    #         g_q2 TEXT NOT NULL,
-    #         g_q3 TEXT NOT NULL,
-    #         g_q4 TEXT NOT NULL,
-    #         g_q5 TEXT NOT NULL,
-    #         g_q6 TEXT NOT NULL,
-    #         g_q7 TEXT NOT NULL,
-    #         g_q8 TEXT NOT NULL,
-    #         g_q9 TEXT NOT NULL,
-    #         g_q10 TEXT NOT NULL,
+    #         user_id TEXT NOT NULL,
+    #         question_id TEXT NOT NULL,
+    #         question TEXT NOT NULL,
     #         FOREIGN KEY (user_id) REFERENCES User(unique_id)
     #     );
     #     """

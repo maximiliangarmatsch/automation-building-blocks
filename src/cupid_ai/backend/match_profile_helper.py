@@ -2,6 +2,20 @@ import sqlite3
 from flask import jsonify
 
 
+def fetch_general_questions(unique_id, conn):
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        SELECT question FROM User_profile_general_questions
+        WHERE user_id = ?
+        ORDER BY id ASC
+        """,
+        (unique_id,),
+    )
+    user_questions = cursor.fetchall()
+    return user_questions
+
+
 def get_match_profiles(unique_id, conn):
     cursor = conn.cursor()
     cursor.execute(
@@ -14,16 +28,8 @@ def get_match_profiles(unique_id, conn):
     match_ids = cursor.fetchall()
     match_unique_ids = [match_id[0] for match_id in match_ids]
     print(match_ids)
-    cursor.execute(
-        """
-        SELECT g_q1, g_q2, g_q3, g_q4, g_q5, g_q6, g_q7, g_q8, g_q9, g_q10 
-        FROM User_profile_general_questions
-        WHERE user_id = ?;
-    """,
-        (unique_id,),
-    )
-    user_questions = cursor.fetchone()
-    if match_unique_ids and user_questions:
+    user_general_questions = fetch_general_questions(unique_id, conn)
+    if match_unique_ids and user_general_questions:
         placeholders = ", ".join(["?"] * len(match_unique_ids))
         cursor.execute(
             f"""
@@ -38,8 +44,15 @@ def get_match_profiles(unique_id, conn):
             profiles = []
             for row in matched_profiles:
                 profile_dict = dict(zip(columns, row))
-                for i, q in enumerate(user_questions, 1):
-                    profile_dict[f"your_q{i}"] = q
+                profile_dict["user_general_questions"] = [
+                    question[0] for question in user_general_questions
+                ]
+                match_general_questions = fetch_general_questions(
+                    profile_dict["unique_id"], conn
+                )
+                profile_dict["match_general_questions"] = [
+                    question[0] for question in match_general_questions
+                ]
                 profiles.append(profile_dict)
             conn.close()
             return jsonify({"profiles": profiles})

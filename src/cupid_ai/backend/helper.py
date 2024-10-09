@@ -1,15 +1,11 @@
 import os
-import random
-import hashlib
 import sqlite3
-import time
-import json
 import google.generativeai as genai
 
 DB_PATH = "db/cupid_ai.db"
 
 
-def get_prompt(file_path) -> str:
+def make_prompt(file_path) -> str:
     file_path = file_path
     with open(file_path, "r", encoding="utf8") as file:
         prompt = file.read()
@@ -26,45 +22,3 @@ def save_uploaded_file(uploaded_file, media_folder):
     with open(file_path, "wb") as f:
         f.write(uploaded_file.read())
     return file_path
-
-
-def analyze_image_video(video_path):
-    video_file = genai.upload_file(path=video_path)
-    while video_file.state.name == "PROCESSING":
-        time.sleep(10)
-        video_file = genai.get_file(video_file.name)
-    if video_file.state.name == "FAILED":
-        return {"error": "Video processing failed."}
-    prompt = get_prompt("./src/cupid_ai/backend/prompts/feature_extraction.txt")
-    model = genai.GenerativeModel("gemini-1.5-flash-latest")
-    response = model.generate_content(
-        [prompt, video_file], request_options={"timeout": 600}
-    )
-    genai.delete_file(video_file.name)
-    json_response = response.text.lstrip("`json").rstrip("`")
-    if not json_response:
-        return {"error": "No response received from GenAI model."}
-    data = json.loads(json_response)
-    print(data.get("HairColor"))
-    return data
-
-
-def get_attractiveness_score(video_path):
-    video_file = genai.upload_file(path=video_path)
-    while video_file.state.name == "PROCESSING":
-        time.sleep(10)
-        video_file = genai.get_file(video_file.name)
-    if video_file.state.name == "FAILED":
-        return {"error": "Video processing failed."}
-    prompt = get_prompt("./src/cupid_ai/backend/prompts/attractiveness.txt")
-    model = genai.GenerativeModel("gemini-1.5-flash-latest")
-    response = model.generate_content(
-        [prompt, video_file], request_options={"timeout": 600}
-    )
-    genai.delete_file(video_file.name)
-    json_response = response.text.lstrip("`json").rstrip("`")
-    if not json_response:
-        return {"error": "No response received from GenAI model."}
-    data = json.loads(json_response)
-    print(data)
-    return data

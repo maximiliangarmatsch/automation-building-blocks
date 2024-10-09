@@ -4,7 +4,11 @@ from api_helpers.auth.helpers import generate_unique_id
 def create_new_user(conn, email, hashed_password):
     cursor = conn.cursor()
     cursor.execute(
-        "INSERT INTO User (email, password) VALUES (?, ?)", (email, hashed_password)
+        """
+        INSERT INTO User (email, password) 
+        VALUES (?, ?)
+        """,
+        (email, hashed_password),
     )
     user_id = cursor.lastrowid
     unique_id = generate_unique_id(user_id)

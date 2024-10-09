@@ -11,7 +11,7 @@ def hash_password(password):
     return hashlib.sha256(password.encode("utf-8")).hexdigest()
 
 
-def extract_user_data(request_data):
+def extract_user_login_data(request_data):
     if (
         not request_data
         or "email" not in request_data

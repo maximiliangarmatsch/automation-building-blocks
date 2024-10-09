@@ -52,3 +52,18 @@ def fetch_matching_profiles(conn, query, params):
     rows = cursor.fetchall()
     columns = [column[0] for column in cursor.description]
     return rows, columns
+
+
+def get_user_address(unique_id, conn):
+    cursor = conn.cursor()
+    query = "SELECT city, country, zipcode FROM User_profile WHERE unique_id = ?"
+    cursor.execute(query, (unique_id,))
+    result = cursor.fetchone()
+    if result:
+        city = result[0]
+        country = result[1]
+        zipcode = result[2]
+        profile_address = f"{city}, {country}, {zipcode}"
+        return profile_address
+    else:
+        return False
