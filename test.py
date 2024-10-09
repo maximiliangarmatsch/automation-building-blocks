@@ -10,9 +10,9 @@ def create_users_table():
     cursor = conn.cursor()
 
     # SQL command to create the users table
-    cursor.execute("SELECT * FROM Match_profile;")
-    unique_ids = cursor.fetchall()  # Fetch all results
-    print(unique_ids)
+    # cursor.execute("SELECT * FROM User_profile_general_questions;")
+    # unique_ids = cursor.fetchall()  # Fetch all results
+    # print(unique_ids)
     # cursor.execute(
     #     """
     #     CREATE TABLE IF NOT EXISTS User (
@@ -222,7 +222,7 @@ def create_users_table():
     # )
     # cursor.execute(
     #     """
-    #     DROP TABLE IF EXISTS UserProfileGeneralQuestions;
+    #     DROP TABLE IF EXISTS User_profile_general_questions;
     #     """
     # )
     # Get all user-created table names, excluding system tables
@@ -238,17 +238,9 @@ def create_users_table():
     #     """
     #     CREATE TABLE User_profile_general_questions (
     #         id INTEGER PRIMARY KEY AUTOINCREMENT,
-    #         user_id INTEGER,
-    #         g_q1 TEXT NOT NULL,
-    #         g_q2 TEXT NOT NULL,
-    #         g_q3 TEXT NOT NULL,
-    #         g_q4 TEXT NOT NULL,
-    #         g_q5 TEXT NOT NULL,
-    #         g_q6 TEXT NOT NULL,
-    #         g_q7 TEXT NOT NULL,
-    #         g_q8 TEXT NOT NULL,
-    #         g_q9 TEXT NOT NULL,
-    #         g_q10 TEXT NOT NULL,
+    #         user_id TEXT NOT NULL,
+    #         question_id TEXT NOT NULL,
+    #         question TEXT NOT NULL,
     #         FOREIGN KEY (user_id) REFERENCES User(unique_id)
     #     );
     #     """
@@ -268,7 +260,63 @@ def create_users_table():
     # )
     # cursor.execute(
     #     """
-    # DELETE FROM Match_profile;
+    # DELETE FROM User_profile;
+    # """
+    # )
+    # cursor.execute(
+    #     """
+    #     CREATE TABLE User_profile (
+    #         id INTEGER PRIMARY KEY AUTOINCREMENT,
+    #         unique_id TEXT,
+    #         attractiveness TEXT NOT NULL,
+    #         relationship_type TEXT NOT NULL,
+    #         family_planning TEXT NOT NULL,
+    #         working_hours TEXT NOT NULL,
+    #         other_commitments TEXT NOT NULL,
+    #         dating_availability TEXT NOT NULL,
+    #         gender TEXT NOT NULL,
+    #         height REAL NOT NULL,
+    #         weight REAL NOT NULL,
+    #         age INTEGER NOT NULL,
+    #         city TEXT NOT NULL,
+    #         country TEXT NOT NULL,
+    #         zipcode TEXT NOT NULL,
+    #         occupation TEXT NOT NULL,
+    #         languages TEXT,
+    #         bmi INTEGER,
+    #         eye_color TEXT,
+    #         eye_type TEXT,
+    #         hair_color TEXT,
+    #         hair_length TEXT,
+    #         hair_style TEXT,
+    #         nose TEXT,
+    #         facial_form TEXT,
+    #         cheekbones TEXT,
+    #         eyebrows TEXT,
+    #         body_shape TEXT,
+    #         sports TEXT,
+    #         hobbies TEXT,
+    #         overall_health TEXT,
+    #         skin_helath TEXT,
+    #         kids TEXT,
+    #         pets TEXT,
+    #         living_space TEXT NOT NULL,
+    #         living_mates TEXT,
+    #         wealth_splitting TEXT,
+    #         effort_splitting TEXT,
+    #         religion TEXT,
+    #         politics TEXT,
+    #         existing_family_structure TEXT,
+    #         retirement TEXT,
+    #         smoking TEXT,
+    #         drinking TEXT,
+    #         drugs TEXT,
+    #         financial_situation TEXT,
+    #         dating_experince TEXT,
+    #         taruma TEXT,
+    #         legal_status TEXT,
+    #         FOREIGN KEY (unique_id) REFERENCES User(unique_id)
+    #     );
     # """
     # )
     conn.commit()
