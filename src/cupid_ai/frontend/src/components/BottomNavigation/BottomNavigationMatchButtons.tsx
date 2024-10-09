@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { Fab } from "@mui/material";
+import Fab from "@mui/material/Fab";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import NotInterestedIcon from "@mui/icons-material/NotInterested";
-import { FilterModal } from "./FilterModal";
 import { ScheduleModal } from "./ScheduleModal";
 import { RejectUserModal } from "./RejectUserModal";
 

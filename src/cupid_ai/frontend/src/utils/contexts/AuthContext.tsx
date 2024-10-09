@@ -6,7 +6,7 @@ import api, { API_ENDPOINTS, BASE_API } from "../../services/api";
 const AuthContext = createContext<{
   user: any;
   uniqueID: string;
-  loginAction: (data: any) => void;
+  loginAction: (data: any, callback: () => void) => void;
   logOut: () => void;
   setUser: React.Dispatch<React.SetStateAction<any>>;
 } | null>(null);
@@ -17,7 +17,7 @@ const AuthProvider = ({ children }) => {
     localStorage.getItem("unique_id") || ""
   );
   const navigate = useNavigate();
-  const loginAction = async (data) => {
+  const loginAction = async (data, callback) => {
     try {
       const authResponse = await api.post(API_ENDPOINTS.AUTH, data);
 
@@ -37,7 +37,7 @@ const AuthProvider = ({ children }) => {
               navigate(PATHS.PROFILE);
             }
           } catch (err) {
-            navigate(PATHS.CREATE_PROFILE);
+            callback();
           }
         }
       }

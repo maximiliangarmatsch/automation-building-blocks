@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Container } from "@mui/material";
+import Container from "@mui/material/Container";
 import { PATHS } from "./utils";
 import { Profile } from "./pages/profile";
 import { Matches } from "./pages/matches";
@@ -9,7 +9,6 @@ import { Login } from "./pages/login";
 import PrivateRoute from "./components/ProtectedRoutes";
 import AuthProvider from "./utils/contexts/AuthContext";
 import { Register } from "./pages/register";
-import { CreateProfile } from "./pages/create-profile";
 
 function App() {
   const matchesData = [
@@ -35,10 +34,6 @@ function App() {
                 path={PATHS.MATCHES}
                 element={<Matches data={matchesData} />}
               />
-            </Route>
-
-            <Route element={<PrivateRoute withUserProfile={false} />}>
-              <Route path={PATHS.CREATE_PROFILE} element={<CreateProfile />} />
             </Route>
 
             {/* Public Routes */}

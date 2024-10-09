@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
-import { Button } from "@mui/material";
+import Button from "@mui/material/Button";
 import { format, parse } from "date-fns";
 
 type AvailableDate = {
