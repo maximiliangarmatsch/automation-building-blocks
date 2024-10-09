@@ -6,7 +6,8 @@ import time
 import json
 import google.generativeai as genai
 
-DB_PATH = 'db/cupid_ai.db'
+DB_PATH = "db/cupid_ai.db"
+
 
 def get_prompt(file_path) -> str:
     file_path = file_path
@@ -14,22 +15,18 @@ def get_prompt(file_path) -> str:
         prompt = file.read()
     return prompt
 
-def generate_unique_id(user_id):
-    random_number = random.randint(100000, 999999)  # Random 6-digit number
-    return f"#{user_id}{random_number}"
-
-def hash_password(password):
-    return hashlib.sha256(password.encode('utf-8')).hexdigest()
 
 def get_db_connection():
     conn = sqlite3.connect(DB_PATH)
     return conn
 
+
 def save_uploaded_file(uploaded_file, media_folder):
     file_path = os.path.join(media_folder, uploaded_file.filename)
-    with open(file_path, 'wb') as f:
+    with open(file_path, "wb") as f:
         f.write(uploaded_file.read())
     return file_path
+
 
 def analyze_image_video(video_path):
     video_file = genai.upload_file(path=video_path)
@@ -39,15 +36,18 @@ def analyze_image_video(video_path):
     if video_file.state.name == "FAILED":
         return {"error": "Video processing failed."}
     prompt = get_prompt("./src/cupid_ai/backend/prompts/feature_extraction.txt")
-    model = genai.GenerativeModel('gemini-1.5-flash-latest')
-    response = model.generate_content([prompt, video_file], request_options={"timeout": 600})
+    model = genai.GenerativeModel("gemini-1.5-flash-latest")
+    response = model.generate_content(
+        [prompt, video_file], request_options={"timeout": 600}
+    )
     genai.delete_file(video_file.name)
-    json_response = response.text.lstrip('`json').rstrip('`')
+    json_response = response.text.lstrip("`json").rstrip("`")
     if not json_response:
         return {"error": "No response received from GenAI model."}
     data = json.loads(json_response)
-    print(data.get('HairColor'))
+    print(data.get("HairColor"))
     return data
+
 
 def get_attractiveness_score(video_path):
     video_file = genai.upload_file(path=video_path)
@@ -57,10 +57,12 @@ def get_attractiveness_score(video_path):
     if video_file.state.name == "FAILED":
         return {"error": "Video processing failed."}
     prompt = get_prompt("./src/cupid_ai/backend/prompts/attractiveness.txt")
-    model = genai.GenerativeModel('gemini-1.5-flash-latest')
-    response = model.generate_content([prompt, video_file], request_options={"timeout": 600})
+    model = genai.GenerativeModel("gemini-1.5-flash-latest")
+    response = model.generate_content(
+        [prompt, video_file], request_options={"timeout": 600}
+    )
     genai.delete_file(video_file.name)
-    json_response = response.text.lstrip('`json').rstrip('`')
+    json_response = response.text.lstrip("`json").rstrip("`")
     if not json_response:
         return {"error": "No response received from GenAI model."}
     data = json.loads(json_response)

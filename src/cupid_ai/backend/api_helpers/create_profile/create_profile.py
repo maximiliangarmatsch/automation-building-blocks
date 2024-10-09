@@ -1,23 +1,23 @@
-def insert_user_profile(cursor, profile_data):
+def insert_user_profile(cursor, profile_data, bmi):
     cursor.execute(
         """
         INSERT INTO User_profile (
             unique_id, attractiveness, relationship_type, family_planning,
-            apartment_style, roommates, working_hours, other_commitments, dating_availability,
-            gender, height, weight, age, city, country, zipcode, occupation, languages, bmi,
-            eye_color, eye_type, hair_color, hair_length, hair_style, nose, facial_form, cheekbones,
-            eyebrows, dept, assets, income_this_year, income_next_year, income_over_next_year,
-            wealth_goals, kids, pets, living, wealth_splitting, effort_splitting, religion, politics,
-            existing_family_structure, retirement, smoking, drinking, drugs, first_sex, virgin, bodycount
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            working_hours, other_commitments, dating_availability, gender, height,
+            weight, age, city, country, zipcode, occupation, languages, bmi,
+            eye_color, eye_type, hair_color, hair_length, hair_style, nose,
+            facial_form, cheekbones, eyebrows, body_shape, sports, hobbies,
+            overall_health, skin_helath, kids, pets, living_space, living_mates,
+            wealth_splitting, effort_splitting, religion, politics, 
+            existing_family_structure, retirement, smoking, drinking, drugs,
+            financial_situation, dating_experince, taruma, legal_status
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             profile_data["unique_id"],
             profile_data["attractiveness"],
             profile_data["relationship_type"],
             profile_data["family_planning"],
-            profile_data["apartment_style"],
-            profile_data["roommates"],
             profile_data["working_hours"],
             profile_data["other_commitments"],
             profile_data["dating_availability"],
@@ -30,7 +30,7 @@ def insert_user_profile(cursor, profile_data):
             profile_data["zipcode"],
             profile_data["occupation"],
             profile_data["languages"],
-            profile_data["bmi"],
+            bmi,
             profile_data["eye_color"],
             profile_data["eye_type"],
             profile_data["hair_color"],
@@ -40,15 +40,15 @@ def insert_user_profile(cursor, profile_data):
             profile_data["facial_form"],
             profile_data["cheekbones"],
             profile_data["eyebrows"],
-            profile_data["dept"],
-            profile_data["assets"],
-            profile_data["income_this_year"],
-            profile_data["income_next_year"],
-            profile_data["income_over_next_year"],
-            profile_data["wealth_goals"],
+            profile_data["body_shape"],
+            profile_data["sports"],
+            profile_data["hobbies"],
+            profile_data["overall_health"],
+            profile_data["skin_helath"],
             profile_data["kids"],
             profile_data["pets"],
-            profile_data["living"],
+            profile_data["living_space"],
+            profile_data["living_mates"],
             profile_data["wealth_splitting"],
             profile_data["effort_splitting"],
             profile_data["religion"],
@@ -58,8 +58,9 @@ def insert_user_profile(cursor, profile_data):
             profile_data["smoking"],
             profile_data["drinking"],
             profile_data["drugs"],
-            profile_data["first_sex"],
-            profile_data["virgin"],
-            profile_data["bodycount"],
+            profile_data["financial_situation"],
+            profile_data["dating_experince"],
+            profile_data["taruma"],
+            profile_data["legal_status"],
         ),
     )

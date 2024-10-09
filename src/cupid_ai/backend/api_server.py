@@ -21,12 +21,29 @@ from api_helpers.create_profile.insert_general_questions import (
 from api_helpers.create_profile.helpers import (
     check_mandatory_fields,
     user_profile_exists,
+    calculate_bmi,
 )
 
+# Create Match Profile module imports
+from api_helpers.match_profile.helpers import (
+    filter_profiles_by_distance,
+    save_matched_profiles,
+    fetch_matching_profiles,
+)
+
+# Create auth module imports
+from api_helpers.auth.helpers import (
+    extract_user_data,
+    fetch_user_by_email,
+    hash_user_password,
+    authenticate_user,
+)
+from api_helpers.auth.create_new_user import create_new_user
+
+from api_helpers.match_profile.extract_user_preferences import extract_user_preferences
+from api_helpers.match_profile.build_match_query import build_match_query
 from helper import (
-    generate_unique_id,
     analyze_image_video,
-    hash_password,
     get_db_connection,
     save_uploaded_file,
     get_attractiveness_score,
@@ -34,7 +51,6 @@ from helper import (
 from distance_calculator_helper import get_distance, get_user_address
 
 from match_profile_helper import (
-    save_match_profile,
     get_match_profiles,
     get_accepted_profiles,
 )
@@ -62,43 +78,21 @@ google_distance_api = os.getenv("GOOGLE_DISTANCE_API")
 @cross_origin()
 def authenticate():
     data = request.json
-    if not data or "email" not in data or "password" not in data:
-        return jsonify({"error": "Missing email or password"}), 422
-    email = data["email"]
-    password = data["password"]
-    if not email or not password:
-        return make_response(
-            jsonify({"message": "Email and password are required"}), 400
-        )
-    hashed_password = hash_password(password)
+    user_data, error_message, error_code = extract_user_data(data)
+    if error_message:
+        return jsonify({"error": error_message}), error_code
+    email = user_data["email"]
+    password = user_data["password"]
+    hashed_password = hash_user_password(password)
     conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM User WHERE email = ?", (email,))
-    user = cursor.fetchone()
+    user = fetch_user_by_email(conn, email)
     if user:
-        if user[2] == hashed_password:
-            conn.close()
-            return make_response(
-                jsonify(
-                    {"message": "Authentication successful!", "unique_id": user[3]}
-                ),
-                200,
-            )
-        else:
-            conn.close()
-            return make_response(jsonify({"message": "Invalid password!"}), 401)
-    else:
-        cursor.execute(
-            "INSERT INTO User (email, password) VALUES (?, ?)", (email, hashed_password)
-        )
-        user_id = cursor.lastrowid
-        unique_id = generate_unique_id(user_id)
-        cursor.execute(
-            "UPDATE User SET unique_id = ? WHERE id = ?", (unique_id, user_id)
-        )
-        conn.commit()
+        auth_response, auth_code = authenticate_user(user, hashed_password)
         conn.close()
-
+        return make_response(jsonify(auth_response), auth_code)
+    else:
+        unique_id = create_new_user(conn, email, hashed_password)
+        conn.close()
         return make_response(
             jsonify({"message": "User created successfully!", "unique_id": unique_id}),
             201,
@@ -182,8 +176,6 @@ def view_match_profile():
             jsonify({"error": "Both your_unique_id and match_unique_id are required"}),
             400,
         )
-    # profiles = get_match_profiles(unique_id, conn=conn)
-
     return jsonify(
         get_user_and_profile_data(your_unique_id, match_unique_id, conn), 200
     )
@@ -260,41 +252,65 @@ def accepted_profiles():
 @app.route("/match_profile", methods=["POST"])
 def match_profile():
     data = request.get_json()
+    conn = get_db_connection()
+    user_preferences = extract_user_preferences(data)
+    query, params = build_match_query(user_preferences)
+    rows, columns = fetch_matching_profiles(conn, query, params)
+    if not rows:
+        return jsonify({"profiles": []})
+    final_profiles = []
+    if user_preferences["max_distance"]:
+        user_address = get_user_address(user_preferences["unique_id"], conn)
+        final_profiles = filter_profiles_by_distance(
+            rows,
+            user_address,
+            user_preferences["max_distance"],
+            columns,
+            google_distance_api,
+        )
+    else:
+        final_profiles = [dict(zip(columns, row)) for row in rows]
+    save_matched_profiles(user_preferences["unique_id"], final_profiles, conn)
+    conn.close()
+    return jsonify({"profiles": final_profiles})
+
+
+@app.route("/apply_filter", methods=["POST"])
+def apply_filter():
+    data = request.get_json()
     user_preferences = data.get("user_preferences", {})
-    # Mandatory filters
     attractiveness_min = user_preferences.get("attractiveness_min")
     attractiveness_max = user_preferences.get("attractiveness_max")
     relationship_type = user_preferences.get("relationship_type")
     family_planning = user_preferences.get("family_planning")
     user_gender = user_preferences.get("gender")
+    country = user_preferences.get("country")
+    city = user_preferences.get("city")
     age_min = user_preferences.get("age_min")
     age_max = user_preferences.get("age_max")
-
-    # Optional filters
     hair_length = user_preferences.get("hair_length")
     max_distance = user_preferences.get("max_distance")
     unique_id = user_preferences.get("unique_id")
-    query = """
-        SELECT * FROM User_profile
-        WHERE CAST(attractiveness AS INTEGER) BETWEEN ? AND ?
-        AND relationship_type = ?
-        AND family_planning = ?
-        AND age BETWEEN ? AND ?
-    """
-    params = [
-        attractiveness_min,
-        attractiveness_max,
-        relationship_type,
-        family_planning,
-        age_min,
-        age_max,
-    ]
-    if user_gender == "male":
+    query = "SELECT * FROM User_profile WHERE 1=1"  # 1=1 allows for easy addition of filters
+    params = []
+    if attractiveness_min is not None and attractiveness_max is not None:
+        query += " AND CAST(attractiveness AS INTEGER) BETWEEN ? AND ?"
+        params.extend([attractiveness_min, attractiveness_max])
+    if relationship_type:
+        query += " AND relationship_type = ?"
+        params.append(relationship_type)
+    if family_planning:
+        query += " AND family_planning = ?"
+        params.append(family_planning)
+    if country and city:
+        query += " AND country = ? AND state = ? AND city = ?"
+        params.extend([country, city])
+    if age_min is not None and age_max is not None:
+        query += " AND age BETWEEN ? AND ?"
+        params.extend([age_min, age_max])
+    if user_gender:
         query += " AND gender = ?"
-        params.append("female")
-    elif user_gender == "female":
-        query += " AND gender = ?"
-        params.append("male")
+        params.append(user_gender)
     if hair_length:
         query += " AND hair_length = ?"
         params.append(hair_length)
@@ -305,37 +321,20 @@ def match_profile():
     if not rows:
         return jsonify({"profiles": []})
     final_profiles = []
-    print(rows)
     if max_distance:
-        conn = get_db_connection()
         user_address = get_user_address(unique_id, conn)
         columns = [column[0] for column in cursor.description]
         for row in rows:
             profile_dict = {columns[i]: row[i] for i in range(len(columns))}
-            city = profile_dict["city"]
-            country = profile_dict["country"]
-            zipcode = profile_dict["zipcode"]
-            profile_address = f"{city}, {country}, {zipcode}"
+            profile_address = f"{profile_dict['city']}, {profile_dict['country']}, {profile_dict['zipcode']}"
             distance = get_distance(google_distance_api, user_address, profile_address)
             distance_value = float(distance.split()[0])
             if distance_value <= float(max_distance):
                 final_profiles.append(profile_dict)
-                save_match_profile(
-                    your_unique_id=unique_id,
-                    match_unique_id=profile_dict["unique_id"],
-                    conn=conn,
-                )
-        conn.close()
     else:
         columns = [column[0] for column in cursor.description]
         final_profiles = [dict(zip(columns, row)) for row in rows]
-        for profile in final_profiles:
-            save_match_profile(
-                your_unique_id=unique_id,
-                match_unique_id=profile["unique_id"],
-                conn=conn,
-            )
-        conn.close()
+    conn.close()
     return jsonify({"profiles": final_profiles})
 
 
@@ -343,26 +342,7 @@ def match_profile():
 @cross_origin()
 def create_or_update_user_profile():
     data = request.json
-    mandatory_fields = [
-        "unique_id",
-        "attractiveness",
-        "relationship_type",
-        "family_planning",
-        "apartment_style",
-        "roommates",
-        "working_hours",
-        "other_commitments",
-        "dating_availability",
-        "gender",
-        "height",
-        "weight",
-        "age",
-        "city",
-        "country",
-        "zipcode",
-        "occupation",
-    ]
-    are_fields_present, missing_fields = check_mandatory_fields(data, mandatory_fields)
+    are_fields_present, missing_fields = check_mandatory_fields(data)
     if not are_fields_present:
         return (
             jsonify(
@@ -373,8 +353,9 @@ def create_or_update_user_profile():
     profile_data = extract_profile_data(data)
     conn = get_db_connection()
     cursor = conn.cursor()
+    bmi = calculate_bmi(profile_data["weight"], profile_data["height"])
     if user_profile_exists(cursor, profile_data["unique_id"]):
-        update_user_profile(cursor, profile_data)
+        update_user_profile(cursor, profile_data, bmi)
         conn.commit()
         conn.close()
         return (
@@ -387,7 +368,7 @@ def create_or_update_user_profile():
             200,
         )
     else:
-        insert_user_profile(cursor, profile_data)
+        insert_user_profile(cursor, profile_data, bmi)
         insert_user_general_questions(cursor, profile_data)
         conn.commit()
         conn.close()
