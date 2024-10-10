@@ -2,7 +2,6 @@ import * as React from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import SettingsIcon from "@mui/icons-material/Settings";

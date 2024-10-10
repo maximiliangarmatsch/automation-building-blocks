@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Fab } from "@mui/material";
+import Fab from "@mui/material/Fab";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { FilterModal } from "./FilterModal";
 

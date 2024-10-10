@@ -1,12 +1,16 @@
-import { Box, Button, TextField, Typography } from "@mui/material";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
 import * as Yup from "yup";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { PATHS } from "../../utils";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../../utils/contexts/AuthContext";
 import useYupValidationResolver from "../../utils/hooks/useYupValidationResolver";
 import CircularProgress from "@mui/material/CircularProgress";
+import { AttractivenessModal } from "../AttractivenessModal";
 
 const formValidationSchema = Yup.object({
   email: Yup.string()
@@ -22,10 +26,14 @@ interface AuthFormProps {
 }
 
 export function AuthForm({ type = "login" }: AuthFormProps) {
+  const [showUploadMedia, setShowUploadMedia] = useState(true);
+
   const auth = useAuth();
   const onSubmit = async (values) => {
     if (auth?.loginAction) {
-      await auth?.loginAction(values);
+      await auth?.loginAction(values, () => {
+        setShowUploadMedia(true);
+      });
     }
   };
 
@@ -43,54 +51,63 @@ export function AuthForm({ type = "login" }: AuthFormProps) {
   });
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Typography variant="h4">{isRegister ? "Register" : "Login"}</Typography>
-      <TextField
-        fullWidth
-        className="mt-2"
-        id="email"
-        label="Email"
-        {...register("email", { required: true })}
-        sx={{
-          marginTop: 2,
-        }}
-      />
-
-      <TextField
-        fullWidth
-        id="password"
-        label="Password"
-        type="password"
-        {...register("password")}
-        sx={{
-          marginTop: 2,
-        }}
-      />
-
-      <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="space-between"
-        marginTop={5}
-      >
-        <Button
-          size="large"
-          color="primary"
-          variant="contained"
-          type="submit"
-          disabled={formState.isSubmitting}
-        >
+    <>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Typography variant="h4">
           {isRegister ? "Register" : "Login"}
-          {formState.isSubmitting && (
-            <CircularProgress style={{ marginLeft: "20px" }} size="20px" />
-          )}
-        </Button>
-        <Button>
-          <Link to={isRegister ? PATHS.LOGIN : PATHS.REGISTER}>
-            {isRegister ? "Login" : "Register"}
-          </Link>
-        </Button>
-      </Box>
-    </form>
+        </Typography>
+        <TextField
+          fullWidth
+          className="mt-2"
+          id="email"
+          label="Email"
+          {...register("email", { required: true })}
+          sx={{
+            marginTop: 2,
+          }}
+        />
+
+        <TextField
+          fullWidth
+          id="password"
+          label="Password"
+          type="password"
+          {...register("password")}
+          sx={{
+            marginTop: 2,
+          }}
+        />
+
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          marginTop={5}
+        >
+          <Button
+            size="large"
+            color="primary"
+            variant="contained"
+            type="submit"
+            disabled={formState.isSubmitting}
+          >
+            {isRegister ? "Register" : "Login"}
+            {formState.isSubmitting && (
+              <CircularProgress style={{ marginLeft: "20px" }} size="20px" />
+            )}
+          </Button>
+          <Button>
+            <Link to={isRegister ? PATHS.LOGIN : PATHS.REGISTER}>
+              {isRegister ? "Login" : "Register"}
+            </Link>
+          </Button>
+        </Box>
+      </form>
+      <AttractivenessModal
+        open={showUploadMedia}
+        setOpen={setShowUploadMedia}
+        onClose={() => setShowUploadMedia(false)}
+      />
+    </>
   );
 }

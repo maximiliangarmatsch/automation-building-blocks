@@ -1,13 +1,11 @@
-import {
-  Box,
-  TextField,
-  Typography,
-  Paper,
-  FormControl,
-  RadioGroup,
-  Radio,
-  FormControlLabel,
-} from "@mui/material";
+import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
+import FormControl from "@mui/material/FormControl";
+import RadioGroup from "@mui/material/RadioGroup";
+import Radio from "@mui/material/Radio";
+import FormControlLabel from "@mui/material/FormControlLabel";
 import Modal from "@mui/material/Modal";
 import Grid from "@mui/material/Grid2";
 

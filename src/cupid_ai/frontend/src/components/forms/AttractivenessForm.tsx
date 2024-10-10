@@ -1,15 +1,24 @@
 import { useForm } from "react-hook-form";
-import { Button, Typography, Box, CircularProgress } from "@mui/material";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
 import AddIcon from "@mui/icons-material/Add";
 import { useState } from "react";
 import api, { API_ENDPOINTS } from "../../services/api";
 import { useAuth } from "../../utils/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { PATHS } from "../../utils";
 
-export const AttractivenessForm = () => {
+interface AttractivenessFormProps {
+  setData: React.Dispatch<React.SetStateAction<any>>;
+  setStep: React.Dispatch<React.SetStateAction<number>>;
+}
+
+export const AttractivenessForm = (props: AttractivenessFormProps) => {
+  const { setData, setStep } = props;
+
   const { handleSubmit, setValue, formState } = useForm();
-  const [selectedFile, setSelectedFile] = useState<string | null>(null); // Specify type here
+  const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const auth = useAuth();
   const navigate = useNavigate();
 
@@ -101,16 +110,8 @@ export const AttractivenessForm = () => {
       createProfilePayload.nose = extraFeatureReponse?.data?.Nose;
     }
 
-    // create profile
-    const createProfileResponse = await api.post(
-      API_ENDPOINTS.CREATE_PROFILE,
-      createProfilePayload
-    );
-
-    if (createProfileResponse.data?.profile_id) {
-      auth?.setUser && auth.setUser(createProfilePayload);
-      navigate(PATHS.PROFILE);
-    }
+    setData(createProfilePayload);
+    setStep(2);
   };
 
   const handleFileChange = (event) => {
@@ -140,7 +141,7 @@ export const AttractivenessForm = () => {
             }
           }}
           sx={{
-            width: 400,
+            width: "100%",
             height: 400,
             margin: "auto",
             border: "0.5px dashed gray",
