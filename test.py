@@ -185,7 +185,7 @@ def create_users_table():
     # )
     # cursor.execute(
     #     """
-    #     DROP TABLE IF EXISTS User_profile_general_questions;
+    #     DROP TABLE IF EXISTS User_Match_Questions;
     #     """
     # )
     # Get all user-created table names, excluding system tables
@@ -223,7 +223,7 @@ def create_users_table():
     # )
     # cursor.execute(
     #     """
-    # DELETE FROM User_profile;
+    # DELETE FROM User_Match_Questions;
     # """
     # )
     # cursor.execute(

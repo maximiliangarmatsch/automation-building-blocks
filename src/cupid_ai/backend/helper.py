@@ -1,4 +1,5 @@
 import os
+from flask import jsonify
 import sqlite3
 import google.generativeai as genai
 
@@ -22,3 +23,10 @@ def save_uploaded_file(uploaded_file, media_folder):
     with open(file_path, "wb") as f:
         f.write(uploaded_file.read())
     return file_path
+
+
+def validate_required_fields(data, required_fields):
+    for field in required_fields:
+        if field not in data or data[field] is None:
+            return jsonify({"error": f"'{field}' is required."}), 400
+    return None
