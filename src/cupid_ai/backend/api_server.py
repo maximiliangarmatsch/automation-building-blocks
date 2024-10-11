@@ -48,14 +48,18 @@ from api_helpers.auth.helpers import (
 )
 from api_helpers.auth.create_new_user import create_new_user
 
+# get profile module imports
+from api_helpers.get_profile.profile_data import get_user_profile
 from match_profile_helper import (
     get_match_profiles,
     get_accepted_profiles,
 )
-from helper import (
-    get_db_connection,
-    save_uploaded_file,
-)
+
+# custom question module imports
+from api_helpers.custom_questions.save_custom_question import save_custom_question
+from api_helpers.custom_questions.save_custom_answer import save_custom_answer
+
+from helper import get_db_connection, save_uploaded_file, validate_required_fields
 
 load_dotenv()
 app = Flask(__name__)
@@ -136,32 +140,16 @@ def atractiveness():
 @app.route("/get_profile", methods=["POST"])
 @cross_origin()
 def get_profile():
+    conn = get_db_connection()
     data = request.json
     if not data or "unique_id" not in data:
         return jsonify({"error": "Missing unique_id"}), 422
     unique_id = data["unique_id"]
     if not unique_id:
         return make_response(jsonify({"message": "unique_id is required"}), 400)
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM User_Profile WHERE unique_id = ?", (unique_id,))
-    profile = cursor.fetchone()
-    if not profile:
-        conn.close()
+    profile_data = get_user_profile(unique_id, conn)
+    if not profile_data:
         return jsonify({"error": "Profile not found for the provided unique_id"}), 404
-    column_names = [column[0] for column in cursor.description]
-    profile_data = dict(zip(column_names, profile))
-    cursor.execute(
-        """
-        SELECT question FROM User_profile_general_questions
-        WHERE user_id = ?
-        ORDER BY id ASC
-        """,
-        (unique_id,),
-    )
-    questions = cursor.fetchall()
-    profile_data["user_general_questions"] = [question[0] for question in questions]
-    conn.close()
     return jsonify(profile_data), 200
 
 
@@ -197,10 +185,15 @@ def update_question():
     user_unique_id = request.json["user_unique_id"]
     question_number = request.json["question_number"]
     new_question_text = request.json["new_question_text"]
-    query = f"UPDATE User_profile_general_questions SET g_q{question_number} = ? WHERE user_id = (SELECT unique_id FROM User WHERE unique_id = ?)"
+    question_id = f"{user_unique_id}_gq{question_number}"
+    query = """
+        UPDATE User_profile_general_questions
+        SET question = ?
+        WHERE question_id = ? AND user_id = ?
+    """
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute(query, (new_question_text, user_unique_id))
+    cursor.execute(query, (new_question_text, question_id, user_unique_id))
     conn.commit()
     conn.close()
     return jsonify({"status": "success", "message": "Question updated successfully"})
@@ -210,13 +203,50 @@ def update_question():
 def delete_question():
     user_unique_id = request.json["user_unique_id"]
     question_number = request.json["question_number"]
-    query = f"UPDATE User_profile_general_questions SET g_q{question_number} = NULL WHERE user_id = (SELECT unique_id FROM User WHERE unique_id = ?)"
+    question_id = f"{user_unique_id}_gq{question_number}"
+    query = """
+        DELETE FROM User_profile_general_questions
+        WHERE question_id = ? AND user_id = ?
+    """
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute(query, (user_unique_id,))
+    cursor.execute(query, (question_id, user_unique_id))
     conn.commit()
     conn.close()
     return jsonify({"status": "success", "message": "Question deleted successfully"})
+
+
+@app.route("/save_custom_question", methods=["POST"])
+def save_specific_question():
+    conn = get_db_connection()
+    data = request.get_json()
+    required_fields = ["to_user_id", "from_user_id", "question"]
+    error_response = validate_required_fields(data, required_fields)
+    if error_response:
+        return error_response
+    to_user_id = data["to_user_id"]
+    from_user_id = data["from_user_id"]
+    question = data["question"]
+    response, status = save_custom_question(to_user_id, from_user_id, question, conn)
+    return jsonify(response), status
+
+
+@app.route("/save_custom_answer", methods=["PUT"])
+def submit_specific_question_answer():
+    conn = get_db_connection()
+    data = request.get_json()
+    required_fields = ["to_user_id", "from_user_id", "question_id", "answer"]
+    error_response = validate_required_fields(data, required_fields)
+    if error_response:
+        return error_response
+    to_user_id = data["to_user_id"]
+    from_user_id = data["from_user_id"]
+    question_id = data["question_id"]
+    answer = data["answer"]
+    response, status = save_custom_answer(
+        to_user_id, from_user_id, question_id, answer, conn
+    )
+    return jsonify(response), status
 
 
 @app.route("/reject_profile", methods=["DELETE"])
