@@ -300,69 +300,6 @@ def match_profile():
     return jsonify({"profiles": final_profiles})
 
 
-@app.route("/apply_filter", methods=["POST"])
-def apply_filter():
-    data = request.get_json()
-    user_preferences = data.get("user_preferences", {})
-    attractiveness_min = user_preferences.get("attractiveness_min")
-    attractiveness_max = user_preferences.get("attractiveness_max")
-    relationship_type = user_preferences.get("relationship_type")
-    family_planning = user_preferences.get("family_planning")
-    user_gender = user_preferences.get("gender")
-    country = user_preferences.get("country")
-    city = user_preferences.get("city")
-    age_min = user_preferences.get("age_min")
-    age_max = user_preferences.get("age_max")
-    hair_length = user_preferences.get("hair_length")
-    max_distance = user_preferences.get("max_distance")
-    unique_id = user_preferences.get("unique_id")
-    query = "SELECT * FROM User_profile WHERE 1=1"  # 1=1 allows for easy addition of filters
-    params = []
-    if attractiveness_min is not None and attractiveness_max is not None:
-        query += " AND CAST(attractiveness AS INTEGER) BETWEEN ? AND ?"
-        params.extend([attractiveness_min, attractiveness_max])
-    if relationship_type:
-        query += " AND relationship_type = ?"
-        params.append(relationship_type)
-    if family_planning:
-        query += " AND family_planning = ?"
-        params.append(family_planning)
-    if country and city:
-        query += " AND country = ? AND state = ? AND city = ?"
-        params.extend([country, city])
-    if age_min is not None and age_max is not None:
-        query += " AND age BETWEEN ? AND ?"
-        params.extend([age_min, age_max])
-    if user_gender:
-        query += " AND gender = ?"
-        params.append(user_gender)
-    if hair_length:
-        query += " AND hair_length = ?"
-        params.append(hair_length)
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute(query, params)
-    rows = cursor.fetchall()
-    if not rows:
-        return jsonify({"profiles": []})
-    final_profiles = []
-    if max_distance:
-        user_address = get_user_address(unique_id, conn)
-        columns = [column[0] for column in cursor.description]
-        for row in rows:
-            profile_dict = {columns[i]: row[i] for i in range(len(columns))}
-            profile_address = f"{profile_dict['city']}, {profile_dict['country']}, {profile_dict['zipcode']}"
-            distance = get_distance(google_distance_api, user_address, profile_address)
-            distance_value = float(distance.split()[0])
-            if distance_value <= float(max_distance):
-                final_profiles.append(profile_dict)
-    else:
-        columns = [column[0] for column in cursor.description]
-        final_profiles = [dict(zip(columns, row)) for row in rows]
-    conn.close()
-    return jsonify({"profiles": final_profiles})
-
-
 @app.route("/create_profile", methods=["POST"])
 @cross_origin()
 def create_or_update_user_profile():
