@@ -3,6 +3,7 @@ Main module of flask API.
 """
 
 import os
+import json
 from typing import Any
 from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS, cross_origin
@@ -18,7 +19,6 @@ from api_helpers.create_profile.attractivenss_score_helper import (
     get_attractiveness_score,
 )
 from api_helpers.create_profile.image_analysis_helper import analyze_image_video
-from view_match_profile import get_user_and_profile_data
 from api_helpers.create_profile.insert_general_questions import (
     insert_user_general_questions,
 )
@@ -38,6 +38,12 @@ from api_helpers.match_profile.helpers import (
 )
 from api_helpers.match_profile.extract_user_preferences import extract_user_preferences
 from api_helpers.match_profile.build_match_query import build_match_query
+from api_helpers.match_profile.get_match_profile import get_match_profiles
+from api_helpers.match_profile.get_match_accepted import get_match_accepted
+from api_helpers.match_profile.get_specific_match import get_specific_match
+from api_helpers.match_profile.get_specific_match_accepted import (
+    get_specific_match_accepted,
+)
 
 # Create auth module imports
 from api_helpers.auth.helpers import (
@@ -48,10 +54,6 @@ from api_helpers.auth.helpers import (
 )
 from api_helpers.auth.create_new_user import create_new_user
 
-from match_profile_helper import (
-    get_match_profiles,
-    get_accepted_profiles,
-)
 from helper import (
     get_db_connection,
     save_uploaded_file,
@@ -176,25 +178,37 @@ def get_profiles():
     return profiles
 
 
-@app.route("/view_match_profile", methods=["POST"])
+@app.route("/get_specific_match", methods=["POST"])
 def view_match_profile():
     conn = get_db_connection()
     data = request.get_json()
-    your_unique_id = data.get("your_unique_id")
-    match_unique_id = data.get("match_unique_id")
-    if not your_unique_id or not match_unique_id:
+    from_unique_id = data.get("from_unique_id")
+    to_unique_id = data.get("to_unique_id")
+    if not from_unique_id or not to_unique_id:
         return (
-            jsonify({"error": "Both your_unique_id and match_unique_id are required"}),
+            jsonify({"error": "Both from_unique_id and to_unique_id are required"}),
             400,
         )
-    return jsonify(
-        get_user_and_profile_data(your_unique_id, match_unique_id, conn), 200
-    )
+    return jsonify(get_specific_match(from_unique_id, to_unique_id, conn), 200)
+
+
+@app.route("/get_specific_match_accepted", methods=["POST"])
+def specific_match_accepted():
+    conn = get_db_connection()
+    data = request.get_json()
+    from_unique_id = data.get("from_unique_id")
+    to_unique_id = data.get("to_unique_id")
+    if not from_unique_id or not to_unique_id:
+        return (
+            jsonify({"error": "Both from_unique_id and to_unique_id are required"}),
+            400,
+        )
+    return jsonify(get_specific_match_accepted(from_unique_id, to_unique_id, conn), 200)
 
 
 @app.route("/update_question", methods=["PUT"])
 def update_question():
-    user_unique_id = request.json["user_unique_id"]
+    user_unique_id = request.json["unique_id"]
     question_number = request.json["question_number"]
     new_question_text = request.json["new_question_text"]
     query = f"UPDATE User_profile_general_questions SET g_q{question_number} = ? WHERE user_id = (SELECT unique_id FROM User WHERE unique_id = ?)"
@@ -208,7 +222,7 @@ def update_question():
 
 @app.route("/delete_question", methods=["DELETE"])
 def delete_question():
-    user_unique_id = request.json["user_unique_id"]
+    user_unique_id = request.json["unique_id"]
     question_number = request.json["question_number"]
     query = f"UPDATE User_profile_general_questions SET g_q{question_number} = NULL WHERE user_id = (SELECT unique_id FROM User WHERE unique_id = ?)"
     conn = get_db_connection()
@@ -222,11 +236,11 @@ def delete_question():
 @app.route("/reject_profile", methods=["DELETE"])
 def reject_profile():
     data = request.json
-    your_unique_id = data.get("your_unique_id")
-    match_unique_id = data.get("match_unique_id")
+    your_unique_id = data.get("from_unique_id")
+    match_unique_id = data.get("to_unique_id")
     if not your_unique_id or not match_unique_id:
         return (
-            jsonify({"error": "Both your_unique_id and match_unique_id are required"}),
+            jsonify({"error": "Both from_unique_id and to_unique_id are required"}),
             400,
         )
     try:
@@ -235,7 +249,7 @@ def reject_profile():
         cursor.execute(
             """
             DELETE FROM Match_profile 
-            WHERE your_unique_id = ? AND match_unique_id = ?
+            WHERE from_unique_id = ? AND to_unique_id = ?
         """,
             (your_unique_id, match_unique_id),
         )
@@ -249,14 +263,14 @@ def reject_profile():
         return jsonify({"error": str(e)}), 500
 
 
-@app.route("/get_accepted_profiles", methods=["POST"])
+@app.route("/get_match_accepted", methods=["POST"])
 def accepted_profiles():
     connection = get_db_connection()
     data = request.get_json()
     unique_id = data.get("unique_id")
     if unique_id is None:
         return jsonify({"error": "unique_id is required"}), 400
-    profiles = get_accepted_profiles(unique_id, connection)
+    profiles = get_match_accepted(unique_id, connection)
     return profiles
 
 
@@ -394,135 +408,38 @@ def create_or_update_user_profile():
         )
 
 
-@app.route("/match_accepted", methods=["POST"])
-def match_accepted():
-    data = request.json
-    your_unique_id = data.get("your_unique_id")
-    match_partner_unique_id = data.get("match_partner_unique_id")
-    status = data.get("status", "No")
-    your_q1 = data.get("your_q1")
-    your_a1 = data.get("your_a1")
-    your_q2 = data.get("your_q2")
-    your_a2 = data.get("your_a2")
-    your_q3 = data.get("your_q3")
-    your_a3 = data.get("your_a3")
-    your_q4 = data.get("your_q4")
-    your_a4 = data.get("your_a4")
-    your_q5 = data.get("your_q5")
-    your_a5 = data.get("your_a5")
-    your_q6 = data.get("your_q6")
-    your_a6 = data.get("your_a6")
-    your_q7 = data.get("your_q7")
-    your_a7 = data.get("your_a7")
-    your_q8 = data.get("your_q8")
-    your_a8 = data.get("your_a8")
-    your_q9 = data.get("your_q9")
-    your_a9 = data.get("your_a9")
-    your_q10 = data.get("your_q10")
-    your_a10 = data.get("your_a10")
-
-    # Optional fields for partner's questions and answers
-    partner_q1 = data.get("partner_q1")
-    partner_a1 = data.get("partner_a1")
-    partner_q2 = data.get("partner_q2")
-    partner_a2 = data.get("partner_a2")
-    partner_q3 = data.get("partner_q3")
-    partner_a3 = data.get("partner_a3")
-    partner_q4 = data.get("partner_q4")
-    partner_a4 = data.get("partner_a4")
-    partner_q5 = data.get("partner_q5")
-    partner_a5 = data.get("partner_a5")
-    partner_q6 = data.get("partner_q6")
-    partner_a6 = data.get("partner_a6")
-    partner_q7 = data.get("partner_q7")
-    partner_a7 = data.get("partner_a7")
-    partner_q8 = data.get("partner_q8")
-    partner_a8 = data.get("partner_a8")
-    partner_q9 = data.get("partner_q9")
-    partner_a9 = data.get("partner_a9")
-    partner_q10 = data.get("partner_q10")
-    partner_a10 = data.get("partner_a10")
-    if not your_unique_id or not match_partner_unique_id:
-        return (
-            jsonify(
-                {"error": "your_unique_id and match_partner_unique_id are required"}
-            ),
-            400,
-        )
+@app.route("/accept_match", methods=["POST"])
+def add_accepted_match():
+    data = request.get_json()
+    to_user_id = data.get("to_user_id")
+    from_user_id = data.get("from_user_id")
+    answer = data.get("answer")
+    if not to_user_id or not from_user_id or not answer:
+        return jsonify({"error": "Missing required fields"}), 400
+    answer_json = json.dumps(answer)
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute(
         """
         SELECT 1 FROM Accepted_match 
-        WHERE your_unique_id = ? AND match_unique_id = ?
+        WHERE to_user_id = ? AND from_user_id = ?;
         """,
-        (your_unique_id, match_partner_unique_id),
+        (to_user_id, from_user_id),
     )
     existing_match = cursor.fetchone()
-
     if existing_match:
         conn.close()
-        return jsonify({"message": "already exists"}), 200
+        return jsonify({"error": "Match already exists"}), 200
     cursor.execute(
         """
-        INSERT INTO Accepted_match (
-            your_unique_id, match_unique_id, status,
-            your_q1, your_a1, your_q2, your_a2, your_q3, your_a3, your_q4, your_a4, your_q5, your_a5, 
-            your_q6, your_a6, your_q7, your_a7, your_q8, your_a8, your_q9, your_a9, your_q10, your_a10,
-            partner_q1, partner_a1, partner_q2, partner_a2, partner_q3, partner_a3, partner_q4, partner_a4, 
-            partner_q5, partner_a5, partner_q6, partner_a6, partner_q7, partner_a7, partner_q8, partner_a8, 
-            partner_q9, partner_a9, partner_q10, partner_a10
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """,
-        (
-            your_unique_id,
-            match_partner_unique_id,
-            status,
-            your_q1,
-            your_a1,
-            your_q2,
-            your_a2,
-            your_q3,
-            your_a3,
-            your_q4,
-            your_a4,
-            your_q5,
-            your_a5,
-            your_q6,
-            your_a6,
-            your_q7,
-            your_a7,
-            your_q8,
-            your_a8,
-            your_q9,
-            your_a9,
-            your_q10,
-            your_a10,
-            partner_q1,
-            partner_a1,
-            partner_q2,
-            partner_a2,
-            partner_q3,
-            partner_a3,
-            partner_q4,
-            partner_a4,
-            partner_q5,
-            partner_a5,
-            partner_q6,
-            partner_a6,
-            partner_q7,
-            partner_a7,
-            partner_q8,
-            partner_a8,
-            partner_q9,
-            partner_a9,
-            partner_q10,
-            partner_a10,
-        ),
+        INSERT INTO Accepted_match (to_user_id, from_user_id, answer, status)
+        VALUES (?, ?, ?, 'No');
+        """,
+        (to_user_id, from_user_id, answer_json),
     )
     conn.commit()
     conn.close()
-    return jsonify({"message": "success"}), 200
+    return jsonify({"message": "Accepted match added successfully"}), 200
 
 
 @app.route("/schedule_date", methods=["POST"])
@@ -568,7 +485,8 @@ def add_user_date():
             return jsonify({"message": "Date already scheduled."}), 200
         cursor.execute(
             """
-            INSERT INTO User_dates (your_unique_id, partner_unique_id, date_selected, time_selected, contact_method, type_of_date, duration)
+            INSERT INTO User_dates (your_unique_id, partner_unique_id, date_selected, time_selected, 
+            contact_method, type_of_date, duration)
             VALUES (?, ?, ?, ?, ?, ?, ?)
             """,
             (
@@ -655,7 +573,6 @@ def delete_user():
     cursor = conn.cursor()
     cursor.execute("SELECT unique_id FROM User WHERE email = ?", (email,))
     user = cursor.fetchone()
-
     if user:
         unique_id = user[0]
         cursor.execute("DELETE FROM User_profile WHERE unique_id = ?", (unique_id,))
