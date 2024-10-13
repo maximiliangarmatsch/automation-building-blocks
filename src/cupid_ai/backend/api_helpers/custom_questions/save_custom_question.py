@@ -1,4 +1,4 @@
-from helpers import get_next_question_id
+from api_helpers.custom_questions.helpers import get_next_question_id
 
 
 def save_custom_question(to_user_id, from_user_id, question, conn):
