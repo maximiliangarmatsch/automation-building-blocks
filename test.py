@@ -10,9 +10,9 @@ def create_users_table():
     cursor = conn.cursor()
 
     # SQL command to create the users table
-    # cursor.execute("SELECT * FROM User_profile_general_questions;")
-    # unique_ids = cursor.fetchall()  # Fetch all results
-    # print(unique_ids)
+    cursor.execute("SELECT * FROM User_Match_Questions;")
+    unique_ids = cursor.fetchall()  # Fetch all results
+    print(unique_ids)
     # cursor.execute(
     #     """
     #     CREATE TABLE IF NOT EXISTS User (
@@ -222,7 +222,7 @@ def create_users_table():
     # )
     # cursor.execute(
     #     """
-    #     DROP TABLE IF EXISTS User_profile_general_questions;
+    #     DROP TABLE IF EXISTS User_Match_Questions;
     #     """
     # )
     # Get all user-created table names, excluding system tables
@@ -260,7 +260,7 @@ def create_users_table():
     # )
     # cursor.execute(
     #     """
-    # DELETE FROM User_profile;
+    # DELETE FROM User_Match_Questions;
     # """
     # )
     # cursor.execute(
@@ -319,6 +319,20 @@ def create_users_table():
     #     );
     # """
     # )
+    # query = """
+    # CREATE TABLE IF NOT EXISTS User_Match_Questions (
+    #     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    #     question_id TEXT NOT NULL,
+    #     to_user_id TEXT NOT NULL,
+    #     from_user_id TEXT NOT NULL,
+    #     question TEXT NOT NULL,
+    #     answer TEXT NULL,
+    #     rating BOOLEAN NULL,
+    #     FOREIGN KEY (to_user_id) REFERENCES User(user_id),
+    #     FOREIGN KEY (from_user_id) REFERENCES User(user_id)
+    # );
+    # """
+    # cursor.execute(query)
     conn.commit()
     # result = cursor.fetchone()
     conn.close()

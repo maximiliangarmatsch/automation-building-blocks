@@ -6,14 +6,16 @@ def fetch_general_questions(unique_id, conn):
     cursor = conn.cursor()
     cursor.execute(
         """
-        SELECT question FROM User_profile_general_questions
+        SELECT question_id, question FROM User_profile_general_questions
         WHERE user_id = ?
         ORDER BY id ASC
         """,
         (unique_id,),
     )
-    user_questions = cursor.fetchall()
-    return user_questions
+    questions = cursor.fetchall()
+    # Return as a dictionary with question_id as the key and question as the value
+    questions_dict = {question_id: question for question_id, question in questions}
+    return questions_dict
 
 
 def get_match_profiles(unique_id, conn):
@@ -22,13 +24,16 @@ def get_match_profiles(unique_id, conn):
         """
         SELECT DISTINCT match_unique_id FROM match_profile
         WHERE your_unique_id = ?;
-    """,
+        """,
         (unique_id,),
     )
     match_ids = cursor.fetchall()
     match_unique_ids = [match_id[0] for match_id in match_ids]
-    print(match_ids)
-    user_general_questions = fetch_general_questions(unique_id, conn)
+
+    user_general_questions = fetch_general_questions(
+        unique_id, conn
+    )  # Fetch as a dictionary
+
     if match_unique_ids and user_general_questions:
         placeholders = ", ".join(["?"] * len(match_unique_ids))
         cursor.execute(
@@ -44,18 +49,20 @@ def get_match_profiles(unique_id, conn):
             profiles = []
             for row in matched_profiles:
                 profile_dict = dict(zip(columns, row))
-                profile_dict["user_general_questions"] = [
-                    question[0] for question in user_general_questions
-                ]
+
+                # Add user's general questions (now a dictionary)
+                profile_dict["user_general_questions"] = user_general_questions
+
+                # Fetch match's general questions as a dictionary
                 match_general_questions = fetch_general_questions(
                     profile_dict["unique_id"], conn
                 )
-                profile_dict["match_general_questions"] = [
-                    question[0] for question in match_general_questions
-                ]
+                profile_dict["match_general_questions"] = match_general_questions
+
                 profiles.append(profile_dict)
             conn.close()
             return jsonify({"profiles": profiles})
+
     conn.close()
     return jsonify({"profiles": []})
 
