@@ -1,7 +1,3 @@
-"""
-Main module of flask API.
-"""
-
 import os
 import json
 from typing import Any
@@ -13,19 +9,16 @@ from dotenv import load_dotenv
 
 # Create Profile module imports
 from api_helpers.create_profile.extract_profile_data import extract_profile_data
-from api_helpers.create_profile.create_profile import insert_user_profile
-from api_helpers.create_profile.update_profile import update_user_profile
 from api_helpers.create_profile.attractivenss_score_helper import (
     get_attractiveness_score,
 )
 from api_helpers.create_profile.image_analysis_helper import analyze_image_video
-from api_helpers.create_profile.insert_general_questions import (
-    insert_user_general_questions,
-)
 from api_helpers.create_profile.helpers import (
     check_mandatory_fields,
     user_profile_exists,
     calculate_bmi,
+    handle_create_profile,
+    handle_update_profile,
 )
 
 # Create Match Profile module imports
@@ -33,15 +26,21 @@ from api_helpers.match_profile.helpers import (
     filter_profiles_by_distance,
     save_matched_profiles,
     fetch_matching_profiles,
-    get_distance,
     get_user_address,
 )
 from api_helpers.match_profile.extract_user_preferences import extract_user_preferences
 from api_helpers.match_profile.build_match_query import build_match_query
 from api_helpers.match_profile.get_match_profile import get_match_profiles
-from api_helpers.match_profile.get_match_accepted import get_match_accepted
 from api_helpers.match_profile.get_specific_match import get_specific_match
-from api_helpers.match_profile.get_specific_match_accepted import (
+
+# accept match module imports
+from api_helpers.match_accept.accept_match import (
+    insert_accepted_match,
+    check_existing_match,
+)
+from api_helpers.match_accept.get_match_accepted import get_match_accepted
+from api_helpers.match_profile.reject_match import delete_match_from_db
+from api_helpers.match_accept.get_specific_match_accepted import (
     get_specific_match_accepted,
 )
 
@@ -61,6 +60,9 @@ from api_helpers.get_profile.profile_data import get_user_profile
 from api_helpers.custom_questions.save_custom_question import save_custom_question
 from api_helpers.custom_questions.save_custom_answer import save_custom_answer
 
+# date scheduling module imports
+from api_helpers.date_scheduling.get_schedule_date import handle_get_schedule_date
+from api_helpers.date_scheduling.schedule_date import handle_date_schedule
 from helper import get_db_connection, save_uploaded_file, validate_required_fields
 
 load_dotenv()
@@ -263,34 +265,26 @@ def submit_specific_question_answer():
     return jsonify(response), status
 
 
-@app.route("/reject_profile", methods=["DELETE"])
+@app.route("/reject_match", methods=["DELETE"])
 def reject_profile():
     data = request.json
-    your_unique_id = data.get("from_unique_id")
-    match_unique_id = data.get("to_unique_id")
-    if not your_unique_id or not match_unique_id:
-        return (
-            jsonify({"error": "Both from_unique_id and to_unique_id are required"}),
-            400,
-        )
+    conn = get_db_connection()
+    error_response = validate_required_fields(data, ["from_unique_id", "to_unique_id"])
+    if error_response:
+        return error_response
     try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute(
-            """
-            DELETE FROM Match_profile 
-            WHERE from_unique_id = ? AND to_unique_id = ?
-        """,
-            (your_unique_id, match_unique_id),
+        rows_deleted = delete_match_from_db(data, conn)
+        if rows_deleted == 0:
+            return (
+                jsonify({"status": "success", "message": "No matching profile found"}),
+                404,
+            )
+        return (
+            jsonify({"status": "success", "message": "Match rejected succesfully"}),
+            200,
         )
-        conn.commit()
-        conn.close()
-        if cursor.rowcount == 0:
-            return jsonify({"message": "No matching profile found"}), 404
-        else:
-            return jsonify({"message": "Profile rejected successfully"}), 200
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return error_response(str(e), 500)
 
 
 @app.route("/get_match_accepted", methods=["POST"])
@@ -330,69 +324,6 @@ def match_profile():
     return jsonify({"profiles": final_profiles})
 
 
-@app.route("/apply_filter", methods=["POST"])
-def apply_filter():
-    data = request.get_json()
-    user_preferences = data.get("user_preferences", {})
-    attractiveness_min = user_preferences.get("attractiveness_min")
-    attractiveness_max = user_preferences.get("attractiveness_max")
-    relationship_type = user_preferences.get("relationship_type")
-    family_planning = user_preferences.get("family_planning")
-    user_gender = user_preferences.get("gender")
-    country = user_preferences.get("country")
-    city = user_preferences.get("city")
-    age_min = user_preferences.get("age_min")
-    age_max = user_preferences.get("age_max")
-    hair_length = user_preferences.get("hair_length")
-    max_distance = user_preferences.get("max_distance")
-    unique_id = user_preferences.get("unique_id")
-    query = "SELECT * FROM User_profile WHERE 1=1"  # 1=1 allows for easy addition of filters
-    params = []
-    if attractiveness_min is not None and attractiveness_max is not None:
-        query += " AND CAST(attractiveness AS INTEGER) BETWEEN ? AND ?"
-        params.extend([attractiveness_min, attractiveness_max])
-    if relationship_type:
-        query += " AND relationship_type = ?"
-        params.append(relationship_type)
-    if family_planning:
-        query += " AND family_planning = ?"
-        params.append(family_planning)
-    if country and city:
-        query += " AND country = ? AND state = ? AND city = ?"
-        params.extend([country, city])
-    if age_min is not None and age_max is not None:
-        query += " AND age BETWEEN ? AND ?"
-        params.extend([age_min, age_max])
-    if user_gender:
-        query += " AND gender = ?"
-        params.append(user_gender)
-    if hair_length:
-        query += " AND hair_length = ?"
-        params.append(hair_length)
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute(query, params)
-    rows = cursor.fetchall()
-    if not rows:
-        return jsonify({"profiles": []})
-    final_profiles = []
-    if max_distance:
-        user_address = get_user_address(unique_id, conn)
-        columns = [column[0] for column in cursor.description]
-        for row in rows:
-            profile_dict = {columns[i]: row[i] for i in range(len(columns))}
-            profile_address = f"{profile_dict['city']}, {profile_dict['country']}, {profile_dict['zipcode']}"
-            distance = get_distance(google_distance_api, user_address, profile_address)
-            distance_value = float(distance.split()[0])
-            if distance_value <= float(max_distance):
-                final_profiles.append(profile_dict)
-    else:
-        columns = [column[0] for column in cursor.description]
-        final_profiles = [dict(zip(columns, row)) for row in rows]
-    conn.close()
-    return jsonify({"profiles": final_profiles})
-
-
 @app.route("/create_profile", methods=["POST"])
 @cross_origin()
 def create_or_update_user_profile():
@@ -410,212 +341,45 @@ def create_or_update_user_profile():
     cursor = conn.cursor()
     bmi = calculate_bmi(profile_data["weight"], profile_data["height"])
     if user_profile_exists(cursor, profile_data["unique_id"]):
-        update_user_profile(cursor, profile_data, bmi)
-        conn.commit()
-        conn.close()
-        return (
-            jsonify(
-                {
-                    "message": "User profile updated successfully",
-                    "profile_id": profile_data["unique_id"],
-                }
-            ),
-            200,
-        )
+        return handle_update_profile(conn, profile_data, bmi)
     else:
-        insert_user_profile(cursor, profile_data, bmi)
-        insert_user_general_questions(cursor, profile_data)
-        conn.commit()
-        conn.close()
-        return (
-            jsonify(
-                {
-                    "message": "User profile created successfully",
-                    "profile_id": profile_data["unique_id"],
-                }
-            ),
-            200,
-        )
+        return handle_create_profile(conn, profile_data, bmi)
 
 
 @app.route("/accept_match", methods=["POST"])
 def add_accepted_match():
     data = request.get_json()
-    to_user_id = data.get("to_user_id")
-    from_user_id = data.get("from_user_id")
-    answer = data.get("answer")
-    if not to_user_id or not from_user_id or not answer:
-        return jsonify({"error": "Missing required fields"}), 400
-    answer_json = json.dumps(answer)
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute(
-        """
-        SELECT 1 FROM Accepted_match 
-        WHERE to_user_id = ? AND from_user_id = ?;
-        """,
-        (to_user_id, from_user_id),
+    error_response = validate_required_fields(
+        data, ["to_user_id", "from_user_id", "answer"]
     )
-    existing_match = cursor.fetchone()
-    if existing_match:
+    if error_response:
+        return error_response
+    conn = get_db_connection()
+    if check_existing_match(conn, data):
         conn.close()
         return jsonify({"error": "Match already exists"}), 200
-    cursor.execute(
-        """
-        INSERT INTO Accepted_match (to_user_id, from_user_id, answer, status)
-        VALUES (?, ?, ?, 'No');
-        """,
-        (to_user_id, from_user_id, answer_json),
-    )
-    conn.commit()
+    insert_accepted_match(conn, data)
     conn.close()
     return jsonify({"message": "Accepted match added successfully"}), 200
 
 
 @app.route("/schedule_date", methods=["POST"])
 def add_user_date():
+    conn = get_db_connection()
     data = request.get_json()
-    required_fields = [
-        "your_unique_id",
-        "partner_unique_id",
-        "date_selected",
-        "time_selected",
-        "contact_method",
-        "type_of_date",
-        "duration",
-    ]
-    for field in required_fields:
-        if field not in data or data[field] is None:
-            return jsonify({"error": f"'{field}' is required."}), 400
-
-    your_unique_id = data["your_unique_id"]
-    partner_unique_id = data["partner_unique_id"]
-    date_selected = data["date_selected"]
-    time_selected = data["time_selected"]
-    contact_method = data["contact_method"]
-    type_of_date = data["type_of_date"]
-    duration = data["duration"]
-    try:
-        if not (5 <= int(duration) <= 120):
-            return (
-                jsonify({"error": "Duration must be between 5 and 120 minutes."}),
-                400,
-            )
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute(
-            """
-            SELECT COUNT(*) FROM User_dates 
-            WHERE your_unique_id = ? AND partner_unique_id = ?
-            """,
-            (your_unique_id, partner_unique_id),
-        )
-        exists = cursor.fetchone()[0]
-        if exists > 0:
-            return jsonify({"message": "Date already scheduled."}), 200
-        cursor.execute(
-            """
-            INSERT INTO User_dates (your_unique_id, partner_unique_id, date_selected, time_selected, 
-            contact_method, type_of_date, duration)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-            """,
-            (
-                your_unique_id,
-                partner_unique_id,
-                date_selected,
-                time_selected,
-                contact_method,
-                type_of_date,
-                duration,
-            ),
-        )
-        conn.commit()
-        conn.close()
-        return jsonify({"message": "Date added successfully!"}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    response, status_code = handle_date_schedule(data, conn)
+    return jsonify(response), status_code
 
 
 @app.route("/get_schedule_date", methods=["POST"])
 def get_schedule_date():
+    conn = get_db_connection()
     data = request.get_json()
     unique_id = data.get("unique_id")
     if not unique_id:
         return jsonify({"error": "'unique_id' is required."}), 400
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute(
-            """
-            SELECT partner_unique_id, date_selected, time_selected, contact_method, type_of_date, duration
-            FROM User_dates
-            WHERE your_unique_id = ?
-            """,
-            (unique_id,),
-        )
-        schedules = cursor.fetchall()
-        if not schedules:
-            cursor.execute(
-                """
-                SELECT your_unique_id, date_selected, time_selected, contact_method, type_of_date, duration
-                FROM User_dates
-                WHERE partner_unique_id = ?
-                """,
-                (unique_id,),
-            )
-            schedules = cursor.fetchall()
-        if not schedules:
-            return (
-                jsonify(
-                    {"message": "No scheduling data found for the provided unique ID."}
-                ),
-                404,
-            )
-        schedule_list = []
-        for schedule in schedules:
-            schedule_list.append(
-                {
-                    "partner_unique_id": schedule[0],
-                    "date_selected": schedule[1],
-                    "time_selected": schedule[2],
-                    "contact_method": schedule[3],
-                    "type_of_date": schedule[4],
-                    "duration": schedule[5],
-                }
-            )
-        conn.close()
-        return jsonify(schedule_list), 200
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
-@app.route("/delete_user", methods=["DELETE"])
-@cross_origin()
-def delete_user():
-    data = request.json
-    if not data or "email" not in data:
-        return jsonify({"error": "Missing email"}), 422
-    email = data["email"]
-    if not email:
-        return make_response(jsonify({"message": "Email is required"}), 400)
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT unique_id FROM User WHERE email = ?", (email,))
-    user = cursor.fetchone()
-    if user:
-        unique_id = user[0]
-        cursor.execute("DELETE FROM User_profile WHERE unique_id = ?", (unique_id,))
-        cursor.execute("DELETE FROM User WHERE email = ?", (email,))
-        conn.commit()
-        conn.close()
-        return make_response(
-            jsonify({"message": f"User with email {email} deleted successfully!"}), 200
-        )
-    else:
-        conn.close()
-        return make_response(jsonify({"message": "User not found!"}), 404)
-
+    response, status_code = handle_get_schedule_date(unique_id, conn)
+    return jsonify(response), status_code
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000)

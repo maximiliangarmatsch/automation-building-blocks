@@ -1,3 +1,11 @@
+from flask import jsonify
+from api_helpers.create_profile.create_profile import insert_user_profile
+from api_helpers.create_profile.update_profile import update_user_profile
+from api_helpers.create_profile.insert_general_questions import (
+    insert_user_general_questions,
+)
+
+
 def check_mandatory_fields(data):
     mandatory_fields = [
         "unique_id",
@@ -30,3 +38,36 @@ def calculate_bmi(weight, height):
     height_meters = height / 100
     bmi = weight / (height_meters**2)
     return int(round(bmi))
+
+
+def handle_update_profile(conn, profile_data, bmi):
+    cursor = conn.cursor()
+    update_user_profile(cursor, profile_data, bmi)
+    conn.commit()
+    conn.close()
+    return (
+        jsonify(
+            {
+                "message": "User profile updated successfully",
+                "profile_id": profile_data["unique_id"],
+            }
+        ),
+        200,
+    )
+
+
+def handle_create_profile(conn, profile_data, bmi):
+    cursor = conn.cursor()
+    insert_user_profile(cursor, profile_data, bmi)
+    insert_user_general_questions(cursor, profile_data)
+    conn.commit()
+    conn.close()
+    return (
+        jsonify(
+            {
+                "message": "User profile created successfully",
+                "profile_id": profile_data["unique_id"],
+            }
+        ),
+        200,
+    )

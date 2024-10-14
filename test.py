@@ -10,7 +10,7 @@ def create_users_table():
     cursor = conn.cursor()
 
     # SQL command to create the users table
-    cursor.execute("SELECT * FROM User_Match_Questions;")
+    cursor.execute("SELECT * FROM Match_profile;")
     unique_ids = cursor.fetchall()  # Fetch all results
     print(unique_ids)
     # cursor.execute(
@@ -90,57 +90,20 @@ def create_users_table():
     #     );
     #     """
     # )
-    # cursor.execute('''
+    # cursor.execute(
+    #     """
     #     CREATE TABLE IF NOT EXISTS Accepted_match (
     #     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    #     your_unique_id INTEGER,
-    #     match_unique_id INTEGER,
-    #     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    #     status TEXT,
-    #     your_q1 TEXT,
-    #     your_a1 TEXT,
-    #     your_q2 TEXT,
-    #     your_a2 TEXT,
-    #     your_q3 TEXT,
-    #     your_a3 TEXT,
-    #     your_q4 TEXT,
-    #     your_a4 TEXT,
-    #     your_q5 TEXT,
-    #     your_a5 TEXT,
-    #     your_q6 TEXT,
-    #     your_a6 TEXT,
-    #     your_q7 TEXT,
-    #     your_a7 TEXT,
-    #     your_q8 TEXT,
-    #     your_a8 TEXT,
-    #     your_q9 TEXT,
-    #     your_a9 TEXT,
-    #     your_q10 TEXT,
-    #     your_a10 TEXT,
-    #     partner_q1 TEXT,
-    #     partner_a1 TEXT,
-    #     partner_q2 TEXT,
-    #     partner_a2 TEXT,
-    #     partner_q3 TEXT,
-    #     partner_a3 TEXT,
-    #     partner_q4 TEXT,
-    #     partner_a4 TEXT,
-    #     partner_q5 TEXT,
-    #     partner_a5 TEXT,
-    #     partner_q6 TEXT,
-    #     partner_a6 TEXT,
-    #     partner_q7 TEXT,
-    #     partner_a7 TEXT,
-    #     partner_q8 TEXT,
-    #     partner_a8 TEXT,
-    #     partner_q9 TEXT,
-    #     partner_a9 TEXT,
-    #     partner_q10 TEXT,
-    #     partner_a10 TEXT,
-    #     FOREIGN KEY (your_unique_id) REFERENCES User(unique_id),
-    #     FOREIGN KEY (match_unique_id) REFERENCES User(unique_id)
+    #     to_user_id TEXT NOT NULL,
+    #     from_user_id TEXT NOT NULL,
+    #     answer JSON NOT NULL,
+    #     status TEXT NOT NULL,
+    #     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    #     FOREIGN KEY (from_user_id) REFERENCES User(unique_id),
+    #     FOREIGN KEY (to_user_id) REFERENCES User(unique_id)
     #     );
-    # ''')
+    # """
+    # )
     # cursor.execute(
     #     """
     #     DELETE FROM User_profile;
