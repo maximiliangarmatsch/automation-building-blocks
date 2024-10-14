@@ -17,3 +17,4 @@ def get_user_profile(unique_id, conn):
     column_names = [column[0] for column in cursor.description]
     profile_data = dict(zip(column_names, profile))
     profile_data["user_general_questions"] = [question[0] for question in questions]
+    return profile_data

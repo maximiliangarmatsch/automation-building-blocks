@@ -10,7 +10,7 @@ def create_users_table():
     cursor = conn.cursor()
 
     # SQL command to create the users table
-    cursor.execute("SELECT * FROM Match_profile;")
+    cursor.execute("SELECT * FROM User_Profile;")
     unique_ids = cursor.fetchall()  # Fetch all results
     print(unique_ids)
     # cursor.execute(
