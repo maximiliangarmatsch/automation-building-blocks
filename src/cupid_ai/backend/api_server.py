@@ -1,6 +1,4 @@
 import os
-import json
-from typing import Any
 from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS, cross_origin
 from asgiref.wsgi import WsgiToAsgi
@@ -75,12 +73,10 @@ api_cors = {
     "allow_headers": ["Content-Type"],
 }
 MEDIA_FOLDER = "uploads"
-
 if not os.path.exists(MEDIA_FOLDER):
     os.makedirs(MEDIA_FOLDER)
 api_key = os.getenv("GOOGLE_API_KEY")
 genai.configure(api_key=api_key)
-
 google_distance_api = os.getenv("GOOGLE_DISTANCE_API")
 
 
@@ -380,6 +376,7 @@ def get_schedule_date():
         return jsonify({"error": "'unique_id' is required."}), 400
     response, status_code = handle_get_schedule_date(unique_id, conn)
     return jsonify(response), status_code
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000)
