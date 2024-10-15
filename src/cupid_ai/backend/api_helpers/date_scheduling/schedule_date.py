@@ -34,7 +34,8 @@ def date_exists(your_unique_id, partner_unique_id, conn):
     cursor = conn.cursor()
     cursor.execute(
         """
-        SELECT COUNT(*) FROM User_dates 
+        SELECT COUNT(*) 
+        FROM User_dates 
         WHERE your_unique_id = ? AND partner_unique_id = ?
         """,
         (your_unique_id, partner_unique_id),

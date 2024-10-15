@@ -4,7 +4,8 @@ def check_existing_match(conn, data):
     cursor = conn.cursor()
     cursor.execute(
         """
-        SELECT 1 FROM Accepted_match 
+        SELECT 1 
+        FROM Accepted_match 
         WHERE to_user_id = ? AND from_user_id = ?;
         """,
         (to_user_id, from_user_id),

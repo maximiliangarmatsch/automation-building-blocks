@@ -1,13 +1,21 @@
 def get_user_profile(unique_id, conn):
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM User_Profile WHERE unique_id = ?", (unique_id,))
+    cursor.execute(
+        """
+        SELECT * 
+        FROM User_Profile 
+        WHERE unique_id = ?
+        """,
+        (unique_id,),
+    )
     profile = cursor.fetchone()
     if not profile:
         conn.close()
         return None
     cursor.execute(
         """
-        SELECT question FROM User_profile_general_questions
+        SELECT question 
+        FROM User_profile_general_questions
         WHERE user_id = ?
         ORDER BY id ASC
         """,

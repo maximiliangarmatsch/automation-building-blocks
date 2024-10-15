@@ -5,7 +5,8 @@ def delete_match_from_db(data, conn):
         cursor = conn.cursor()
         cursor.execute(
             """
-            DELETE FROM Match_profile 
+            DELETE 
+            FROM Match_profile 
             WHERE your_unique_id = ? AND match_unique_id = ?
             """,
             (from_unique_id, to_unique_id),

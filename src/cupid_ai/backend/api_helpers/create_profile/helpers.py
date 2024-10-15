@@ -30,7 +30,12 @@ def check_mandatory_fields(data):
 
 
 def user_profile_exists(cursor, unique_id):
-    cursor.execute("SELECT * FROM User_profile WHERE unique_id = ?", (unique_id,))
+    cursor.execute(
+        """SELECT * 
+        FROM User_profile 
+        WHERE unique_id = ?""",
+        (unique_id,),
+    )
     return cursor.fetchone()
 
 

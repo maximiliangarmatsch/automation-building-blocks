@@ -1,11 +1,9 @@
-from flask import jsonify
-
-
 def fetch_general_questions(unique_id, conn):
     cursor = conn.cursor()
     cursor.execute(
         """
-        SELECT question FROM User_profile_general_questions
+        SELECT question 
+        FROM User_profile_general_questions
         WHERE user_id = ?
         ORDER BY id ASC
         """,
@@ -47,6 +45,6 @@ def get_specific_match(from_unique_id, to_unique_id, conn):
                 question[0] for question in match_general_questions
             ]
         conn.close()
-        return profile_dict  # Return dictionary here instead of jsonify
+        return profile_dict
     conn.close()
     return {"profiles": []}  # Return a regular dictionary

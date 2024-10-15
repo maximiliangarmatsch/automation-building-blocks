@@ -5,7 +5,8 @@ def fetch_general_questions(unique_id, conn):
     cursor = conn.cursor()
     cursor.execute(
         """
-        SELECT question FROM User_profile_general_questions
+        SELECT question 
+        FROM User_profile_general_questions
         WHERE user_id = ?
         ORDER BY id ASC
         """,
@@ -19,7 +20,8 @@ def get_match_profiles(unique_id, conn):
     cursor = conn.cursor()
     cursor.execute(
         """
-        SELECT DISTINCT match_unique_id FROM match_profile
+        SELECT DISTINCT match_unique_id 
+        FROM match_profile
         WHERE your_unique_id = ?;
     """,
         (unique_id,),
@@ -32,7 +34,8 @@ def get_match_profiles(unique_id, conn):
         placeholders = ", ".join(["?"] * len(match_unique_ids))
         cursor.execute(
             f"""
-            SELECT * FROM User_profile
+            SELECT * 
+            FROM User_profile
             WHERE unique_id IN ({placeholders});
         """,
             match_unique_ids,

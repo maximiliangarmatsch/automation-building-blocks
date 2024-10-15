@@ -5,7 +5,8 @@ def get_match_accepted(unique_id, conn):
     cursor = conn.cursor()
     cursor.execute(
         """
-        SELECT DISTINCT from_user_id FROM Accepted_match
+        SELECT DISTINCT from_user_id 
+        FROM Accepted_match
         WHERE to_user_id = ?;
         """,
         (unique_id,),
@@ -15,7 +16,8 @@ def get_match_accepted(unique_id, conn):
     if not accepted_unique_ids:
         cursor.execute(
             """
-            SELECT DISTINCT to_user_id FROM Accepted_match
+            SELECT DISTINCT to_user_id 
+            FROM Accepted_match
             WHERE from_user_id = ?;
             """,
             (unique_id,),
