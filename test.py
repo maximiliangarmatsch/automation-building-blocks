@@ -9,8 +9,9 @@ def create_users_table():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    # SQL command to create the users table
-    cursor.execute("SELECT * FROM User_Profile;")
+    # Correctly quoting the user_id string in the SQL query
+    user_id = "#2100403"
+    cursor.execute("SELECT answer FROM Accepted_match;")
     unique_ids = cursor.fetchall()  # Fetch all results
     print(unique_ids)
     # cursor.execute(

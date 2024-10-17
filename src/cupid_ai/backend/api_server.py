@@ -40,6 +40,12 @@ from api_helpers.custom_questions.save_custom_question_api import save_custom_qu
 from api_helpers.custom_questions.save_custom_answer_api import save_custom_answer
 from api_helpers.date_scheduling.schedule_date_api import schedule_date
 from api_helpers.date_scheduling.get_schedule_date_api import get_schedule_date
+from api_helpers.general_questions.update_general_question_api import (
+    update_general_question,
+)
+from api_helpers.general_questions.delete_general_question_api import (
+    delete_general_question,
+)
 
 app.register_blueprint(auth)
 app.register_blueprint(create_profile)
@@ -57,7 +63,8 @@ app.register_blueprint(save_custom_question)
 app.register_blueprint(save_custom_answer)
 app.register_blueprint(schedule_date)
 app.register_blueprint(get_schedule_date)
-
+app.register_blueprint(update_general_question)
+app.register_blueprint(delete_general_question)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000)
