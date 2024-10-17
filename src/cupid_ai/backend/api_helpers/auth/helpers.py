@@ -34,7 +34,12 @@ def hash_user_password(password):
 
 def fetch_user_by_email(conn, email):
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM User WHERE email = ?", (email,))
+    cursor.execute(
+        """SELECT * 
+        FROM User 
+        WHERE email = ?""",
+        (email,),
+    )
     return cursor.fetchone()
 
 

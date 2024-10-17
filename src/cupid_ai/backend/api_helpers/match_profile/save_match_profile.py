@@ -7,7 +7,8 @@ def save_match_profile(your_unique_id, match_unique_id, conn):
     try:
         cursor.execute(
             """
-            SELECT 1 FROM Match_profile
+            SELECT 1 
+            FROM Match_profile
             WHERE (your_unique_id = ? AND match_unique_id = ?);
             """,
             (your_unique_id, match_unique_id),
