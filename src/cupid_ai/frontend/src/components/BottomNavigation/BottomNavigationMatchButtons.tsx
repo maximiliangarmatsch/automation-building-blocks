@@ -58,16 +58,8 @@ export function BottomNavigationMatchButtons() {
         <CalendarMonthIcon />
       </Fab>
 
-      <RejectUserModal
-        onClose={onCloseRejectUser}
-        onOpen={onOpenRejectUser}
-        open={openRejectUser}
-      />
-      <ScheduleModal
-        onClose={onCloseSchedule}
-        onOpen={onOpenSchedule}
-        open={openSchedule}
-      />
+      <RejectUserModal onClose={onCloseRejectUser} open={openRejectUser} />
+      <ScheduleModal onClose={onCloseSchedule} open={openSchedule} />
     </>
   );
 }

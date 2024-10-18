@@ -32,7 +32,7 @@ export function BottomNavigationFilterButton() {
         <FilterListIcon />
       </Fab>
 
-      <FilterModal onClose={onClose} onOpen={onOpen} open={open} />
+      <FilterModal onClose={onClose} open={open} />
     </>
   );
 }

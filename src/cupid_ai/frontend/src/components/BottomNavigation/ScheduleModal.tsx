@@ -16,11 +16,13 @@ const style = {
   p: 4,
 };
 
-export function ScheduleModal(props: any) {
-  const { onClose, onOpen, open } = props;
+interface ScheduleModalProps {
+  onClose: () => void;
+  open: boolean;
+}
 
-  const onSubmit = async () => {};
 
+export function ScheduleModal({ onClose, open }: ScheduleModalProps) {
   const availableDates = [
     { date: "2024-12-04", startTime: "10:00", endTime: "16:00" },
     { date: "2024-12-05", startTime: "16:00", endTime: "21:00" },
@@ -44,10 +46,12 @@ export function ScheduleModal(props: any) {
             Schedule a Date
           </Typography>
           <Box marginBottom={2}>
-            <Typography>Her Dating Availability</Typography>
+            <Typography variant="subtitle1" component="h2">
+              Her Dating Availability
+            </Typography>
             <List>
               {availableDates?.map((availableDate) => (
-                <Typography>
+                <Typography key={availableDate.date}>
                   {availableDate.date}: {availableDate.startTime} -{" "}
                   {availableDate.endTime}
                 </Typography>

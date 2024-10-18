@@ -1,70 +1,92 @@
-import { useContext, createContext, useState } from "react";
+import React, { useContext, createContext, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { PATHS } from "../../utils";
-import api, { API_ENDPOINTS, BASE_API } from "../../services/api";
+import api, { API_ENDPOINTS } from "../../services/api";
 
-const AuthContext = createContext<{
-  user: any;
+interface User {
+  // Define user properties here
+}
+
+interface AuthContextType {
+  user: User | null;
   uniqueID: string;
-  loginAction: (data: any, callback: () => void) => void;
+  loginAction: (data: LoginData, callback: () => void) => Promise<void>;
   logOut: () => void;
-  setUser: React.Dispatch<React.SetStateAction<any>>;
-} | null>(null);
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
+}
 
-const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState<any>(null);
+interface LoginData {
+  email: string;
+  password: string;
+}
+
+const AuthContext = createContext<AuthContextType | null>(null);
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
+};
+
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const [user, setUser] = useState<User | null>(null);
   const [uniqueID, setUniqueID] = useState(
     localStorage.getItem("unique_id") || ""
   );
   const navigate = useNavigate();
-  const loginAction = async (data, callback) => {
-    try {
-      const authResponse = await api.post(API_ENDPOINTS.AUTH, data);
 
-      if (authResponse.data) {
-        localStorage.setItem("unique_id", authResponse.data?.unique_id);
-        setUniqueID(authResponse.data?.unique_id ?? "");
+  const loginAction = useCallback(
+    async (data: LoginData, callback: () => void) => {
+      try {
+        const authResponse = await api.post(API_ENDPOINTS.AUTH, data);
 
-        // get user profile and store in state
-        if (authResponse.data.unique_id) {
-          try {
+        if (authResponse.data) {
+          localStorage.setItem("unique_id", authResponse.data.unique_id);
+          setUniqueID(authResponse.data.unique_id ?? "");
+
+          if (authResponse.data.unique_id) {
             const response = await api.post(API_ENDPOINTS.GET_PROFILE, {
-              unique_id: authResponse.data?.unique_id,
+              unique_id: authResponse.data.unique_id,
             });
 
             if (response.data) {
               setUser(response.data);
               navigate(PATHS.PROFILE);
             }
-          } catch (err) {
-            callback();
           }
+        } else {
+          throw new Error(
+            authResponse.data?.message || "Authentication failed"
+          );
         }
+      } catch (err) {
+        console.error(err);
+        callback();
       }
-      throw new Error(authResponse.data?.message);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+    },
+    [navigate]
+  );
 
-  const logOut = () => {
+  const logOut = useCallback(() => {
     setUser(null);
     setUniqueID("");
     localStorage.removeItem("unique_id");
     navigate(PATHS.LOGIN);
+  }, [navigate]);
+
+  const value = {
+    uniqueID,
+    user,
+    loginAction,
+    logOut,
+    setUser,
   };
 
-  return (
-    <AuthContext.Provider
-      value={{ uniqueID, user, loginAction, logOut, setUser }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export default AuthProvider;
-
-export const useAuth = () => {
-  return useContext(AuthContext);
-};

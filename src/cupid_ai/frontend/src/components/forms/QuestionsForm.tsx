@@ -14,53 +14,7 @@ import { useAuth } from "../../utils/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { PATHS } from "../../utils";
 import { useState } from "react";
-
-const steps = [
-  {
-    fields: [
-      {
-        type: "text",
-        id: "relationship_type",
-        label: "Relationship Type",
-        required: true,
-      },
-      {
-        type: "radio",
-        id: "gender",
-        label: "Gender",
-        options: [
-          { value: "male", label: "Male" },
-          { value: "female", label: "Female" },
-        ],
-        required: true,
-      },
-    ],
-  },
-  {
-    fields: [
-      {
-        type: "checkbox",
-        id: "interests",
-        label: "Select your interests",
-        options: [
-          { value: "sports", label: "Sports" },
-          { value: "music", label: "Music" },
-          { value: "travel", label: "Travel" },
-        ],
-      },
-      {
-        type: "select",
-        id: "country",
-        label: "Country",
-        options: [
-          { value: "us", label: "United States" },
-          { value: "ca", label: "Canada" },
-        ],
-        required: true,
-      },
-    ],
-  },
-];
+import questions from "../../data/questions.json";
 
 export const QuestionForm = ({ data }) => {
   const { handleSubmit, formState, register, setValue, getValues } = useForm({
@@ -84,14 +38,14 @@ export const QuestionForm = ({ data }) => {
   };
 
   const handleNext = () => {
-    setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
+    setCurrentStep((prev) => Math.min(prev + 1, questions.length - 1));
   };
 
   const handleBack = () => {
     setCurrentStep((prev) => Math.max(prev - 1, 0));
   };
 
-  const progress = (currentStep / (steps.length - 1)) * 100;
+  const progress = (currentStep / (questions.length - 1)) * 100;
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -101,7 +55,7 @@ export const QuestionForm = ({ data }) => {
         sx={{ marginBottom: 2 }}
       />
 
-      {steps[currentStep].fields.map((field) => {
+      {questions[currentStep].fields.map((field) => {
         switch (field.type) {
           case "text":
             return (
@@ -123,7 +77,7 @@ export const QuestionForm = ({ data }) => {
                 <RadioGroup
                   {...register(field.id, { required: field.required })}
                 >
-                  {field.options.map((option) => (
+                  {field.options?.map((option) => (
                     <FormControlLabel
                       key={option.value}
                       value={option.value}
@@ -139,7 +93,7 @@ export const QuestionForm = ({ data }) => {
             return (
               <div key={field.id}>
                 <label>{field.label}</label>
-                {field.options.map((option) => (
+                {field.options?.map((option) => (
                   <FormControlLabel
                     key={option.value}
                     control={
@@ -181,7 +135,7 @@ export const QuestionForm = ({ data }) => {
                 {...register(field.id, { required: field.required })}
                 sx={{ marginTop: 2 }}
               >
-                {field.options.map((option) => (
+                {field.options?.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
                     {option.label}
                   </MenuItem>
@@ -204,7 +158,7 @@ export const QuestionForm = ({ data }) => {
             Back
           </Button>
         )}
-        {currentStep < steps.length - 1 ? (
+        {currentStep < questions.length - 1 ? (
           <Button
             type="button"
             onClick={handleNext}
