@@ -12,6 +12,10 @@ def create_new_user(conn, email, hashed_password):
     )
     user_id = cursor.lastrowid
     unique_id = generate_unique_id(user_id)
-    cursor.execute("UPDATE User SET unique_id = ? WHERE id = ?", (unique_id, user_id))
+    cursor.execute(
+        """UPDATE User SET unique_id = ? 
+        WHERE id = ?""",
+        (unique_id, user_id),
+    )
     conn.commit()
     return unique_id

@@ -1,4 +1,4 @@
-def save_custom_answer(to_user_id, from_user_id, question_id, answer, conn):
+def save_customize_answer(to_user_id, from_user_id, question_id, answer, conn):
     try:
         cursor = conn.cursor()
         cursor.execute(
