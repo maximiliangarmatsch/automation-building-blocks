@@ -27,14 +27,14 @@ const style = {
 };
 
 interface AttractivenessModalProps extends Omit<ModalProps, "children"> {
-  setOpen: any;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const AttractivenessModal = (props: AttractivenessModalProps) => {
   const { onClose, open, setOpen } = props;
 
   const [step, setStep] = useState(1);
-  const [data, setData] = useState({});
+  const [data, setData] = useState<Record<string, any>>({});
 
   return (
     <Modal

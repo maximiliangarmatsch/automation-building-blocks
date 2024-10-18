@@ -1,15 +1,17 @@
+import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import * as Yup from "yup";
+
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import * as Yup from "yup";
-import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import CircularProgress from "@mui/material/CircularProgress";
+
 import { PATHS } from "../../utils";
-import { useForm } from "react-hook-form";
 import { useAuth } from "../../utils/contexts/AuthContext";
 import useYupValidationResolver from "../../utils/hooks/useYupValidationResolver";
-import CircularProgress from "@mui/material/CircularProgress";
 import { AttractivenessModal } from "../AttractivenessModal";
 
 const formValidationSchema = Yup.object({

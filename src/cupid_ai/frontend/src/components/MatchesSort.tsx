@@ -1,11 +1,11 @@
-import * as React from 'react';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import * as React from "react";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
 
 export default function MatchesSort() {
-  const [sort, setSort] = React.useState("10");
+  const [sort, setSort] = React.useState<string>("urgency");
 
   const handleChange = (event: SelectChangeEvent) => {
     setSort(event.target.value);
@@ -18,12 +18,12 @@ export default function MatchesSort() {
         labelId="sort-label"
         id="sort"
         value={sort}
-        label="Age"
+        label="Sort"
         onChange={handleChange}
       >
-        <MenuItem value={10}>Urgency</MenuItem>
-        <MenuItem value={20}>Distance</MenuItem>
-        <MenuItem value={30}>Attractiveness</MenuItem>
+        <MenuItem value="urgency">Urgency</MenuItem>
+        <MenuItem value="distance">Distance</MenuItem>
+        <MenuItem value="attractiveness">Attractiveness</MenuItem>
       </Select>
     </FormControl>
   );

@@ -8,7 +8,6 @@ export const Matches = (props: any) => {
   const { data } = props;
 
   const handleNavigate = (userId) => {
-    // Navigate to the "About" page
     navigate(PATHS.PROFILE);
   };
 

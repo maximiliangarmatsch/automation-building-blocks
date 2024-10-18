@@ -8,7 +8,7 @@ import Radio from "@mui/material/Radio";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Modal from "@mui/material/Modal";
 import Grid from "@mui/material/Grid2";
-
+import FormGroup from "@mui/material/FormGroup";
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
@@ -21,82 +21,84 @@ const style = {
   p: 4,
 };
 
-export function FilterModal(props: any) {
-  const { onClose, onOpen, open } = props;
+interface FilterModalProps {
+  onClose: () => void;
+  open: boolean;
+}
+
+export function FilterModal(props: FilterModalProps) {
+  const { onClose, open } = props;
 
   return (
-    <>
-      <Modal
-        open={open}
-        onClose={onClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <Typography
-            id="modal-modal-title"
-            variant="h6"
-            component="h1"
-            sx={{ mb: 2 }}
-          >
-            Filter your Matches
-          </Typography>
+    <Modal
+      open={open}
+      onClose={onClose}
+      aria-labelledby="filter-modal-title"
+      aria-describedby="filter-modal-description"
+    >
+      <Box sx={style}>
+        <Typography
+          id="filter-modal-title"
+          variant="h6"
+          component="h2"
+          gutterBottom
+        >
+          Filter your Matches
+        </Typography>
 
-          <Grid container spacing={2}>
-            <Grid size={12}>
-              <Paper elevation={2}>
-                <Typography variant="h6">Gender</Typography>
-                <FormControl>
-                  <RadioGroup
-                    row
-                    aria-labelledby="demo-row-radio-buttons-group-label"
-                    name="row-radio-buttons-group"
-                  >
-                    <FormControlLabel
-                      value="female"
-                      control={<Radio />}
-                      label="Female"
-                    />
-                    <FormControlLabel
-                      value="male"
-                      control={<Radio />}
-                      label="Male"
-                    />
-                  </RadioGroup>
-                </FormControl>
-              </Paper>
-            </Grid>
-
-            <Grid size={12}>
-              <Paper elevation={2}>
-                <Typography variant="h6">Age</Typography>
-                <Box display="flex" flexDirection="row" gap={0}>
+        <Grid container spacing={3}>
+          <Grid size={12}>
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <Typography variant="h6" gutterBottom>
+                Gender
+              </Typography>
+              <FormControl component="fieldset">
+                <RadioGroup row name="gender">
                   <FormControlLabel
-                    control={<TextField size="small" sx={{ width: "60px" }} />}
-                    label=" To"
+                    value="female"
+                    control={<Radio />}
+                    label="Female"
                   />
                   <FormControlLabel
-                    control={<TextField size="small" sx={{ width: "60px" }} />}
-                    label=""
+                    value="male"
+                    control={<Radio />}
+                    label="Male"
                   />
-                </Box>
-              </Paper>
-            </Grid>
-
-            <Grid size={12}>
-              <Paper elevation={2}>
-                <Typography variant="h6">Distance (km)</Typography>
-                <Box display="flex" flexDirection="row" gap={0}>
-                  <FormControlLabel
-                    control={<TextField size="small" sx={{ width: "80px" }} />}
-                    label=""
-                  />
-                </Box>
-              </Paper>
-            </Grid>
+                </RadioGroup>
+              </FormControl>
+            </Paper>
           </Grid>
-        </Box>
-      </Modal>
-    </>
+
+          <Grid size={12}>
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <Typography variant="h6" gutterBottom>
+                Age
+              </Typography>
+              <FormGroup row>
+                <FormControlLabel
+                  control={<TextField size="small" sx={{ width: "80px" }} />}
+                  label="From"
+                  labelPlacement="start"
+                />
+                <FormControlLabel
+                  control={<TextField size="small" sx={{ width: "80px" }} />}
+                  label="To"
+                  labelPlacement="start"
+                />
+              </FormGroup>
+            </Paper>
+          </Grid>
+
+          <Grid size={12}>
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <Typography variant="h6" gutterBottom>
+                Distance (km)
+              </Typography>
+              <TextField size="small" sx={{ width: "120px" }} />
+            </Paper>
+          </Grid>
+        </Grid>
+      </Box>
+    </Modal>
   );
 }

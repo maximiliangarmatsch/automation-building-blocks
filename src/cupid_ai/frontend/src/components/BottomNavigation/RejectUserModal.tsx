@@ -14,8 +14,13 @@ const style = {
   p: 4,
 };
 
-export function RejectUserModal(props: any) {
-  const { onClose, onOpen, open } = props;
+interface RejectUserModalProps {
+  onClose: () => void;
+  open: boolean;
+}
+
+export function RejectUserModal(props: RejectUserModalProps) {
+  const { onClose, open } = props;
 
   return (
     <>
@@ -34,61 +39,6 @@ export function RejectUserModal(props: any) {
           >
             Reject User
           </Typography>
-
-          {/* Just old trash */}
-          {/* <Grid container spacing={2}>
-            <Grid size={12}>
-              <Paper elevation={2}>
-                <Typography variant="h6">Gender</Typography>
-                <FormControl>
-                  <RadioGroup
-                    row
-                    aria-labelledby="demo-row-radio-buttons-group-label"
-                    name="row-radio-buttons-group"
-                  >
-                    <FormControlLabel
-                      value="female"
-                      control={<Radio />}
-                      label="Female"
-                    />
-                    <FormControlLabel
-                      value="male"
-                      control={<Radio />}
-                      label="Male"
-                    />
-                  </RadioGroup>
-                </FormControl>
-              </Paper>
-            </Grid>
-
-            <Grid size={12}>
-              <Paper elevation={2}>
-                <Typography variant="h6">Age</Typography>
-                <Box display="flex" flexDirection="row" gap={0}>
-                  <FormControlLabel
-                    control={<TextField size="small" sx={{ width: "60px" }} />}
-                    label=" To"
-                  />
-                  <FormControlLabel
-                    control={<TextField size="small" sx={{ width: "60px" }} />}
-                    label=""
-                  />
-                </Box>
-              </Paper>
-            </Grid>
-
-            <Grid size={12}>
-              <Paper elevation={2}>
-                <Typography variant="h6">Distance (km)</Typography>
-                <Box display="flex" flexDirection="row" gap={0}>
-                  <FormControlLabel
-                    control={<TextField size="small" sx={{ width: "80px" }} />}
-                    label=""
-                  />
-                </Box>
-              </Paper>
-            </Grid>
-          </Grid> */}
         </Box>
       </Modal>
     </>

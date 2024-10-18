@@ -1,0 +1,347 @@
+[
+  {
+    "fields": [
+      {
+        "type": "select",
+        "id": "relationship_type",
+        "label": "Relationship Type",
+        "required": true,
+        "options": [
+          { "value": "casual", "label": "Casual" },
+          { "value": "serious", "label": "Serious" },
+          { "value": "marriage", "label": "Marriage" }
+        ]
+      },
+      {
+        "type": "radio",
+        "id": "family_planning",
+        "label": "Family Planning",
+        "required": true,
+        "options": [
+          { "value": "want_children", "label": "Want children" },
+          { "value": "dont_want_children", "label": "Don't want children" },
+          { "value": "undecided", "label": "Undecided" }
+        ]
+      }
+    ]
+  },
+  {
+    "fields": [
+      {
+        "type": "checkbox",
+        "id": "interests",
+        "label": "Select your interests",
+        "required": true,
+        "options": [
+          { "value": "sports", "label": "Sports" },
+          { "value": "music", "label": "Music" },
+          { "value": "travel", "label": "Travel" },
+          { "value": "cooking", "label": "Cooking" },
+          { "value": "reading", "label": "Reading" }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "country",
+        "label": "Country",
+        "options": [
+          { "value": "us", "label": "United States" },
+          { "value": "ca", "label": "Canada" }
+        ],
+        "required": true
+      }
+    ]
+  },
+  {
+    "fields": [
+      {
+        "type": "text",
+        "id": "living_address",
+        "label": "Living Address",
+        "required": true
+      },
+      {
+        "type": "select",
+        "id": "apartment_style",
+        "label": "Apartment Style",
+        "required": true,
+        "options": [
+          { "value": "studio", "label": "Studio" },
+          { "value": "1br", "label": "1 Bedroom" },
+          { "value": "2br", "label": "2 Bedrooms" },
+          { "value": "3br_plus", "label": "3+ Bedrooms" }
+        ]
+      },
+      {
+        "type": "text",
+        "id": "roommates",
+        "label": "Number of Roommates",
+        "required": true
+      }
+    ]
+  },
+  {
+    "fields": [
+      {
+        "type": "select",
+        "id": "working_hours",
+        "label": "Working Hours",
+        "required": true,
+        "options": [
+          { "value": "full_time", "label": "Full-time" },
+          { "value": "part_time", "label": "Part-time" },
+          { "value": "flexible", "label": "Flexible" }
+        ]
+      },
+      {
+        "type": "text",
+        "id": "other_commitments",
+        "label": "Other Commitments",
+        "required": true
+      },
+      {
+        "type": "select",
+        "id": "dating_availability",
+        "label": "Dating Availability",
+        "required": true,
+        "options": [
+          { "value": "weekdays", "label": "Weekdays" },
+          { "value": "weekends", "label": "Weekends" },
+          { "value": "both", "label": "Both" }
+        ]
+      }
+    ]
+  },
+  {
+    "fields": [
+      {
+        "type": "text",
+        "id": "height",
+        "label": "Height (cm)",
+        "required": true
+      },
+      {
+        "type": "text",
+        "id": "weight",
+        "label": "Weight (kg)",
+        "required": true
+      },
+      {
+        "type": "text",
+        "id": "age",
+        "label": "Age",
+        "required": true
+      }
+    ]
+  },
+  {
+    "fields": [
+      {
+        "type": "text",
+        "id": "dept",
+        "label": "Department",
+        "required": true
+      },
+      {
+        "type": "text",
+        "id": "assets",
+        "label": "Assets",
+        "required": true
+      },
+      {
+        "type": "text",
+        "id": "income_this_year",
+        "label": "Income This Year",
+        "required": true
+      },
+      {
+        "type": "text",
+        "id": "income_next_year",
+        "label": "Income Next Year",
+        "required": true
+      },
+      {
+        "type": "text",
+        "id": "income_over_next_year",
+        "label": "Income Over Next Year",
+        "required": true
+      }
+    ]
+  },
+  {
+    "fields": [
+      {
+        "type": "text",
+        "id": "wealth_goals",
+        "label": "Wealth Goals",
+        "required": true
+      },
+      {
+        "type": "text",
+        "id": "kids",
+        "label": "Number of Kids",
+        "required": true
+      },
+      {
+        "type": "checkbox",
+        "id": "pets",
+        "label": "Pets",
+        "required": true,
+        "options": [
+          { "value": "dog", "label": "Dog" },
+          { "value": "cat", "label": "Cat" },
+          { "value": "fish", "label": "Fish" },
+          { "value": "other", "label": "Other" }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "living",
+        "label": "Living Situation",
+        "required": true,
+        "options": [
+          { "value": "alone", "label": "Living Alone" },
+          { "value": "roommates", "label": "With Roommates" },
+          { "value": "family", "label": "With Family" }
+        ]
+      }
+    ]
+  },
+  {
+    "fields": [
+      {
+        "type": "radio",
+        "id": "wealth_splitting",
+        "label": "Wealth Splitting",
+        "required": true,
+        "options": [
+          { "value": "equal", "label": "Equal" },
+          { "value": "proportional", "label": "Proportional to Income" },
+          { "value": "other", "label": "Other" }
+        ]
+      },
+      {
+        "type": "radio",
+        "id": "effort_splitting",
+        "label": "Effort Splitting",
+        "required": true,
+        "options": [
+          { "value": "equal", "label": "Equal" },
+          { "value": "based_on_skills", "label": "Based on Skills" },
+          { "value": "other", "label": "Other" }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "religion",
+        "label": "Religion",
+        "required": true,
+        "options": [
+          { "value": "christian", "label": "Christian" },
+          { "value": "muslim", "label": "Muslim" },
+          { "value": "jewish", "label": "Jewish" },
+          { "value": "hindu", "label": "Hindu" },
+          { "value": "buddhist", "label": "Buddhist" },
+          { "value": "atheist", "label": "Atheist" },
+          { "value": "other", "label": "Other" }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "politics",
+        "label": "Political Views",
+        "required": true,
+        "options": [
+          { "value": "liberal", "label": "Liberal" },
+          { "value": "conservative", "label": "Conservative" },
+          { "value": "moderate", "label": "Moderate" },
+          { "value": "other", "label": "Other" }
+        ]
+      }
+    ]
+  },
+  {
+    "fields": [
+      {
+        "type": "text",
+        "id": "existing_family_structure",
+        "label": "Existing Family Structure",
+        "required": true
+      },
+      {
+        "type": "text",
+        "id": "retirement",
+        "label": "Retirement Plans",
+        "required": true
+      }
+    ]
+  },
+  {
+    "fields": [
+      {
+        "type": "text",
+        "id": "q1",
+        "label": "Question 1",
+        "required": true
+      },
+      {
+        "type": "text",
+        "id": "q2",
+        "label": "Question 2",
+        "required": true
+      },
+      {
+        "type": "text",
+        "id": "q3",
+        "label": "Question 3",
+        "required": true
+      },
+      {
+        "type": "text",
+        "id": "q4",
+        "label": "Question 4",
+        "required": true
+      },
+      {
+        "type": "text",
+        "id": "q5",
+        "label": "Question 5",
+        "required": true
+      }
+    ]
+  },
+  {
+    "fields": [
+      {
+        "type": "text",
+        "id": "q6",
+        "label": "Question 6",
+        "required": true
+      },
+      {
+        "type": "text",
+        "id": "q7",
+        "label": "Question 7",
+        "required": true
+      },
+      {
+        "type": "text",
+        "id": "q8",
+        "label": "Question 8",
+        "required": true
+      },
+      {
+        "type": "text",
+        "id": "q9",
+        "label": "Question 9",
+        "required": true
+      },
+      {
+        "type": "text",
+        "id": "q10",
+        "label": "Question 10",
+        "required": true
+      }
+    ]
+  }
+]
