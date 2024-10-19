@@ -1,0 +1,18 @@
+[
+  {
+    "key": "never",
+    "label": "Never"
+  },
+  {
+    "key": "former",
+    "label": "Former smoker"
+  },
+  {
+    "key": "occasional",
+    "label": "Occasional smoker"
+  },
+  {
+    "key": "regular",
+    "label": "Regular smoker"
+  }
+]

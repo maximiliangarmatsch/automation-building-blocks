@@ -1,0 +1,155 @@
+[
+    {
+        "key": "English",
+        "label": "English"
+    },
+    {
+        "key": "Spanish",
+        "label": "Spanish"
+    },
+    {
+        "key": "French",
+        "label": "French"
+    },
+    {
+        "key": "German",
+        "label": "German"
+    },
+    {
+        "key": "Italian",
+        "label": "Italian"
+    },
+    {
+        "key": "Portuguese",
+        "label": "Portuguese"
+    },
+    {
+        "key": "Russian",
+        "label": "Russian"
+    },
+    {
+        "key": "Chinese",
+        "label": "Chinese"
+    },
+    {
+        "key": "Japanese",
+        "label": "Japanese"
+    },
+    {
+        "key": "Korean",
+        "label": "Korean"
+    },
+    {
+        "key": "Arabic",
+        "label": "Arabic"
+    },
+    {
+        "key": "Hindi",
+        "label": "Hindi"
+    },
+    {
+        "key": "Dutch",
+        "label": "Dutch"
+    },
+    {
+        "key": "Polish",
+        "label": "Polish"
+    },
+    {
+        "key": "Turkish",
+        "label": "Turkish"
+    },
+    {
+        "key": "Vietnamese",
+        "label": "Vietnamese"
+    },
+    {
+        "key": "Dutch",
+        "label": "Dutch"
+    },
+    {
+        "key": "Polish",
+        "label": "Polish"
+    },
+    {
+        "key": "Turkish",
+        "label": "Turkish"
+    },
+    {
+        "key": "Vietnamese",
+        "label": "Vietnamese"
+    },
+    {
+        "key": "Dutch",
+        "label": "Dutch"
+    },
+    {
+        "key": "Polish",
+        "label": "Polish"
+    },
+    {
+        "key": "arabic",
+        "label": "ARABIC"
+    },
+    {
+        "key": "chinese",
+        "label": "CHINESE"
+    },
+    {
+        "key": "dutch",
+        "label": "DUTCH"
+    },
+    {
+        "key": "english",
+        "label": "ENGLISH"
+    },
+    {
+        "key": "french",
+        "label": "FRENCH"
+    },
+    {
+        "key": "german",
+        "label": "GERMAN"
+    },
+    {
+        "key": "hindi",
+        "label": "HINDI"
+    },
+    {
+        "key": "italian",
+        "label": "ITALIAN"
+    },
+    {
+        "key": "japanese",
+        "label": "JAPANESE"
+    },
+    {
+        "key": "korean",
+        "label": "KOREAN"
+    },
+    {
+        "key": "polish",
+        "label": "POLISH"
+    },
+    {
+        "key": "portuguese",
+        "label": "PORTUGUESE"
+    },
+    {
+        "key": "russian",
+        "label": "RUSSIAN"
+    },
+    {
+        "key": "spanish",
+        "label": "SPANISH"
+    },
+    {
+        "key": "turkish",
+        "label": "TURKISH"
+    },
+    {
+        "key": "vietnamese",
+        "label": "VIETNAMESE"
+    }
+
+]

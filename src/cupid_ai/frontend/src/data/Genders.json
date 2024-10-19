@@ -1,0 +1,10 @@
+[
+  {
+    "key": "male",
+    "label": "Male"
+  },
+  {
+    "key": "female",
+    "label": "Female"
+  }
+]

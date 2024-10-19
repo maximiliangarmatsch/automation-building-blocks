@@ -1,0 +1,38 @@
+[
+  {
+    "key": "brown",
+    "label": "Brown"
+  },
+  {
+    "key": "blue",
+    "label": "Blue"
+  },
+  {
+    "key": "green",
+    "label": "Green"
+  },
+  {
+    "key": "hazel",
+    "label": "Hazel"
+  },
+  {
+    "key": "gray",
+    "label": "Gray"
+  },
+  {
+    "key": "amber",
+    "label": "Amber"
+  },
+  {
+    "key": "black",
+    "label": "Black"
+  },
+  {
+    "key": "heterochromia",
+    "label": "Heterochromia"
+  },
+  {
+    "key": "other",
+    "label": "Other"
+  }
+]
