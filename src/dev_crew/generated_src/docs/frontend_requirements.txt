@@ -1,0 +1,44 @@
+Frontend Requirements Document
+
+1. Color Schemes:
+- Primary Color: #3498db (Blue)
+- Secondary Color: #2ecc71 (Green)
+- Accent Color: #e74c3c (Red)
+- Background Color: #ecf0f1 (Light Grey)
+- Text Color: #2c3e50 (Dark Grey)
+- Branding Guidelines: Use the primary color for headers and important buttons, secondary color for secondary buttons and links, and accent color for alerts and notifications.
+
+2. Frontend Pages:
+  a. Home Page
+     - Layout: Hero section with featured drawings, categories section, latest drawings section, and footer.
+     - Navigation: Menu with links to Home, Shop, About Us, Contact Us, and Cart.
+     - Content: High-quality images of drawings, short descriptions, and call-to-action buttons.
+  b. Shop Page
+     - Layout: Grid of drawings with filters for categories, price range, and ratings.
+     - Navigation: Breadcrumbs for easy navigation, links to individual drawing pages.
+     - Content: Thumbnails of drawings, titles, prices, and ratings.
+  c. Drawing Detail Page
+     - Layout: Image carousel, drawing details, price, add to cart button, and related drawings section.
+     - Navigation: Back to shop link, breadcrumbs.
+     - Content: High-resolution images, detailed description, artist information, and reviews.
+  d. Cart Page
+     - Layout: List of added drawings, quantity selector, total price, and checkout button.
+     - Navigation: Links to continue shopping and proceed to checkout.
+     - Content: Drawing thumbnails, titles, prices, quantity inputs, and total amount.
+  e. Checkout Page
+     - Layout: Billing details form, order summary, payment options, and place order button.
+     - Navigation: Links to cart page and order confirmation.
+     - Content: Input fields for billing details, summary of ordered items, and payment options.
+  f. About Us Page
+     - Layout: Company history, mission statement, team members section, and footer.
+     - Navigation: Links to Home, Shop, and Contact Us.
+     - Content: Text, images of team members, and company milestones.
+  g. Contact Us Page
+     - Layout: Contact form, company address, map, and footer.
+     - Navigation: Links to Home, Shop, and About Us.
+     - Content: Input fields for name, email, message, and contact details.
+
+3. Content Requirements:
+- Text: Product descriptions, company information, blog posts, and FAQs.
+- Images: High-resolution images of drawings, team members, and office.
+- Videos: Tutorials, artist interviews, and promotional material.

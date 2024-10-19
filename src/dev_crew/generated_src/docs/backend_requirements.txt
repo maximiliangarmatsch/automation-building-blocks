@@ -1,0 +1,59 @@
+Backend Requirements Document
+
+1. Backend APIs:
+  a. Authentication API
+     - Endpoint: /api/auth/login
+     - Method: POST
+     - Inputs: {"email": "string", "password": "string"}
+     - Outputs: {"token": "string", "user": {"id": "int", "name": "string", "email": "string"}}
+     - Authentication: None (login)
+  b. Registration API
+     - Endpoint: /api/auth/register
+     - Method: POST
+     - Inputs: {"name": "string", "email": "string", "password": "string"}
+     - Outputs: {"token": "string", "user": {"id": "int", "name": "string", "email": "string"}}
+     - Authentication: None (registration)
+  c. Get Drawings API
+     - Endpoint: /api/drawings
+     - Method: GET
+     - Inputs: {"category": "string", "price_range": "string", "rating": "int"}
+     - Outputs: [{"id": "int", "title": "string", "price": "float", "rating": "int", "image_url": "string"}]
+     - Authentication: Optional (for personalized recommendations)
+  d. Drawing Detail API
+     - Endpoint: /api/drawings/:id
+     - Method: GET
+     - Inputs: None
+     - Outputs: {"id": "int", "title": "string", "description": "string", "price": "float", "rating": "int", "image_urls": ["string"], "artist": {"name": "string", "bio": "string"}, "reviews": [{"user": "string", "rating": "int", "comment": "string"}]}
+     - Authentication: Optional (for personalized recommendations)
+  e. Add to Cart API
+     - Endpoint: /api/cart
+     - Method: POST
+     - Inputs: {"drawing_id": "int", "quantity": "int"}
+     - Outputs: {"message": "string"}
+     - Authentication: Required
+  f. Get Cart API
+     - Endpoint: /api/cart
+     - Method: GET
+     - Inputs: None
+     - Outputs: [{"drawing_id": "int", "title": "string", "price": "float", "quantity": "int", "total_price": "float"}]
+     - Authentication: Required
+  g. Checkout API
+     - Endpoint: /api/checkout
+     - Method: POST
+     - Inputs: {"billing_details": {"name": "string", "address": "string", "city": "string", "country": "string", "postal_code": "string"}, "payment_info": {"card_number": "string", "expiry_date": "string", "cvv": "string"}}
+     - Outputs: {"order_id": "int", "message": "string"}
+     - Authentication: Required
+
+2. API Responses:
+  a. Success Response
+     - Status Code: 200
+     - Structure: {"status": "success", "data": {}}
+  b. Error Response
+     - Status Code: 4xx/5xx
+     - Structure: {"status": "error", "message": "string"}
+  c. Common Error Messages
+     - 400: "Bad Request"
+     - 401: "Unauthorized"
+     - 403: "Forbidden"
+     - 404: "Not Found"
+     - 500: "Internal Server Error"

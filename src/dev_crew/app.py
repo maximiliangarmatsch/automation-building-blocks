@@ -10,13 +10,11 @@ load_dotenv()
 os.environ["GROQ_API_KEY"] = os.getenv("GROQ_API_KEY")
 
 class WebsiteDevCrew:
-    """Website Development Crew"""
-
     def __init__(self, project_description):
         self.agents = Agents(project_description=project_description)
         self.tasks = Tasks(
             project_description=project_description,
-            output_directory="./generated_src",
+            output_directory="./old_generated_src",
         )
         self.project_description = project_description
 
