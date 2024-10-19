@@ -80,7 +80,6 @@ export function ScheduleCalendar() {
         setIsLoading(false);
       })
       .catch((error) => {
-        // ignore the error if it's caused by `controller.abort`
         if (error.name !== "AbortError") {
           throw error;
         }
@@ -91,14 +90,11 @@ export function ScheduleCalendar() {
 
   React.useEffect(() => {
     fetchHighlightedDays(initialValue);
-    // abort request on unmount
     return () => requestAbortController.current?.abort();
   }, []);
 
   const handleMonthChange = (date: Dayjs) => {
     if (requestAbortController.current) {
-      // make sure that you are aborting useless requests
-      // because it is possible to switch between months pretty quickly
       requestAbortController.current.abort();
     }
 

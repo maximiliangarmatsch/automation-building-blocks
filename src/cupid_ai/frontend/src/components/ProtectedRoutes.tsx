@@ -12,8 +12,6 @@ const PrivateRoute = ({ withUserProfile = true }: PrivateRouteInterface) => {
 
   const protection = withUserProfile ? auth?.user : auth?.uniqueID;
 
-  console.log(protection);
-
   if (!protection && !isLocalhost) return <Navigate to="/login" />;
   return <Outlet />;
 };
