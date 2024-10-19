@@ -1,0 +1,22 @@
+[
+    {
+        "key": "has_kids",
+        "label": "Has Kids"
+    },
+    {
+        "key": "soon",
+        "label": "Soon"
+    },
+    {
+        "key": "maybe",
+        "label": "Maybe"
+    },
+    {
+        "key": "dont_know",
+        "label": "Don't know"
+    },
+    {
+        "key": "far_future",
+        "label": "Far Future"
+    }
+]

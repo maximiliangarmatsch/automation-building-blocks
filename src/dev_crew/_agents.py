@@ -1,7 +1,12 @@
+import os
 from crewai import Agent
 from tools.file_write import FileWrite
+from langchain_groq import ChatGroq
+from dotenv import load_dotenv
+load_dotenv()
 
-
+api_key = os.getenv("GROQ_API_KEY")
+llm = ChatGroq(model = "llama-3.1-70b-versatile", api_key = api_key)
 class Agents:
     def __init__(self, project_description):
         self.project_description = project_description
@@ -13,6 +18,7 @@ class Agents:
             backstory="You are a senior project manager with a lot of experience in managing web development projects, with a track record of successful deliveries for various industries. You're skilled in agile methodologies and have a deep understanding of both technical and business aspects of web development.",
             allow_delegation=True,
             verbose=True,
+            llm = llm
         )
 
     def ui_ux_designer(self) -> Agent:
@@ -22,6 +28,7 @@ class Agents:
             backstory="You're a seasoned senior UI/UX designer with a lot of experience in creating intuitive web interfaces. You've worked on projects ranging from e-commerce platforms to complex web applications, and you're proficient in tools like Figma and Sketch.",
             allow_delegation=True,
             verbose=True,
+            llm = llm
         )
 
     def frontend_developer(self) -> Agent:
@@ -32,6 +39,7 @@ class Agents:
             allow_delegation=False,
             verbose=True,
             allow_code_execution=True,
+            llm = llm,
             tools=[FileWrite()],
         )
 
@@ -43,6 +51,7 @@ class Agents:
             allow_delegation=False,
             verbose=True,
             allow_code_execution=True,
+            llm = llm,
             tools=[FileWrite()],
         )
 
@@ -52,6 +61,7 @@ class Agents:
             goal=f"Produce engaging, SEO-optimized content that effectively communicates the value proposition of the {self.project_description}",
             backstory="You're a versatile writer with a lot of experience in creating web content across various industries. You have a strong understanding of SEO principles and user engagement metrics, and you're skilled in adapting your writing style to different target audiences and brand voices.",
             allow_delegation=True,
+            llm = llm,
             verbose=True,
         )
 
@@ -62,5 +72,6 @@ class Agents:
             backstory="You have a lot of experience in quality assurance for web applications. You're proficient in both manual and automated testing methodologies, with expertise in tools like Selenium and JMeter. You have a keen eye for detail and a passion for delivering high-quality, bug-free products.",
             allow_delegation=True,
             allow_code_execution=True,
+            llm = llm,
             verbose=True,
         )
