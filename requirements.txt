@@ -21,7 +21,8 @@ crewai_tools
 watchdog
 composio-crewai
 langchain-openai
-# here
+groq
+langchain-groq
 flask
 flask-cors
 asgiref
