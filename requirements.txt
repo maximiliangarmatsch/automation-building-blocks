@@ -23,3 +23,9 @@ composio-crewai
 langchain-openai
 groq
 langchain-groq
+flask
+flask-cors
+asgiref
+google-generativeai 
+python-dotenv
+openai

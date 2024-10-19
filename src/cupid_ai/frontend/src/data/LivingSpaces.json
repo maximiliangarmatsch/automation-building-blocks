@@ -1,0 +1,22 @@
+[
+    {
+        "key": "apartment",
+        "label": "Apartment"
+    },
+    {
+        "key": "house",
+        "label": "House"
+    },
+    {
+        "key": "dorm",
+        "label": "Dorm"
+    },
+    {
+        "key": "hotel",
+        "label": "Hotel"
+    },
+    {
+        "key": "other",
+        "label": "Other"
+    }
+]
