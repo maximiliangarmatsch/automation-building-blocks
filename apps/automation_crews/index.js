@@ -7,9 +7,9 @@ import OpenAI from "openai";
 dotenv.config();
 
 // Import module
-import { main_login } from "./src/utils/login_main_function.js";
-import { main_response } from "./src/utils/main_function_response_generation.js";
-import { logoutGmail } from "./src/utils/helper_functions.js";
+import { main_login } from "./components/puppeteer/login_automation.js";
+import { main_response } from "./components/puppeteer/automation_response.js";
+import { logoutGmail } from "./components/puppeteer/puppeteer_automation_helper.js";
 
 // Create OpenAI object
 const openai = new OpenAI({ apiKey: process.env.API_KEY });

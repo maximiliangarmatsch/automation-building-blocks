@@ -1,7 +1,7 @@
 import os
 import unittest
 from unittest.mock import patch
-from src.utils.helper.is_osx import is_osx
+from apps.automation_crews.utils.helper.is_osx import is_osx
 
 
 class TestIsOsx(unittest.TestCase):

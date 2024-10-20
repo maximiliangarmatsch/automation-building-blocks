@@ -11,8 +11,8 @@ from dotenv import load_dotenv
 import undetected_chromedriver as uc
 from webdriver_manager.chrome import ChromeDriverManager
 
-from src.utils.helper.is_osx import is_osx
-from src.components.pyautogui.detect_icon import detect_icon
+from apps.automation_crews.utils.helper.is_osx import is_osx
+from apps.automation_crews.components.pyautogui.detect_icon import detect_icon
 
 load_dotenv()
 BITWARDEN_EMAIL = os.getenv("BITWARDEN_EMAIL")
