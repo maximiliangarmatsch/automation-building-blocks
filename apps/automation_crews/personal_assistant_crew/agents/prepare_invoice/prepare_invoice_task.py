@@ -15,12 +15,13 @@ invoice_preparation_todo = """
     For cell {E16}, set {1234}
 """
 
+
 def invoice_preparation():
     task = Task(
         description=f"""Insert data in to the specific columns according to {invoice_preparation_todo}. 
         Data should be enter in mentioed columns.
         After data enter in each cell then execute {gSheet_script_path} script using SHELLTOOL_EXEC_COMMAND.""",
-        agent = prepare_invoice(),
-        expected_output = "Google sheet template with updated data and a draft email with all the mentioed instructions.",
+        agent=prepare_invoice(),
+        expected_output="Google sheet template with updated data and a draft email with all the mentioed instructions.",
     )
     return task
