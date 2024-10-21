@@ -1,4 +1,3 @@
-import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
@@ -6,20 +5,9 @@ import FormControl from "@mui/material/FormControl";
 import RadioGroup from "@mui/material/RadioGroup";
 import Radio from "@mui/material/Radio";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import Modal from "@mui/material/Modal";
 import Grid from "@mui/material/Grid2";
 import FormGroup from "@mui/material/FormGroup";
-const style = {
-  position: "absolute" as "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
+import { CustomModal } from "../CustomModal";
 
 interface FilterModalProps {
   onClose: () => void;
@@ -30,13 +18,13 @@ export function FilterModal(props: FilterModalProps) {
   const { onClose, open } = props;
 
   return (
-    <Modal
+    <CustomModal
       open={open}
       onClose={onClose}
       aria-labelledby="filter-modal-title"
       aria-describedby="filter-modal-description"
     >
-      <Box sx={style}>
+      <>
         <Typography
           id="filter-modal-title"
           variant="h6"
@@ -98,7 +86,7 @@ export function FilterModal(props: FilterModalProps) {
             </Paper>
           </Grid>
         </Grid>
-      </Box>
-    </Modal>
+      </>
+    </CustomModal>
   );
 }

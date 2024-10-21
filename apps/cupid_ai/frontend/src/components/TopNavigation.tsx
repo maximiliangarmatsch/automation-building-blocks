@@ -4,6 +4,7 @@ import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
+import Divider from "@mui/material/Divider";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { useAuth } from "../utils/contexts/AuthContext";
 
@@ -71,7 +72,11 @@ export function TopNavigation() {
                 onClose={handleClose}
               >
                 <MenuItem onClick={auth.logOut}>
-                  <p className="text-red-700	">Logout</p>
+                  <p className="text-red-700">Logout</p>
+                </MenuItem>
+                <Divider />
+                <MenuItem onClick={auth.deleteProfile}>
+                  <p className="text-red-700">Delete Profile</p>
                 </MenuItem>
               </Menu>
             </>
