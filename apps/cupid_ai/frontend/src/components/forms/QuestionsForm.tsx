@@ -1,29 +1,57 @@
-import { useForm } from "react-hook-form";
+import { useForm, FieldValues } from "react-hook-form";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import TextField from "@mui/material/TextField";
+import Box from "@mui/material/Box";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import LinearProgress from "@mui/material/LinearProgress";
 import Checkbox from "@mui/material/Checkbox";
-import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import api, { API_ENDPOINTS } from "../../services/api";
 import { useAuth } from "../../utils/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { PATHS } from "../../utils";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import questions from "../../data/questions.json";
+import FormLabel from "@mui/material/FormControl";
+import FormHelperText from "@mui/material/FormHelperText";
 
 export const QuestionForm = ({ data }) => {
-  const { handleSubmit, formState, register, setValue, getValues } = useForm({
-    defaultValues: data,
+  const [formData, setFormData] = useState(data);
+
+  const {
+    handleSubmit,
+    formState,
+    formState: { errors },
+    register,
+    setValue,
+    getValues,
+    trigger,
+  } = useForm({
+    defaultValues: formData,
   });
 
   const [currentStep, setCurrentStep] = useState(0);
   const auth = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Update react-hook-form values when formData changes
+    Object.entries(formData).forEach(([key, value]) => {
+      setValue(key, value);
+    });
+  }, [formData, setValue]);
+
+  const handleFieldChange = (fieldId, value) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      [fieldId]: value,
+    }));
+    setValue(fieldId, value); // Add this line to update react-hook-form
+    trigger(fieldId);
+  };
 
   const onSubmit = async (payload) => {
     const createProfileResponse = await api.post(
@@ -37,8 +65,13 @@ export const QuestionForm = ({ data }) => {
     }
   };
 
-  const handleNext = () => {
-    setCurrentStep((prev) => Math.min(prev + 1, questions.length - 1));
+  const handleNext = async () => {
+    const currentFields = questions[currentStep].fields;
+    const isStepValid = await trigger(currentFields.map((field) => field.id));
+
+    if (isStepValid) {
+      setCurrentStep((prev) => Math.min(prev + 1, questions.length - 1));
+    }
   };
 
   const handleBack = () => {
@@ -59,23 +92,35 @@ export const QuestionForm = ({ data }) => {
         switch (field.type) {
           case "text":
             return (
-              <TextField
-                key={field.id}
-                fullWidth
-                className="mt-2"
-                id={field.id}
-                label={field.label}
-                {...register(field.id, { required: field.required })}
-                sx={{ marginTop: 2 }}
-              />
+              <Box key={field.id} sx={{ marginBottom: 2 }}>
+                <TextField
+                  fullWidth
+                  id={field.id}
+                  label={field.label}
+                  value={formData[field.id] || ""}
+                  {...register(field.id, {
+                    required: field.required,
+                    onChange: (e) => {
+                      handleFieldChange(field.id, e.target.value);
+                    },
+                  })}
+                  error={!!errors[field.id]}
+                />
+                {errors[field.id] && (
+                  <FormHelperText error>
+                    {field.label} is required
+                  </FormHelperText>
+                )}
+              </Box>
             );
 
           case "radio":
             return (
-              <div key={field.id}>
-                <label>{field.label}</label>
+              <Box key={field.id} sx={{ marginBottom: 2 }}>
+                <FormLabel sx={{ marginBottom: 1 }}>{field.label}</FormLabel>
                 <RadioGroup
-                  {...register(field.id, { required: field.required })}
+                  value={formData[field.id] || ""}
+                  onChange={(e) => handleFieldChange(field.id, e.target.value)}
                 >
                   {field.options?.map((option) => (
                     <FormControlLabel
@@ -86,61 +131,95 @@ export const QuestionForm = ({ data }) => {
                     />
                   ))}
                 </RadioGroup>
-              </div>
+                <input
+                  type="hidden"
+                  {...register(field.id, {
+                    required: field.required
+                      ? `${field.label} is required`
+                      : false,
+                  })}
+                />
+                {errors[field.id] && (
+                  <FormHelperText error>
+                    {errors[field.id]?.message as string}
+                  </FormHelperText>
+                )}
+              </Box>
             );
 
           case "checkbox":
             return (
-              <div key={field.id}>
-                <label>{field.label}</label>
+              <Box key={field.id} sx={{ marginBottom: 2 }}>
+                <FormLabel sx={{ marginBottom: 1 }}>{field.label}</FormLabel>
                 {field.options?.map((option) => (
                   <FormControlLabel
                     key={option.value}
                     control={
                       <Checkbox
-                        {...register(field.id)}
+                        checked={(formData[field.id] || []).includes(
+                          option.value
+                        )}
+                        {...register(field.id, {
+                          validate: (value) =>
+                            !field.required ||
+                            value.length > 0 ||
+                            `${field.label} is required`,
+                          onChange: ({ target }) => {
+                            const selectedValues = formData[field.id] || [];
+                            const newValues = target.checked
+                              ? [...selectedValues, option.value]
+                              : selectedValues.filter(
+                                  (val) => val !== option.value
+                                );
+                            handleFieldChange(field.id, newValues);
+                          },
+                        })}
                         value={option.value}
-                        onChange={({ target }) => {
-                          const selectedValues = getValues(field.id) || [];
-                          if (target.checked) {
-                            setValue(field.id, [
-                              ...selectedValues,
-                              option.value,
-                            ]);
-                          } else {
-                            setValue(
-                              field.id,
-                              selectedValues.filter(
-                                (val) => val !== option.value
-                              )
-                            );
-                          }
-                        }}
                       />
                     }
                     label={option.label}
                   />
                 ))}
-              </div>
+                {errors[field.id] && (
+                  <FormHelperText error>
+                    {errors[field.id]?.message as string}
+                  </FormHelperText>
+                )}
+              </Box>
             );
 
           case "select":
             return (
-              <Select
-                key={field.id}
-                fullWidth
-                className="mt-2"
-                id={field.id}
-                label={field.label}
-                {...register(field.id, { required: field.required })}
-                sx={{ marginTop: 2 }}
-              >
-                {field.options?.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </Select>
+              <Box key={field.id} sx={{ marginBottom: 2 }}>
+                <TextField
+                  select
+                  fullWidth
+                  id={field.id}
+                  label={field.label}
+                  value={formData[field.id] || ""}
+                  {...register(field.id, {
+                    validate: (value) =>
+                      !field.required ||
+                      value !== "" ||
+                      `${field.label} is required`,
+                    onChange: (e) => {
+                      handleFieldChange(field.id, e.target.value);
+                    },
+                  })}
+                  error={!!errors[field.id]}
+                >
+                  {field.options?.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </TextField>
+                {errors[field.id] && (
+                  <FormHelperText error>
+                    {errors[field.id]?.message as string}
+                  </FormHelperText>
+                )}
+              </Box>
             );
 
           default:
@@ -164,6 +243,7 @@ export const QuestionForm = ({ data }) => {
             onClick={handleNext}
             variant="contained"
             style={{ marginTop: "20px" }}
+            disabled={formState.isSubmitting}
           >
             Next
           </Button>

@@ -3,15 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { PATHS } from "../../utils";
 import api, { API_ENDPOINTS } from "../../services/api";
 
-interface User {
-  // Define user properties here
-}
+type User = Record<string, any>;
 
 interface AuthContextType {
   user: User | null;
   uniqueID: string;
   loginAction: (data: LoginData, callback: () => void) => Promise<void>;
   logOut: () => void;
+  deleteProfile: () => Promise<void>;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
 }
 
@@ -78,11 +77,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     navigate(PATHS.LOGIN);
   }, [navigate]);
 
+  const deleteProfile = useCallback(async () => {
+    if (user) {
+      const response = await api.delete(API_ENDPOINTS.DELETE_PROFILE, {
+        data: {
+          email: user?.email,
+        },
+      });
+
+      if (response.data) {
+        setUniqueID("");
+        localStorage.removeItem("unique_id");
+        setUser(null);
+      }
+    }
+  }, [user, logOut]);
+
   const value = {
     uniqueID,
     user,
     loginAction,
     logOut,
+    deleteProfile,
     setUser,
   };
 
