@@ -3,6 +3,7 @@
 ## Tools & functions
 
 - GPT4 Vision API
+- Gemini vision API
 - Puppeteer
 
 ## Use Cases
@@ -39,7 +40,7 @@ python3 -m venv venv
        OR
 python -m venv venv
 source venv/bin/activate
-pip install -r requirements.txt
+pip install -r apps/automation_crews/requirements.txt
 ```
 
 ### Create ./.env file
@@ -71,17 +72,18 @@ python start_discord.py
 #### replace the keys in pyautogui.gmail
 
 ```shell
-python3 ./src/financial_crew/run_crew.py
+python3 ./apps/automation_crews/financial_crew/run_crew.py
       OR
-python ./src/financial_crew/run_crew.py
+python ./apps/automation_crews/financial_crew/run_crew.py
 
 ```
 
-### Start "Website automation" with Puppetee
+### Start "Website automation" with Puppeteer
 
 ```shell
 npm install
-node ./utils/vision_crew_ai.js
+cd ./apps/automation_crews
+node index.js
 ```
 
 ## Other
@@ -95,11 +97,11 @@ $ deactivate
 ### Start Only "Dev Crew"
 ```shell
 source venv/bin/activate
-cd src/dev_crew
+cd apps/automation_crews/dev_crew
 python app.py
 ```
 Example prompt "an ecommerce website for drawings"
-- Output directory is in `src/dev_crew/generated_src`
+- Output directory is in `apps/automation_crews/dev_crew/generated_src`
 - `allow_code_excecution` is activated in file "...". It allows crewAI to "test" code on the fly
 
 # start Only Personal Assistant Crew
@@ -140,4 +142,28 @@ MODEL = gpt-4o-mini
 python run_crew.py
 ```
 
+## Steps to Run any crew with "/"command
+
+### 1. Navigate to the Project Directory
+
+Change to the to automation_crews:
+```shell
+cd apps/automation_crews
+```
+
+### 2. Run the python script
+```shell
+python start_discord.py
+```
+### 3. Ask to assitant crew from discord
+
+```
+!assistant_crew your message here
+```
+
+### 4. Ask to financial crew from discord
+
+```
+!financial_crew your message here
+```
 ## See /docs for more

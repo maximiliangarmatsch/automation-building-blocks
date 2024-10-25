@@ -8,13 +8,17 @@ from discord import Intents
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
+assets_folder_path = "./financial_crew/assets"
+os.makedirs(assets_folder_path, exist_ok=True)
 # Import your modules here
 import components.pyautogui.gmail as gmail
 import financial_crew.run_crew as crew
+import personal_assistant_crew.run_crew as assistant_crew
 from components.discord.discord_helper_function import (
     send_message,
     run_finance_crew,
     train_finance_crew,
+    run_assistant_crew,
 )
 
 # STEP 0: LOAD OUR DISCORD_TOKEN FROM .env FILE
@@ -56,12 +60,19 @@ async def on_message(message: discord.Message) -> None:
         channel = str(message.channel)
         print(f'[{channel}] {username}: "{user_message}"')
         await send_message(message, user_message[len("!crew") :].strip(), crew, gmail)
-    elif user_message.startswith("!run"):
+    elif user_message.startswith("!finance_crew"):
         username = str(message.author)
         channel = str(message.channel)
         print(f'[{channel}] {username}: "{user_message}"')
         await run_finance_crew(
-            message, user_message[len("!run") :].strip(), crew, gmail
+            message, user_message[len("!finance_crew") :].strip(), crew, gmail
+        )
+    elif user_message.startswith("!assistant_crew"):
+        username = str(message.author)
+        channel = str(message.channel)
+        print(f'[{channel}] {username}: "{user_message}"')
+        await run_assistant_crew(
+            message, user_message[len("!assistant_crew") :].strip(), assistant_crew
         )
     elif user_message.startswith("!train"):
         username = str(message.author)
