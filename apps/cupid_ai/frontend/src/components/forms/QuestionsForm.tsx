@@ -54,9 +54,17 @@ export const QuestionForm = ({ data }) => {
   };
 
   const onSubmit = async (payload) => {
+    const formattedPayload = {
+      ...payload,
+      height: Number(payload.height),
+      weight: Number(payload.weight),
+      age: Number(payload.age),
+      kids: Number(payload.kids),
+    };
+
     const createProfileResponse = await api.post(
       API_ENDPOINTS.CREATE_PROFILE,
-      payload
+      formattedPayload
     );
 
     if (createProfileResponse.data?.profile_id) {

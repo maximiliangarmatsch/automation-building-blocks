@@ -23,7 +23,7 @@ export function BottomNavigationFilterButton() {
         sx={{
           position: "absolute",
           zIndex: 9999,
-          transform: "translateY(-50%)",
+          transform: "translateY(-25%)",
           left: 0,
           right: 0,
           margin: "0 auto",

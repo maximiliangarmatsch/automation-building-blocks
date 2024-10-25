@@ -28,7 +28,7 @@ interface AuthFormProps {
 }
 
 export function AuthForm({ type = "login" }: AuthFormProps) {
-  const [showUploadMedia, setShowUploadMedia] = useState(true);
+  const [showUploadMedia, setShowUploadMedia] = useState(false);
 
   const auth = useAuth();
   const onSubmit = async (values) => {
@@ -108,7 +108,6 @@ export function AuthForm({ type = "login" }: AuthFormProps) {
       <AttractivenessModal
         open={showUploadMedia}
         setOpen={setShowUploadMedia}
-        onClose={() => setShowUploadMedia(false)}
       />
     </>
   );

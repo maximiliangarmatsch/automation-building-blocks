@@ -28,17 +28,44 @@
   {
     "fields": [
       {
-        "type": "checkbox",
-        "id": "interests",
-        "label": "Select your interests",
-        "required": true,
-        "options": [
-          { "value": "sports", "label": "Sports" },
-          { "value": "music", "label": "Music" },
-          { "value": "travel", "label": "Travel" },
-          { "value": "cooking", "label": "Cooking" },
-          { "value": "reading", "label": "Reading" }
-        ]
+        "type": "text",
+        "id": "occupation",
+        "label": "Occupation",
+        "required": true
+      },
+      {
+        "type": "text",
+        "id": "languages",
+        "label": "Languages",
+        "required": true
+      },
+      {
+        "type": "text",
+        "id": "bmi",
+        "label": "BMI",
+        "required": true
+      },
+      {
+        "type": "text",
+        "id": "body_shape",
+        "label": "Body Shape",
+        "required": true
+      }
+    ]
+  },
+  {
+    "fields": [
+      {
+        "type": "text",
+        "id": "city",
+        "label": "City",
+        "required": true
+      },
+      {
+        "type": "text",
+        "id": "zipcode",
+        "label": "Zipcode",
+        "required": true
       },
       {
         "type": "select",
@@ -55,15 +82,9 @@
   {
     "fields": [
       {
-        "type": "text",
-        "id": "living_address",
-        "label": "Living Address",
-        "required": true
-      },
-      {
         "type": "select",
-        "id": "apartment_style",
-        "label": "Apartment Style",
+        "id": "living_space",
+        "label": "Living Space",
         "required": true,
         "options": [
           { "value": "studio", "label": "Studio" },
@@ -71,12 +92,6 @@
           { "value": "2br", "label": "2 Bedrooms" },
           { "value": "3br_plus", "label": "3+ Bedrooms" }
         ]
-      },
-      {
-        "type": "text",
-        "id": "roommates",
-        "label": "Number of Roommates",
-        "required": true
       }
     ]
   },
@@ -138,66 +153,20 @@
     "fields": [
       {
         "type": "text",
-        "id": "dept",
-        "label": "Department",
-        "required": true
-      },
-      {
-        "type": "text",
-        "id": "assets",
-        "label": "Assets",
-        "required": true
-      },
-      {
-        "type": "text",
-        "id": "income_this_year",
-        "label": "Income This Year",
-        "required": true
-      },
-      {
-        "type": "text",
-        "id": "income_next_year",
-        "label": "Income Next Year",
-        "required": true
-      },
-      {
-        "type": "text",
-        "id": "income_over_next_year",
-        "label": "Income Over Next Year",
-        "required": true
-      }
-    ]
-  },
-  {
-    "fields": [
-      {
-        "type": "text",
-        "id": "wealth_goals",
-        "label": "Wealth Goals",
-        "required": true
-      },
-      {
-        "type": "text",
         "id": "kids",
         "label": "Number of Kids",
         "required": true
       },
       {
-        "type": "checkbox",
+        "type": "text",
         "id": "pets",
         "label": "Pets",
-        "required": true,
-        "options": [
-          { "value": "dog", "label": "Dog" },
-          { "value": "cat", "label": "Cat" },
-          { "value": "fish", "label": "Fish" },
-          { "value": "other", "label": "Other" }
-        ]
+        "required": true
       },
       {
         "type": "select",
-        "id": "living",
-        "label": "Living Situation",
+        "id": "living_mates",
+        "label": "Living Mates",
         "required": true,
         "options": [
           { "value": "alone", "label": "Living Alone" },
@@ -280,32 +249,14 @@
     "fields": [
       {
         "type": "text",
-        "id": "q1",
-        "label": "Question 1",
+        "id": "sports",
+        "label": "Sports",
         "required": true
       },
       {
         "type": "text",
-        "id": "q2",
-        "label": "Question 2",
-        "required": true
-      },
-      {
-        "type": "text",
-        "id": "q3",
-        "label": "Question 3",
-        "required": true
-      },
-      {
-        "type": "text",
-        "id": "q4",
-        "label": "Question 4",
-        "required": true
-      },
-      {
-        "type": "text",
-        "id": "q5",
-        "label": "Question 5",
+        "id": "hobbies",
+        "label": "Hobbies",
         "required": true
       }
     ]
@@ -313,34 +264,105 @@
   {
     "fields": [
       {
-        "type": "text",
-        "id": "q6",
-        "label": "Question 6",
-        "required": true
+        "type": "select",
+        "id": "overall_health",
+        "label": "Overall Health",
+        "required": true,
+        "options": [
+          { "value": "excellent", "label": "Excellent" },
+          { "value": "good", "label": "Good" },
+          { "value": "fair", "label": "Fair" },
+          { "value": "poor", "label": "Poor" }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "skin_health",
+        "label": "Skin Health",
+        "required": true,
+        "options": [
+          { "value": "excellent", "label": "Excellent" },
+          { "value": "good", "label": "Good" },
+          { "value": "fair", "label": "Fair" },
+          { "value": "poor", "label": "Poor" }
+        ]
+      },
+      {
+        "type": "radio",
+        "id": "smoking",
+        "label": "Smoking",
+        "required": true,
+        "options": [
+          { "value": "yes", "label": "Yes" },
+          { "value": "no", "label": "No" }
+        ]
+      },
+      {
+        "type": "radio",
+        "id": "drinking",
+        "label": "Drinking",
+        "required": true,
+        "options": [
+          { "value": "yes", "label": "Yes" },
+          { "value": "no", "label": "No" }
+        ]
+      },
+      {
+        "type": "radio",
+        "id": "drugs",
+        "label": "Drugs",
+        "required": true,
+        "options": [
+          { "value": "yes", "label": "Yes" },
+          { "value": "no", "label": "No" }
+        ]
+      }
+    ]
+  },
+  {
+    "fields": [
+      {
+        "type": "select",
+        "id": "financial_situation",
+        "label": "Financial Situation",
+        "required": true,
+        "options": [
+          { "value": "comfortable", "label": "Comfortable" },
+          { "value": "stable", "label": "Stable" },
+          { "value": "struggling", "label": "Struggling" }
+        ]
+      }
+    ]
+  },
+  {
+    "fields": [
+      {
+        "type": "select",
+        "id": "dating_experience",
+        "label": "Dating Experience",
+        "required": true,
+        "options": [
+          { "value": "extensive", "label": "Extensive" },
+          { "value": "moderate", "label": "Moderate" },
+          { "value": "limited", "label": "Limited" }
+        ]
       },
       {
         "type": "text",
-        "id": "q7",
-        "label": "Question 7",
-        "required": true
+        "id": "trauma",
+        "label": "Trauma",
+        "required": false
       },
       {
-        "type": "text",
-        "id": "q8",
-        "label": "Question 8",
-        "required": true
-      },
-      {
-        "type": "text",
-        "id": "q9",
-        "label": "Question 9",
-        "required": true
-      },
-      {
-        "type": "text",
-        "id": "q10",
-        "label": "Question 10",
-        "required": true
+        "type": "select",
+        "id": "legal_status",
+        "label": "Legal Status",
+        "required": true,
+        "options": [
+          { "value": "clean", "label": "Clean" },
+          { "value": "minor_offenses", "label": "Minor Offenses" },
+          { "value": "major_offenses", "label": "Major Offenses" }
+        ]
       }
     ]
   }

@@ -34,9 +34,9 @@ export function BottomNavigationMatchButtons() {
         sx={{
           position: "absolute",
           zIndex: 9999,
-          transform: "translateY(-50%)",
+          transform: "translateY(-25%)",
           left: 0,
-          right: 85,
+          right: 80,
           margin: "0 auto",
         }}
       >
@@ -49,7 +49,7 @@ export function BottomNavigationMatchButtons() {
         sx={{
           position: "absolute",
           zIndex: 9999,
-          transform: "translateY(-50%)",
+          transform: "translateY(-25%)",
           left: 0,
           right: -85,
           margin: "0 auto",

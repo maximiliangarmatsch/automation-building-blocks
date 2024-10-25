@@ -12,7 +12,7 @@ interface AttractivenessModalProps extends Omit<ModalProps, "children"> {
 }
 
 export const AttractivenessModal = (props: AttractivenessModalProps) => {
-  const { onClose, open, setOpen } = props;
+  const { open, setOpen } = props;
 
   const [step, setStep] = useState(1);
   const [data, setData] = useState<Record<string, any>>({});
@@ -20,7 +20,6 @@ export const AttractivenessModal = (props: AttractivenessModalProps) => {
   return (
     <CustomModal
       open={open}
-      onClose={onClose}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >

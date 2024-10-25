@@ -13,11 +13,16 @@ import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import { UserDataPoints } from "../data/UserDataPoints";
 import ProfileHeader from "../components/ProfileHeader";
 import { MockUser } from "../data/MockUser";
+import { useAuth } from "../utils/contexts/AuthContext";
 
 export const Profile = () => {
   // eslint-disable-next-line
   const [editMode, setEditMode] = useState(false);
   const user = MockUser;
+
+  const auth = useAuth();
+  const user1 = auth?.user;
+  console.log(user1);
 
   return (
     <>
