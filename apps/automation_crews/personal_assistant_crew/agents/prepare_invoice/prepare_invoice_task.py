@@ -1,5 +1,7 @@
 from crewai import Task
-from agents.prepare_invoice.prepare_invoice_agent import prepare_invoice
+from personal_assistant_crew.agents.prepare_invoice.prepare_invoice_agent import (
+    prepare_invoice,
+)
 
 
 gSheet_script_path = "./components/gSheet_script_executor.py"
