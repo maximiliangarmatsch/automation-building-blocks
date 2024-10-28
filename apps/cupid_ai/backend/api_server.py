@@ -2,9 +2,6 @@ import os
 from flask import Flask
 from flask_cors import CORS
 from asgiref.wsgi import WsgiToAsgi
-from dotenv import load_dotenv
-
-load_dotenv()
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -18,7 +15,6 @@ api_cors = {
 MEDIA_FOLDER = "uploads"
 if not os.path.exists(MEDIA_FOLDER):
     os.makedirs(MEDIA_FOLDER)
-api_key = os.getenv("GOOGLE_API_KEY")
 
 from api_helpers.auth.auth_api import auth
 from api_helpers.create_profile.create_profile_api import create_profile
