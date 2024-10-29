@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const BASE_API = "http://3.87.57.146:8000";
+export const BASE_API = "http://127.0.0.1:8000";
 
 export const API_ENDPOINTS = {
   AUTH: "/auth",

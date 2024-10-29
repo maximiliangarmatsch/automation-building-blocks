@@ -12,17 +12,16 @@ import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import { UserDataPoints } from "../data/UserDataPoints";
 import ProfileHeader from "../components/ProfileHeader";
-import { MockUser } from "../data/MockUser";
 import { useAuth } from "../utils/contexts/AuthContext";
 
 export const Profile = () => {
-  // eslint-disable-next-line
   const [editMode, setEditMode] = useState(false);
-  const user = MockUser;
-
   const auth = useAuth();
-  const user1 = auth?.user;
-  console.log(user1);
+  const user = auth?.user;
+
+  if (!user) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>
@@ -31,8 +30,6 @@ export const Profile = () => {
         <Grid size={12}>
           <BasicInformation user={user} editMode={editMode} />
           <GeneralQuestions user={user} editMode={editMode} />
-          <SpecificQuestions user={user} editMode={editMode} />
-          <TheirQuestions user={user} editMode={editMode} />
           <PartnershipPreferences user={user} editMode={editMode} />
         </Grid>
       </Grid>
@@ -52,7 +49,6 @@ const generateListItem = ({ dataPoint, value, editMode }) => {
     </>
   ) : null;
 
-  // If the dataPoint is a question, we want to display the question and answer
   if (dataPoint.question) {
     return (
       <ListItem key={dataPoint.id} secondaryAction={secondaryAction}>
@@ -64,7 +60,6 @@ const generateListItem = ({ dataPoint, value, editMode }) => {
     );
   }
 
-  // If the dataPoint is a dataPoint, we want to display the label and value
   return (
     <ListItem key={dataPoint.name} secondaryAction={secondaryAction}>
       <ListItemText primary={dataPoint.label} secondary={dataPoint.value} />
@@ -73,6 +68,10 @@ const generateListItem = ({ dataPoint, value, editMode }) => {
 };
 
 const BasicInformation = ({ user, editMode }) => {
+  if (!user) {
+    return null;
+  }
+
   return (
     <Accordion>
       <AccordionSummary
@@ -87,9 +86,9 @@ const BasicInformation = ({ user, editMode }) => {
           {UserDataPoints.filter((dataPoint) =>
             [
               "languages",
-              "location",
+              "city",
               "occupation",
-              "living_situation",
+              "living_space",
               "living_mates",
               "smoking",
               "drinking",
@@ -97,7 +96,7 @@ const BasicInformation = ({ user, editMode }) => {
           ).map((dataPoint) =>
             generateListItem({
               dataPoint,
-              value: user[dataPoint.name],
+              value: user[dataPoint.name] || "Not specified",
               editMode,
             })
           )}
@@ -108,6 +107,8 @@ const BasicInformation = ({ user, editMode }) => {
 };
 
 export const GeneralQuestions = ({ user, editMode }) => {
+  const questions = user?.user_general_questions || [];
+
   return (
     <Accordion>
       <AccordionSummary
@@ -119,10 +120,14 @@ export const GeneralQuestions = ({ user, editMode }) => {
       </AccordionSummary>
       <AccordionDetails>
         <List>
-          {user.generalQuestions.map((question) =>
+          {questions.map((question, index) =>
             generateListItem({
-              dataPoint: question,
-              value: question.answer,
+              dataPoint: {
+                id: index,
+                question: "Personal Trait",
+                answer: question,
+              },
+              value: question,
               editMode,
             })
           )}
@@ -133,57 +138,18 @@ export const GeneralQuestions = ({ user, editMode }) => {
 };
 
 export const SpecificQuestions = ({ user, editMode }) => {
-  return (
-    <Accordion>
-      <AccordionSummary
-        expandIcon={<ExpandMoreIcon />}
-        aria-controls="panel4-content"
-        id="panel4-header"
-      >
-        Questions for {user.gender[0]}
-        {user.age}-{user.occupation}
-      </AccordionSummary>
-      <AccordionDetails>
-        <List>
-          {user.specificQuestions.map((question) =>
-            generateListItem({
-              dataPoint: question,
-              value: question.answer,
-              editMode,
-            })
-          )}
-        </List>
-      </AccordionDetails>
-    </Accordion>
-  );
+  return null;
 };
 
 export const TheirQuestions = ({ user, editMode }) => {
-  return (
-    <Accordion>
-      <AccordionSummary
-        expandIcon={<ExpandMoreIcon />}
-        aria-controls="panel5-content"
-        id="panel5-header"
-      >
-        Questions for you
-      </AccordionSummary>
-      <AccordionDetails>
-        <List>
-          {user.theirQuestions.map((question) =>
-            generateListItem({
-              dataPoint: question,
-              value: question.answer,
-              editMode,
-            })
-          )}
-        </List>
-      </AccordionDetails>
-    </Accordion>
-  );
+  return null;
 };
 
 const PartnershipPreferences = ({ user, editMode }) => {
+  if (!user) {
+    return null;
+  }
+
   return (
     <Accordion>
       <AccordionSummary
@@ -197,23 +163,23 @@ const PartnershipPreferences = ({ user, editMode }) => {
         <List>
           {UserDataPoints.filter((dataPoint) =>
             [
-              "familyPlanning",
-              "kidsWanted",
+              "family_planning",
+              "kids",
               "pets",
-              "livingPreference",
-              "wealthSplitting",
-              "effortSplitting",
+              "living_space",
+              "wealth_splitting",
+              "effort_splitting",
               "religion",
               "politics",
-              "existingFamilyStructure",
-              "retirementPlans",
-              "workingHours",
-              "otherCommitments",
+              "existing_family_structure",
+              "retirement",
+              "working_hours",
+              "other_commitments",
             ].includes(dataPoint.name)
           ).map((dataPoint) =>
             generateListItem({
-              dataPoint: dataPoint,
-              value: user[dataPoint.name],
+              dataPoint,
+              value: user[dataPoint.name] || "Not specified",
               editMode,
             })
           )}
