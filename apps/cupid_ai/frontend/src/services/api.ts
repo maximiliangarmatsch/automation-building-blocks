@@ -9,6 +9,7 @@ export const API_ENDPOINTS = {
   EXTRACT_FEATURES: "/extract_features",
   CREATE_PROFILE: "/create_profile",
   DELETE_PROFILE: "/delete_user",
+  GET_MATCHES: "/",
 };
 
 export default axios.create({

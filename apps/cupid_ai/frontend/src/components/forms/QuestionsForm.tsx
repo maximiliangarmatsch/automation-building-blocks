@@ -69,7 +69,7 @@ export const QuestionForm = ({ data }) => {
 
     if (createProfileResponse.data?.profile_id) {
       auth?.setUser && auth.setUser(data);
-      navigate(PATHS.PROFILE);
+      navigate(PATHS.MATCHES);
     }
   };
 

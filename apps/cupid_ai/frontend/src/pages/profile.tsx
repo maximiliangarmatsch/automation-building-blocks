@@ -20,7 +20,7 @@ export const Profile = () => {
   const user = auth?.user;
 
   if (!user) {
-    return <div>Loading...</div>;
+    return null;
   }
 
   return (
