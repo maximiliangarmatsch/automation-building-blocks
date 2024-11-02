@@ -4,11 +4,8 @@ from crewai import Agent
 from tools.file_write import FileWrite
 from tools.file_read import FileRead
 from langchain_groq import ChatGroq
-from dotenv import load_dotenv
-load_dotenv()
+from dev_crew.llm import llm
 
-api_key = os.getenv("GROQ_API_KEY")
-llm = ChatGroq(model = "llama-3.1-70b-versatile", api_key = api_key)
 
 def database_developer() -> Agent:
     return Agent(
@@ -33,6 +30,6 @@ def database_developer() -> Agent:
         ),
         allow_delegation=True,
         verbose=True,
-        llm = llm,
+        llm=llm,
         tools=[FileWrite(), FileRead()],
     )

@@ -1,13 +1,9 @@
 import os
 from crewai import Crew, Process
-from _agents import Agents
-from tasks import Tasks
-from dotenv import load_dotenv
+from dev_crew._agents import Agents
+from dev_crew.tasks import Tasks
+from dev_crew.llm import llm
 
-load_dotenv()
-
-# os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
-os.environ["GROQ_API_KEY"] = os.getenv("GROQ_API_KEY")
 
 class WebsiteDevCrew:
     def __init__(self, project_description):
@@ -45,9 +41,9 @@ class WebsiteDevCrew:
         return result
 
 
-if __name__ == "__main__":
-    print("==========================================")
-    project = input("What Project would you like to build: \n")
-    website_crew = WebsiteDevCrew(project_description=project)
-    result = website_crew.run()
-    print(result)
+# if __name__ == "__main__":
+#     print("==========================================")
+#     project = input("What Project would you like to build: \n")
+#     website_crew = WebsiteDevCrew(project_description=project)
+#     result = website_crew.run()
+#     print(result)

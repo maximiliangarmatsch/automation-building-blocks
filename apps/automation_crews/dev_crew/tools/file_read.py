@@ -3,8 +3,8 @@ from langchain.tools import BaseTool
 
 
 class FileRead(BaseTool):
-    name = "File Read Tool"
-    description = "Use this tool to read content from a file"
+    name: str = "File_Read_Tool"
+    description: str = "Use this tool to read content from a file"
 
     def _run(self, file_path: str) -> str:
         if not os.path.exists(file_path):

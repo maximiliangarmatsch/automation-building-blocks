@@ -4,10 +4,12 @@ import discord
 async def send_message(
     message: discord.Message, user_message: str, crew, gmail
 ) -> None:
+
     if not user_message:
-        print("(Message was empty because intents were not enabled probably)")
         return
+
     is_private = user_message[0] == "?"
+
     if is_private:
         user_message = user_message[1:]
     try:
@@ -20,6 +22,7 @@ async def send_message(
                         await message.author.send(chunk)
                     else:
                         await message.channel.send(chunk)
+
             elif "Something Went Wrong!" in response:
                 chunks = [response[i : i + 2000] for i in range(0, len(response), 2000)]
                 for chunk in chunks:
@@ -27,6 +30,7 @@ async def send_message(
                         await message.author.send(chunk)
                     else:
                         await message.channel.send(chunk)
+
             else:
                 crew_response = str(crew.run_financial_crew())
                 response = (
@@ -36,7 +40,9 @@ async def send_message(
                     + "\n"
                     + crew_response
                 )
+
                 chunks = [response[i : i + 2000] for i in range(0, len(response), 2000)]
+
                 for chunk in chunks:
                     if is_private:
                         await message.author.send(chunk)
@@ -49,10 +55,12 @@ async def send_message(
 async def run_finance_crew(
     message: discord.Message, user_message: str, crew, gmail
 ) -> None:
+
     if not user_message:
-        print("(Message was empty because intents were not enabled probably)")
         return
+
     is_private = user_message[0] == "?"
+
     if is_private:
         user_message = user_message[1:]
     try:
@@ -71,10 +79,12 @@ async def run_finance_crew(
 async def run_assistant_crew(
     message: discord.Message, user_message: str, assistant_crew
 ) -> None:
+
     if not user_message:
-        print("(Message was empty because intents were not enabled probably)")
         return
+
     is_private = user_message[0] == "?"
+
     if is_private:
         user_message = user_message[1:]
     try:
@@ -90,13 +100,40 @@ async def run_assistant_crew(
         print(f"An error occurred while sending a message: {e}")
 
 
+async def run_dev_crew(
+    message: discord.Message, user_message: str, WebsiteDevCrew
+) -> None:
+
+    if not user_message:
+        return
+
+    is_private = user_message[0] == "?"
+
+    if is_private:
+        user_message = user_message[1:]
+    try:
+        website_crew = WebsiteDevCrew(project_description=user_message)
+        crew_response = website_crew.run()
+        response = crew_response
+        chunks = [response[i : i + 2000] for i in range(0, len(response), 2000)]
+        for chunk in chunks:
+            if is_private:
+                await message.author.send(chunk)
+            else:
+                await message.channel.send(chunk)
+    except Exception as e:
+        print(f"An error occurred while sending a message: {e}")
+
+
 async def train_finance_crew(
     message: discord.Message, user_message: str, crew, gmail
 ) -> None:
+
     if not user_message:
-        print("(Message was empty because intents were not enabled probably)")
         return
+
     is_private = user_message[0] == "?"
+
     if is_private:
         user_message = user_message[1:]
     try:

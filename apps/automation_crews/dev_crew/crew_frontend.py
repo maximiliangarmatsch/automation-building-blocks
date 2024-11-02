@@ -1,7 +1,7 @@
 from crewai import Crew
 
-from agents.frontend_developer.frontend_developer import frontend_developer
-from agents.frontend_developer.develop_frontend import develop_frontend
+from dev_crew.agents.frontend_developer.frontend_developer import frontend_developer
+from dev_crew.agents.frontend_developer.develop_frontend import develop_frontend
 
 
 class FrontendCrew:
@@ -25,9 +25,8 @@ class FrontendCrew:
         return result
 
 
-if __name__ == "__main__":
-    print("==========================================")
-    frontend_crew = FrontendCrew()
-    result = frontend_crew.run()
-    print(result)
- 
+# if __name__ == "__main__":
+#     print("==========================================")
+#     frontend_crew = FrontendCrew()
+#     result = frontend_crew.run()
+#     print(result)

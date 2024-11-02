@@ -14,11 +14,16 @@ os.makedirs(assets_folder_path, exist_ok=True)
 import components.pyautogui.gmail as gmail
 import financial_crew.run_crew as crew
 import personal_assistant_crew.run_crew as assistant_crew
+
+from dev_crew.app import WebsiteDevCrew
+from dev_crew.crew_business import BusinessCrew
+from dev_crew.crew_frontend import FrontendCrew
 from components.discord.discord_helper_function import (
     send_message,
     run_finance_crew,
     train_finance_crew,
     run_assistant_crew,
+    run_dev_crew,
 )
 
 # STEP 0: LOAD OUR DISCORD_TOKEN FROM .env FILE
@@ -74,6 +79,14 @@ async def on_message(message: discord.Message) -> None:
         await run_assistant_crew(
             message, user_message[len("!assistant_crew") :].strip(), assistant_crew
         )
+    elif user_message.startswith("!dev_crew"):
+        username = str(message.author)
+        channel = str(message.channel)
+        print(f'[{channel}] {username}: "{user_message}"')
+        await run_dev_crew(
+            message, user_message[len("!dev_crew") :].strip(), WebsiteDevCrew
+        )
+
     elif user_message.startswith("!train"):
         username = str(message.author)
         channel = str(message.channel)
