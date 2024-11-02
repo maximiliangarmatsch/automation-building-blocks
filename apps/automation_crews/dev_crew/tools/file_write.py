@@ -3,8 +3,8 @@ from langchain.tools import BaseTool
 
 
 class FileWrite(BaseTool):
-    name = "File Write Tool"
-    description = "Use this tool to write content to a file"
+    name: str = "File_Write_Tool"
+    description: str = "Use this tool to write content to a file"
 
     def _run(self, file_path: str, content: str) -> str:
         os.makedirs(os.path.dirname(file_path), exist_ok=True)

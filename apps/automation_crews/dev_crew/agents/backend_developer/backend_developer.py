@@ -1,14 +1,17 @@
 import os
 from textwrap import dedent
 from crewai import Agent
-from tools.file_write import FileWrite
-from tools.file_read import FileRead
+from dev_crew.tools.file_write import FileWrite
+from dev_crew.tools.file_read import FileRead
 from langchain_groq import ChatGroq
 from dotenv import load_dotenv
+
 load_dotenv()
 
 api_key = os.getenv("GROQ_API_KEY")
-llm = ChatGroq(model = "llama-3.1-70b-versatile", api_key = api_key)
+llm = ChatGroq(model="llama-3.1-70b-versatile", api_key=api_key)
+
+
 def backend_developer() -> Agent:
     return Agent(
         role="Senior Backend Developer",
@@ -31,6 +34,6 @@ def backend_developer() -> Agent:
         ),
         allow_delegation=True,
         verbose=True,
-        llm = llm,
+        llm=llm,
         tools=[FileWrite(), FileRead()],
     )
