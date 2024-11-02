@@ -17,15 +17,20 @@ export const Matches = () => {
   const auth = useAuth();
 
   useEffect(() => {
-    const fetchMatches = async () => {};
-    if (auth?.uniqueID) {
-      const response = api.post(API_ENDPOINTS.GET_MATCHES, {
-        unique_id: auth.uniqueID,
-      });
-      console.log(response);
-    }
+    const fetchMatches = async () => {
+      if (auth?.uniqueID) {
+        const response = await api.post(API_ENDPOINTS.GET_MATCHES, {
+          unique_id: auth.uniqueID,
+        });
+
+        if (response.data?.profiles && response.data.profiles?.length > 0) {
+          setProfiles(response.data.profiles);
+        }
+      }
+    };
+
     fetchMatches();
-  });
+  }, []);
 
   const data = [
     { title: "welcome", id: "welcome", message: "this is the message" },
