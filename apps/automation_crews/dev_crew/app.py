@@ -2,12 +2,7 @@ import os
 from crewai import Crew, Process
 from dev_crew._agents import Agents
 from dev_crew.tasks import Tasks
-from dotenv import load_dotenv
-
-load_dotenv()
-
-os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
-os.environ["GROQ_API_KEY"] = os.getenv("GROQ_API_KEY")
+from dev_crew.llm import llm
 
 
 class WebsiteDevCrew:

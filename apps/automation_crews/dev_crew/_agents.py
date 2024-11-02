@@ -3,15 +3,7 @@ from crewai import Agent
 from dev_crew.tools.file_write import FileWrite
 from langchain_groq import ChatGroq
 from langchain_openai import ChatOpenAI
-from dotenv import load_dotenv
-
-load_dotenv()
-
-api_key = os.getenv("GROQ_API_KEY")
-openai_api_key = os.getenv("OPENAI_API_KEY")
-
-# llm = ChatOpenAI(model="gpt4o-mini", api_key=openai_api_key)
-llm = ChatGroq(model="llama-3.1-70b-versatile", api_key=api_key)
+from dev_crew.llm import llm
 
 
 class Agents:

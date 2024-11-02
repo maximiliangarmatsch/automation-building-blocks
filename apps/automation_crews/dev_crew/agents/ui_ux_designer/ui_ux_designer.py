@@ -2,11 +2,9 @@ import os
 from textwrap import dedent
 from crewai import Agent
 from langchain_groq import ChatGroq
-from dotenv import load_dotenv
-load_dotenv()
+from dev_crew.llm import llm
 
-api_key = os.getenv("GROQ_API_KEY")
-llm = ChatGroq(model = "llama-3.1-70b-versatile", api_key = api_key)
+
 def ui_ux_designer(project_description: str) -> Agent:
     return Agent(
         role="Senior UI/UX Designer",
@@ -46,5 +44,5 @@ def ui_ux_designer(project_description: str) -> Agent:
         ),
         allow_delegation=True,
         verbose=True,
-        llm = llm,
+        llm=llm,
     )

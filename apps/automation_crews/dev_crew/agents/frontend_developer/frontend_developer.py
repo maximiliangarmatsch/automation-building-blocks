@@ -4,12 +4,7 @@ from crewai import Agent
 from dev_crew.tools.file_write import FileWrite
 from dev_crew.tools.file_read import FileRead
 from langchain_groq import ChatGroq
-from dotenv import load_dotenv
-
-load_dotenv()
-
-api_key = os.getenv("GROQ_API_KEY")
-llm = ChatGroq(model="llama-3.1-70b-versatile", api_key=api_key)
+from dev_crew.llm import llm
 
 
 def frontend_developer() -> Agent:

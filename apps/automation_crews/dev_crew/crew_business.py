@@ -5,10 +5,6 @@ from dev_crew.agents.project_manager.prepare_document import prepare_document
 
 from dev_crew.agents.business_analyst.business_analyst import business_analyst
 from dev_crew.agents.business_analyst.define_product_vision import define_product_vision
-from dotenv import load_dotenv
-
-load_dotenv()
-os.environ["GROQ_API_KEY"] = "GROQ_API_KEY"
 
 
 class BusinessCrew:
