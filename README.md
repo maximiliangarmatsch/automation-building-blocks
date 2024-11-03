@@ -142,7 +142,7 @@ MODEL = gpt-4o-mini
 python run_crew.py
 ```
 
-## Steps to Run any crew with "/"command
+## Steps to Run any crew with "!"command
 
 ### 1. Navigate to the Project Directory
 
@@ -167,7 +167,7 @@ python start_discord.py
 !financial_crew your message here
 ```
 
-### 5. Ask to dev crew from discord
+### 5. Connect to dev_crew for development support
 
 ```
 !dev_crew Project description here (Which you want to develop)
