@@ -1,4 +1,3 @@
-import os
 from crewai import Crew
 from dev_crew.agents.project_manager.project_manager import project_manager
 from dev_crew.agents.project_manager.prepare_document import prepare_document

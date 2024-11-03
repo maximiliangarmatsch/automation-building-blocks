@@ -1,8 +1,6 @@
-import os
 from textwrap import dedent
 from crewai import Agent
-from langchain_groq import ChatGroq
-from dev_crew.llm import llm
+from apps.automation_crews.utils.helper.initialize_llm import llm
 
 
 def content_writer(project_description: str) -> Agent:

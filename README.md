@@ -166,4 +166,10 @@ python start_discord.py
 ```
 !financial_crew your message here
 ```
+
+### 5. Ask to dev crew from discord
+
+```
+!dev_crew Project description here (Which you want to develop)
+```
 ## See /docs for more
