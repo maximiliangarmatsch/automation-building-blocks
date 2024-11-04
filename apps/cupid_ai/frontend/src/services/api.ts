@@ -8,7 +8,7 @@ export const API_ENDPOINTS = {
   ATTRACTIVENESS: "/attractiveness_score",
   EXTRACT_FEATURES: "/extract_features",
   CREATE_PROFILE: "/create_profile",
-  GET_MATCHES: "/get_match_profile", // get matches
+  GET_MATCHES: "/get_match_profile",
 };
 
 export default axios.create({

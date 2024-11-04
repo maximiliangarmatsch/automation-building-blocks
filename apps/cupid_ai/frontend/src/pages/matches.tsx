@@ -33,8 +33,6 @@ export const Matches = () => {
     fetchMatches();
   }, []);
 
-  console.log("proiles: ", profiles);
-
   const data = [
     { title: "welcome", id: "welcome", message: "this is the message" },
   ];
