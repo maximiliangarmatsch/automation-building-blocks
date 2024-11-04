@@ -8,7 +8,6 @@ export const API_ENDPOINTS = {
   ATTRACTIVENESS: "/attractiveness_score",
   EXTRACT_FEATURES: "/extract_features",
   CREATE_PROFILE: "/create_profile",
-  DELETE_PROFILE: "/delete_user",
   GET_MATCHES: "/get_match_profile", // get matches
 };
 

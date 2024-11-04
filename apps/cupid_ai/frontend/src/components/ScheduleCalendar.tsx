@@ -35,10 +35,6 @@ function fakeFetch(date: Dayjs, { signal }: { signal: AbortSignal }) {
 
 const initialValue = dayjs("2022-04-17");
 
-const AA = () => {
-  return <div>Welcome</div>;
-};
-
 function ServerDay(
   props: PickersDayProps<Dayjs> & { highlightedDays?: number[] }
 ) {

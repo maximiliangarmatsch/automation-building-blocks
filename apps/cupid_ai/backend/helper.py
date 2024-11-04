@@ -3,8 +3,8 @@ from flask import jsonify
 import sqlite3
 import google.generativeai as genai
 
-# DB_PATH = "apps/cupid_ai/db/cupid_ai.db"
 DB_PATH = "cupid_ai.db"
+
 
 def make_prompt(file_path) -> str:
     file_path = file_path

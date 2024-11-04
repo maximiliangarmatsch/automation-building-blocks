@@ -1,17 +1,18 @@
-import { List, ListItemButton, ListItemText } from "@mui/material";
+import { Box, List, ListItemButton, ListItemText } from "@mui/material";
 import MatchesSort from "../components/MatchesSort";
 import { PATHS } from "../utils";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import api, { API_ENDPOINTS } from "../services/api";
 import { useAuth } from "../utils/contexts/AuthContext";
+import { Match } from "../components/Match";
 
 export const Matches = () => {
-  const [profiles, setProfiles] = useState([]);
+  const [profiles, setProfiles] = useState<Array<Record<any, any>>>([]);
   const navigate = useNavigate();
 
-  const handleNavigate = (userId) => {
-    navigate(PATHS.PROFILE);
+  const handleNavigate = (profileId) => {
+    navigate(`${PATHS.PROFILE}/${profileId}`);
   };
 
   const auth = useAuth();
@@ -32,6 +33,8 @@ export const Matches = () => {
     fetchMatches();
   }, []);
 
+  console.log("proiles: ", profiles);
+
   const data = [
     { title: "welcome", id: "welcome", message: "this is the message" },
   ];
@@ -44,14 +47,14 @@ export const Matches = () => {
         component="nav"
         aria-labelledby="nested-list-subheader"
       >
-        {data.map((match) => (
+        {profiles.map((profile) => (
           <ListItemButton
-            key={match.title}
+            key={profile?.unique_id}
             onClick={() => {
-              handleNavigate(match.id);
+              handleNavigate(profile.unique_id);
             }}
           >
-            <ListItemText primary={match.title} secondary={match.message} />
+            <Match profile={profile} />
           </ListItemButton>
         ))}
       </List>
