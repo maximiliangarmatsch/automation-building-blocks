@@ -11,7 +11,7 @@ def get_attractiveness_score(video_path):
         video_file = genai.get_file(video_file.name)
     if video_file.state.name == "FAILED":
         return {"error": "Video processing failed."}
-    prompt = make_prompt("./src/cupid_ai/backend/prompts/attractiveness.txt")
+    prompt = make_prompt("./prompts/attractiveness.txt")
     model = genai.GenerativeModel("gemini-1.5-flash-latest")
     response = model.generate_content(
         [prompt, video_file], request_options={"timeout": 600}

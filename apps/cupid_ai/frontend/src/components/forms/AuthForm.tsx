@@ -19,7 +19,7 @@ const formValidationSchema = Yup.object({
     .email("Enter a valid email")
     .required("Email is required"),
   password: Yup.string()
-    .min(6, "Password should be of minimum 6 characters length")
+    .min(3, "Password should be of minimum 6 characters length")
     .required("Password is required"),
 });
 
@@ -28,7 +28,7 @@ interface AuthFormProps {
 }
 
 export function AuthForm({ type = "login" }: AuthFormProps) {
-  const [showUploadMedia, setShowUploadMedia] = useState(true);
+  const [showUploadMedia, setShowUploadMedia] = useState(false);
 
   const auth = useAuth();
   const onSubmit = async (values) => {
@@ -108,7 +108,6 @@ export function AuthForm({ type = "login" }: AuthFormProps) {
       <AttractivenessModal
         open={showUploadMedia}
         setOpen={setShowUploadMedia}
-        onClose={() => setShowUploadMedia(false)}
       />
     </>
   );

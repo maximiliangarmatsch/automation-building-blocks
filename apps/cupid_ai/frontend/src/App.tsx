@@ -11,14 +11,6 @@ import AuthProvider from "./utils/contexts/AuthContext";
 import { Register } from "./pages/register";
 
 function App() {
-  const matchesData = [
-    {
-      id: 1,
-      title: "24yo | Bartender | Berlin",
-      message: "Chat-Date on Friday at 18:30, 29.09.2024",
-    },
-  ];
-
   return (
     <BrowserRouter>
       <AuthProvider>
@@ -30,10 +22,7 @@ function App() {
               <Route path={PATHS.PROFILE} element={<Profile />} />
             </Route>
             <Route element={<PrivateRoute />}>
-              <Route
-                path={PATHS.MATCHES}
-                element={<Matches data={matchesData} />}
-              />
+              <Route path={PATHS.MATCHES} element={<Matches />} />
             </Route>
 
             {/* Public Routes */}

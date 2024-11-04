@@ -18,6 +18,7 @@ api_cors = {
 MEDIA_FOLDER = "uploads"
 if not os.path.exists(MEDIA_FOLDER):
     os.makedirs(MEDIA_FOLDER)
+
 api_key = os.getenv("GOOGLE_API_KEY")
 
 from api_helpers.auth.auth_api import auth

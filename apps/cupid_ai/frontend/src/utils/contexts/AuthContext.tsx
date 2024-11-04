@@ -1,4 +1,10 @@
-import React, { useContext, createContext, useState, useCallback } from "react";
+import React, {
+  useContext,
+  createContext,
+  useState,
+  useCallback,
+  useEffect,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import { PATHS } from "../../utils";
 import api, { API_ENDPOINTS } from "../../services/api";
@@ -10,7 +16,6 @@ interface AuthContextType {
   uniqueID: string;
   loginAction: (data: LoginData, callback: () => void) => Promise<void>;
   logOut: () => void;
-  deleteProfile: () => Promise<void>;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
 }
 
@@ -54,7 +59,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
             if (response.data) {
               setUser(response.data);
-              navigate(PATHS.PROFILE);
+              navigate(PATHS.MATCHES);
             }
           }
         } else {
@@ -70,6 +75,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     [navigate]
   );
 
+  useEffect(() => {
+    // fetch the user when uniqueid is present and user
+    const fetchUser = async () => {
+      const _uniqueID = localStorage.getItem("unique_id");
+      if (!user && _uniqueID) {
+        try {
+          const response = await api.post(API_ENDPOINTS.GET_PROFILE, {
+            unique_id: _uniqueID,
+          });
+
+          if (response.data) {
+            setUser(response.data);
+            navigate(PATHS.MATCHES);
+          }
+        } catch (err) {
+          // do nothing
+        }
+      }
+    };
+
+    fetchUser();
+  }, []);
+
   const logOut = useCallback(() => {
     setUser(null);
     setUniqueID("");
@@ -77,28 +105,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     navigate(PATHS.LOGIN);
   }, [navigate]);
 
-  const deleteProfile = useCallback(async () => {
-    if (user) {
-      const response = await api.delete(API_ENDPOINTS.DELETE_PROFILE, {
-        data: {
-          email: user?.email,
-        },
-      });
-
-      if (response.data) {
-        setUniqueID("");
-        localStorage.removeItem("unique_id");
-        setUser(null);
-      }
-    }
-  }, [user, logOut]);
-
   const value = {
     uniqueID,
     user,
     loginAction,
     logOut,
-    deleteProfile,
     setUser,
   };
 

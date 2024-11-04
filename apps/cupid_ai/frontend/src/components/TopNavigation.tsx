@@ -75,9 +75,6 @@ export function TopNavigation() {
                   <p className="text-red-700">Logout</p>
                 </MenuItem>
                 <Divider />
-                <MenuItem onClick={auth.deleteProfile}>
-                  <p className="text-red-700">Delete Profile</p>
-                </MenuItem>
               </Menu>
             </>
           )}
