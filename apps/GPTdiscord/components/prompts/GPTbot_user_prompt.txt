@@ -1,0 +1,9 @@
+Identify and list up to 8 single keywords that represent the main topics of this message. 
+    These keywords should be single words. These keywords should be related to the main topic of the message 
+    and they should not be things like 'mention' 'notification' 'message' or 'participant'. The keywords should 
+    be lowercase, should not be numbered, and should have no punctuation. Avoid using keywords that are a 'type' 
+    of message, such as query, recall, remember, mention, or conversation. Instead, they should be real topics of 
+    the message. Expand the keywords that you find by adding other, potentially related keywords. For example, if 
+    someone asks about 'democrats' then also add the keyword 'republican' and 'politics'. If someone asks about 'food' 
+    maybe include different types of common dishes like 'spaghetti' or even types of cuisine like 'italian' or 'chinese'. 
+    Message: {MESSAGE}
