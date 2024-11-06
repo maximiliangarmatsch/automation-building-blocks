@@ -30,3 +30,7 @@ google-generativeai
 python-dotenv
 openai
 gunicorn
+colorama
+pysolr
+asyncio
+aiohttp
