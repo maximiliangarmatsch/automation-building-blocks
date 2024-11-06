@@ -2,8 +2,10 @@ import pysolr
 import os
 from colorama import Fore, Style
 import json
+from dotenv import load_dotenv
 
-SOLR_URL = "http://localhost:8983/solr/soupy"
+load_dotenv()
+SOLR_URL = os.getenv("SOLR_URL")
 
 try:
     solr = pysolr.Solr(SOLR_URL, timeout=10)

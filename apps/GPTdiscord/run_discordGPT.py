@@ -18,8 +18,13 @@ from utils.helpers.generate_image_helper import (
 from utils.helpers.openai_message_format_helper import format_error_message
 from utils.helpers.solr_helper import solr, save_message_to_json_and_index_solr
 from utils.helpers.json_helper import save_channel_history_to_json, index_all_json_files
-from utils.helpers.manage_history_helper import fetch_message_history
-from utils.helpers.prompt_helper import read_prompt, read_and_construct_prompt
+from utils.helpers.manage_history_helper import (
+    fetch_message_history,
+    remove_redundant_messages,
+    get_expanded_keywords,
+    split_message,
+)
+from utils.helpers.prompt_helper import read_prompt
 
 directory = "chat_history"
 if not os.path.exists(directory):
@@ -62,62 +67,9 @@ def should_bot_respond_to_message(message):
     return False, False
 
 
-async def get_expanded_keywords(message):
-    user_prompt = read_and_construct_prompt(
-        message, "./components/prompts/GPTbot_user_prompt.txt"
-    )
-    try:
-        response = await async_chat_completion(
-            model=openai_model,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
-            ],
-            max_tokens=100,
-        )
-        topic_keywords_str = response.choices[0].message.content.strip()
-        topic_keywords_str = re.sub(r"Keywords:\n\d+\.\s", "", topic_keywords_str)
-        expanded_keywords = [
-            kw.strip().split(",") for kw in topic_keywords_str.split("\n") if kw.strip()
-        ]
-        return expanded_keywords
-    except Exception as e:
-        print(Fore.RED + f"Error in getting expanded keywords: {e}" + Style.RESET_ALL)
-        return None
-
-
-def split_message(message_content, min_length=1500):
-    chunks = []
-    remaining = message_content
-    while len(remaining) > min_length:
-        index = max(
-            remaining.rfind(".", 0, min_length),
-            remaining.rfind("!", 0, min_length),
-            remaining.rfind("?", 0, min_length),
-        )
-        if index == -1:
-            index = min_length
-        chunks.append(remaining[: index + 1])
-        remaining = remaining[index + 1 :]
-    chunks.append(remaining)
-    return chunks
-
-
 async def async_chat_completion(*args, **kwargs):
     response = await asyncio.to_thread(openai.chat.completions.create, *args, **kwargs)
     return response
-
-
-def remove_redundant_messages(messages):
-    filtered_messages = []
-    last_message = None
-    for message in messages:
-        if message != last_message:
-            filtered_messages.append(message)
-        else:
-            print(f"Redundant message detected and removed: {message}")
-        last_message = message
-    return filtered_messages
 
 
 @bot.event

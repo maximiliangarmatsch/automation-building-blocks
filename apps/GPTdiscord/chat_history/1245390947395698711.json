@@ -1,0 +1,26 @@
+[
+    {
+        "id": "1245390947395698711_2024-11-05T18:20:31.751000",
+        "username": "aamirsohail",
+        "content": "!gpt hello",
+        "timestamp": "2024-11-05T18:20:31.751"
+    },
+    {
+        "id": "1245390947395698711_2024-11-05T18:36:16.663000",
+        "username": "maximilian.f.p.g",
+        "content": "!gpt whats the last question i asked",
+        "timestamp": "2024-11-05T18:36:16.663"
+    },
+    {
+        "id": "1245390947395698711_2024-11-05T18:36:54.043000",
+        "username": "maximilian.f.p.g",
+        "content": "!gpt hello",
+        "timestamp": "2024-11-05T18:36:54.043"
+    },
+    {
+        "id": "1245390947395698711_2024-11-05T18:37:11.548000",
+        "username": "maximilian.f.p.g",
+        "content": "!gpt hello",
+        "timestamp": "2024-11-05T18:37:11.548"
+    }
+]
