@@ -1,6 +1,7 @@
 import os
 import openai
 import asyncio
+import random
 import regex as re
 from colorama import Style, Fore
 from utils.helpers.solr_helper import solr
@@ -135,3 +136,17 @@ def remove_redundant_messages(messages):
             print(f"Redundant message detected and removed: {message}")
         last_message = message
     return filtered_messages
+
+
+def should_bot_respond_to_message(message, bot):
+    channel_ids_str = os.getenv("CHANNEL_IDS")
+    if not channel_ids_str:
+        return False, False
+    allowed_channel_ids = [int(cid) for cid in channel_ids_str.split(",")]
+    if message.author == bot.user or "Generated Image" in message.content:
+        return False, False
+    is_random_response = random.random() < 0.015
+    is_mentioned = bot.user in [mention for mention in message.mentions]
+    if is_mentioned or is_random_response or message.channel.id in allowed_channel_ids:
+        return True, is_random_response
+    return False, False

@@ -2,7 +2,6 @@ import os
 import re
 import discord
 import openai
-import random
 import asyncio
 import requests
 from io import BytesIO
@@ -23,6 +22,7 @@ from utils.helpers.manage_history_helper import (
     remove_redundant_messages,
     get_expanded_keywords,
     split_message,
+    should_bot_respond_to_message,
 )
 from utils.helpers.prompt_helper import read_prompt
 
@@ -51,20 +51,6 @@ RATE_LIMIT = 0.25
 
 index_all_json_files("chat_history/")
 solr.commit()
-
-
-def should_bot_respond_to_message(message):
-    channel_ids_str = os.getenv("CHANNEL_IDS")
-    if not channel_ids_str:
-        return False, False
-    allowed_channel_ids = [int(cid) for cid in channel_ids_str.split(",")]
-    if message.author == bot.user or "Generated Image" in message.content:
-        return False, False
-    is_random_response = random.random() < 0.015
-    is_mentioned = bot.user in [mention for mention in message.mentions]
-    if is_mentioned or is_random_response or message.channel.id in allowed_channel_ids:
-        return True, is_random_response
-    return False, False
 
 
 async def async_chat_completion(*args, **kwargs):
@@ -181,7 +167,7 @@ async def on_message(message):
         save_message_to_json_and_index_solr(
             message.channel.id, message.author.name, user_message, message.created_at
         )
-        should_respond, is_random_response = should_bot_respond_to_message(message)
+        should_respond, is_random_response = should_bot_respond_to_message(message, bot)
         is_mentioned = bot.user in message.mentions
         if message.attachments and (
             is_mentioned
