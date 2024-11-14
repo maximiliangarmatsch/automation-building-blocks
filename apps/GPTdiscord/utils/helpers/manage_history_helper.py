@@ -4,7 +4,8 @@ import asyncio
 import random
 import regex as re
 from colorama import Style, Fore
-from utils.helpers.solr_helper import solr
+
+# from utils.helpers.solr_helper import solr
 from dotenv import load_dotenv
 from utils.helpers.prompt_helper import read_prompt, read_and_construct_prompt
 
@@ -69,8 +70,9 @@ async def perform_tiered_solr_search(message_author, expanded_keywords):
                 f'username:"{message_author}" AND ({ " OR ".join(queries) })'
             )
             try:
-                results = solr.search(combined_query, **{"rows": 10})
-                solr_results[tier] = results.docs
+                # results = solr.search(combined_query, **{"rows": 10})
+                # solr_results[tier] = results.docs
+                solr_results = []
             except Exception as e:
                 print(f"Error querying Solr for {tier}: {e}")
         else:
