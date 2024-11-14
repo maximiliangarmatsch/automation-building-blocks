@@ -5,7 +5,9 @@ import glob
 import datetime
 from datetime import datetime, timedelta, timezone
 from colorama import Fore, Style
-from utils.helpers.solr_helper import generate_message_id, solr
+
+# from utils.helpers.solr_helper import generate_message_id, solr
+from utils.helpers.solr_helper import generate_message_id
 
 
 async def save_channel_history_to_json(channel):
@@ -90,7 +92,7 @@ def index_all_json_files(directory):
                 )
                 entry["id"] = generate_message_id(channel_id, timestamp)
                 try:
-                    solr.add([entry])
+                    # solr.add([entry])
                     new_entries += 1
                 except Exception as e:
                     print(
@@ -98,4 +100,4 @@ def index_all_json_files(directory):
                         + f"Failed to index entry from {json_file_path}. Error: {e}"
                         + Style.RESET_ALL
                     )
-            solr.commit()
+            # solr.commit()
