@@ -52,7 +52,7 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 RATE_LIMIT = 0.25
 
 index_all_json_files("chat_history/")
-solr.commit()
+# solr.commit()
 
 
 async def async_chat_completion(*args, **kwargs):
