@@ -80,9 +80,10 @@ async def perform_tiered_solr_search(message_author, expanded_keywords):
 
 async def fetch_message_history(channel, message_author, expanded_keywords, bot):
     history = await fetch_recent_messages(channel, bot, history_length=15)
-    solr_results = await perform_tiered_solr_search(message_author, expanded_keywords)
-    combined_results = combine_and_rank_results(history, solr_results)
-    return combined_results
+    # solr_results = await perform_tiered_solr_search(message_author, expanded_keywords)
+    # combined_results = combine_and_rank_results(history, solr_results)
+    # return combined_results
+    return history
 
 
 async def get_expanded_keywords(message):

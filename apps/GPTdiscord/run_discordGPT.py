@@ -15,7 +15,9 @@ from utils.helpers.generate_image_helper import (
     generate_unique_filename,
 )
 from utils.helpers.openai_message_format_helper import format_error_message
-from utils.helpers.solr_helper import solr, save_message_to_json_and_index_solr
+
+# from utils.helpers.solr_helper import solr, save_message_to_json_and_index_solr
+from utils.helpers.solr_helper import save_message_to_json_and_index_solr
 from utils.helpers.json_helper import save_channel_history_to_json, index_all_json_files
 from utils.helpers.manage_history_helper import (
     fetch_message_history,
