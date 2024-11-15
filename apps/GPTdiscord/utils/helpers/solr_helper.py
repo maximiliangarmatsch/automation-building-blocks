@@ -1,17 +1,9 @@
-import pysolr
 import os
 from colorama import Fore, Style
 import json
 from dotenv import load_dotenv
 
 load_dotenv()
-# SOLR_URL = os.getenv("SOLR_URL")
-
-# try:
-#     solr = pysolr.Solr(SOLR_URL, timeout=10)
-#     solr.ping()
-# except Exception as e:
-#     print(f"Failed to connect to Solr. Error: {e}")
 
 
 def generate_message_id(channel_id, timestamp):
@@ -28,10 +20,6 @@ def save_message_to_json_and_index_solr(channel_id, username, content, timestamp
         "content": content,
         "timestamp": timestamp.strftime("%Y-%m-%dT%H:%M:%S.%f"),
     }
-    existing_message_query = f'id:"{message_id}"'
-    # search_results = solr.search(existing_message_query)
-    # if search_results.hits > 0:
-    #     return
     if os.path.exists(filename):
         with open(filename, "r+", encoding="utf-8") as file:
             file_data = json.load(file)
@@ -43,11 +31,3 @@ def save_message_to_json_and_index_solr(channel_id, username, content, timestamp
     else:
         with open(filename, "w", encoding="utf-8") as file:
             json.dump([data], file, indent=4, ensure_ascii=False)
-    # try:
-    #     solr.add([data], commit=True)
-    # except Exception as e:
-    #     print(
-    #         Fore.RED
-    #         + f"Failed to index message '{message_id}' in Solr: {e}"
-    #         + Style.RESET_ALL
-    #     )
