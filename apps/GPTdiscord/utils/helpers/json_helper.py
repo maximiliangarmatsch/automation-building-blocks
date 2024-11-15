@@ -1,40 +1,49 @@
 import os
-import time
 import json
 import glob
 import datetime
 from datetime import datetime, timedelta, timezone
 from colorama import Fore, Style
-
-# from utils.helpers.solr_helper import generate_message_id, solr
 from utils.helpers.solr_helper import generate_message_id
+from pathlib import Path
+
+
+def clear_channel_history(channel):
+    file_name = f"chat_history/{channel.id}.json"
+    file_path = Path(file_name)
+    if file_path.exists():
+        with open(file_path, "w") as file:
+            file.write("[]")
+        print(f"Cleared JSON data for channel ID: {channel.id}")
+        return True
+    else:
+        return False
 
 
 async def save_channel_history_to_json(channel):
-    filename = f"chat_history/{channel.id}.json"
+    file_name = f"chat_history/{channel.id}.json"
     existing_data = []
     new_message_count = 0
-    file_exists_for_channel = os.path.exists(filename)
+    file_exists_for_channel = os.path.exists(file_name)
     days_to_look_back = 15 if file_exists_for_channel else 365
-
     try:
         if file_exists_for_channel:
-            with open(filename, "r", encoding="utf-8") as file:
+            with open(file_name, "r", encoding="utf-8") as file:
                 existing_data = json.load(file)
         else:
-            with open(filename, "w", encoding="utf-8") as file:
+            with open(file_name, "w", encoding="utf-8") as file:
                 json.dump(existing_data, file)
     except PermissionError as e:
         print(
             Fore.RED
-            + f"PermissionError: Unable to create or read file {filename} for channel {channel.name}. Error: {e}"
+            + f"PermissionError: Unable to create or read file {file_name} for channel {channel.name}. Error: {e}"
             + Style.RESET_ALL
         )
         return
     except Exception as e:
         print(
             Fore.RED
-            + f"Error: Unable to create or read file {filename} for channel {channel.name}. Error: {e}"
+            + f"Error: Unable to create or read file {file_name} for channel {channel.name}. Error: {e}"
             + Style.RESET_ALL
         )
         return
@@ -61,18 +70,18 @@ async def save_channel_history_to_json(channel):
                 processed_messages += 1
     if new_message_count > 0:
         try:
-            with open(filename, "w", encoding="utf-8") as file:
+            with open(file_name, "w", encoding="utf-8") as file:
                 json.dump(existing_data, file, indent=4, ensure_ascii=False)
         except PermissionError as e:
             print(
                 Fore.RED
-                + f"PermissionError: Unable to write to file {filename} for channel {channel.name}. Error: {e}"
+                + f"PermissionError: Unable to write to file {file_name} for channel {channel.name}. Error: {e}"
                 + Style.RESET_ALL
             )
         except Exception as e:
             print(
                 Fore.RED
-                + f"Error: Unable to write to file {filename} for channel {channel.name}. Error: {e}"
+                + f"Error: Unable to write to file {file_name} for channel {channel.name}. Error: {e}"
                 + Style.RESET_ALL
             )
 
@@ -92,7 +101,6 @@ def index_all_json_files(directory):
                 )
                 entry["id"] = generate_message_id(channel_id, timestamp)
                 try:
-                    # solr.add([entry])
                     new_entries += 1
                 except Exception as e:
                     print(
@@ -100,4 +108,3 @@ def index_all_json_files(directory):
                         + f"Failed to index entry from {json_file_path}. Error: {e}"
                         + Style.RESET_ALL
                     )
-            # solr.commit()

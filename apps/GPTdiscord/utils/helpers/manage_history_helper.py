@@ -2,6 +2,9 @@ import os
 import openai
 import asyncio
 import random
+import json
+from pathlib import Path
+from datetime import datetime
 import regex as re
 from colorama import Style, Fore
 
@@ -14,15 +17,24 @@ system_prompt = read_prompt("./components/prompts/GPTbot_system_prompt.txt")
 openai_model = os.getenv("MODEL_CHAT")
 
 
-async def fetch_recent_messages(channel, bot, history_length=15):
-    message_history = []
-    async for message in channel.history(limit=history_length, oldest_first=False):
-        user_mention = f"{message.author.name}: " if message.author != bot.user else ""
-        role = "assistant" if message.author == bot.user else "user"
-        message_history.append(
-            {"role": role, "content": f"{user_mention}{message.content}"}
+async def fetch_recent_messages(channel, bot, history_length=5):
+    file_name = f"chat_history/{channel.id}.json"
+    file_path = Path(file_name)
+    if not file_path.exists():
+        return []
+    with open(file_path, "r") as file:
+        messages = json.load(file)
+    parsed_messages = sorted(
+        messages, key=lambda x: datetime.fromisoformat(x["timestamp"])
+    )
+    recent_messages = parsed_messages[-history_length:]
+    formatted_history = []
+    for message in recent_messages:
+        role = "assistant" if message["username"] == bot.user.name else "user"
+        formatted_history.append(
+            {"role": role, "content": f'{message["username"]}: {message["content"]}'}
         )
-    return message_history
+    return formatted_history
 
 
 def combine_and_rank_results(history, solr_results):
@@ -70,8 +82,6 @@ async def perform_tiered_solr_search(message_author, expanded_keywords):
                 f'username:"{message_author}" AND ({ " OR ".join(queries) })'
             )
             try:
-                # results = solr.search(combined_query, **{"rows": 10})
-                # solr_results[tier] = results.docs
                 solr_results = []
             except Exception as e:
                 print(f"Error querying Solr for {tier}: {e}")
@@ -80,11 +90,8 @@ async def perform_tiered_solr_search(message_author, expanded_keywords):
     return solr_results
 
 
-async def fetch_message_history(channel, message_author, expanded_keywords, bot):
+async def fetch_message_history(channel, message_author, bot):
     history = await fetch_recent_messages(channel, bot, history_length=15)
-    # solr_results = await perform_tiered_solr_search(message_author, expanded_keywords)
-    # combined_results = combine_and_rank_results(history, solr_results)
-    # return combined_results
     return history
 
 

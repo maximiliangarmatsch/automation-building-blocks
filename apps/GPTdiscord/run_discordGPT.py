@@ -16,13 +16,15 @@ from utils.helpers.generate_image_helper import (
 )
 from utils.helpers.openai_message_format_helper import format_error_message
 
-# from utils.helpers.solr_helper import solr, save_message_to_json_and_index_solr
 from utils.helpers.solr_helper import save_message_to_json_and_index_solr
-from utils.helpers.json_helper import save_channel_history_to_json, index_all_json_files
+from utils.helpers.json_helper import (
+    save_channel_history_to_json,
+    index_all_json_files,
+    clear_channel_history,
+)
 from utils.helpers.manage_history_helper import (
     fetch_message_history,
     remove_redundant_messages,
-    get_expanded_keywords,
     split_message,
     should_bot_respond_to_message,
 )
@@ -166,9 +168,6 @@ async def on_message(message):
         user_message = message.content[len("!gpt") :].strip()
         if message.author == bot.user:
             return
-        save_message_to_json_and_index_solr(
-            message.channel.id, message.author.name, user_message, message.created_at
-        )
         should_respond, is_random_response = should_bot_respond_to_message(message, bot)
         is_mentioned = bot.user in message.mentions
         if message.attachments and (
@@ -212,9 +211,8 @@ async def on_message(message):
             return
 
         if should_respond:
-            expanded_keywords = await get_expanded_keywords(user_message)
             messages_with_solr = await fetch_message_history(
-                message.channel, message.author.name, expanded_keywords, bot
+                message.channel, message.author.name, bot
             )
             system_message = {"role": "system", "content": system_prompt}
             current_user_message = {
@@ -261,16 +259,26 @@ async def on_message(message):
             except Exception as e:
                 airesponse = "An unexpected error has occurred."
             if not openai_api_error_occurred:
+                save_message_to_json_and_index_solr(
+                    message.channel.id,
+                    message.author.name,
+                    user_message,
+                    message.created_at,
+                )
                 for chunk in airesponse_chunks:
                     chunk = re.sub(r"^([^\s:]+(\s+[^\s:]+)?):\s*", "", chunk)
                     sent_message = await message.channel.send(chunk)
                     save_message_to_json_and_index_solr(
                         sent_message.channel.id,
-                        str(bot.user),
+                        str("Assistant"),
                         chunk,
                         sent_message.created_at,
                     )
                     await asyncio.sleep(RATE_LIMIT)
+        return
+    if message.content.startswith("!refresh"):
+        clear_channel_history(message.channel)
+        sent_message = await message.channel.send("Clear Previous Chat")
         return
     await bot.process_commands(message)
 
