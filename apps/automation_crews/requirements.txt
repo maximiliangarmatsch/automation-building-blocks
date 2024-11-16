@@ -16,7 +16,6 @@ Pillow
 webdriver-manager
 selenium
 crewai
-hnswlib
 crewai_tools
 watchdog
 composio-crewai
@@ -30,3 +29,8 @@ google-generativeai
 python-dotenv
 openai
 gunicorn
+colorama
+asyncio
+aiohttp
+regex
+hnswlib
