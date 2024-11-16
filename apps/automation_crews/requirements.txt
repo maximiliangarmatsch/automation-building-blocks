@@ -16,7 +16,6 @@ Pillow
 webdriver-manager
 selenium
 crewai
-hnswlib
 crewai_tools
 watchdog
 composio-crewai
@@ -34,3 +33,5 @@ colorama
 pysolr
 asyncio
 aiohttp
+regex
+hnswlib
