@@ -1,19 +1,13 @@
 import os
-import openai
-import asyncio
 import random
 import json
 from pathlib import Path
 from datetime import datetime
-import regex as re
-from colorama import Style, Fore
-
-# from utils.helpers.solr_helper import solr
 from dotenv import load_dotenv
-from utils.helpers.prompt_helper import read_prompt, read_and_construct_prompt
+from utils.helpers.prompt_helper import read_prompt
 
 load_dotenv()
-system_prompt = read_prompt("./components/prompts/GPTbot_system_prompt.txt")
+system_prompt = read_prompt("./components/prompts/GPTbot_system.txt")
 openai_model = os.getenv("MODEL_CHAT")
 
 
@@ -37,86 +31,9 @@ async def fetch_recent_messages(channel, bot, history_length=5):
     return formatted_history
 
 
-def combine_and_rank_results(history, solr_results):
-    combined_results = []
-    preface = {
-        "role": "system",
-        "content": "Below are messages from the past that may be relevant to the current conversation:",
-    }
-    combined_results.append(preface)
-    for tier, results in solr_results.items():
-        for result in results:
-            if isinstance(result.get("username"), list) and isinstance(
-                result.get("content"), list
-            ):
-                username = result["username"][0]
-                content = result["content"][0]
-                combined_results.append(
-                    {"role": "user", "content": f"{username}: {content}", "tier": tier}
-                )
-            else:
-                print("Warning: Unexpected data structure in Solr result")
-    combined_results.extend(history)
-    return combined_results
-
-
-async def async_chat_completion(*args, **kwargs):
-    response = await asyncio.to_thread(openai.chat.completions.create, *args, **kwargs)
-    return response
-
-
-async def perform_tiered_solr_search(message_author, expanded_keywords):
-    solr_queries = {
-        "Tier 1": [f'content:"{keyword}"' for keyword in expanded_keywords[0]],
-        "Tier 2": [
-            f'content:"{related}"'
-            for keyword_list in expanded_keywords[1:]
-            for related in keyword_list
-            if related.strip()
-        ],
-    }
-    solr_results = {}
-    for tier, queries in solr_queries.items():
-        if queries:
-            combined_query = (
-                f'username:"{message_author}" AND ({ " OR ".join(queries) })'
-            )
-            try:
-                solr_results = []
-            except Exception as e:
-                print(f"Error querying Solr for {tier}: {e}")
-        else:
-            print(f"No valid queries for {tier}. Skipping Solr query for this tier.")
-    return solr_results
-
-
 async def fetch_message_history(channel, message_author, bot):
     history = await fetch_recent_messages(channel, bot, history_length=15)
     return history
-
-
-async def get_expanded_keywords(message):
-    user_prompt = read_and_construct_prompt(
-        message, "./components/prompts/GPTbot_user_prompt.txt"
-    )
-    try:
-        response = await async_chat_completion(
-            model=openai_model,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
-            ],
-            max_tokens=100,
-        )
-        topic_keywords_str = response.choices[0].message.content.strip()
-        topic_keywords_str = re.sub(r"Keywords:\n\d+\.\s", "", topic_keywords_str)
-        expanded_keywords = [
-            kw.strip().split(",") for kw in topic_keywords_str.split("\n") if kw.strip()
-        ]
-        return expanded_keywords
-    except Exception as e:
-        print(Fore.RED + f"Error in getting expanded keywords: {e}" + Style.RESET_ALL)
-        return None
 
 
 def split_message(message_content, min_length=1500):

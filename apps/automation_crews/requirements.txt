@@ -30,7 +30,6 @@ python-dotenv
 openai
 gunicorn
 colorama
-pysolr
 asyncio
 aiohttp
 regex
