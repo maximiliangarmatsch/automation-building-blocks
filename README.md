@@ -190,27 +190,19 @@ REGISTERED_CHANNEL_IDS = [1233073621849866352, 1245390947395698711]
 MAX_TOKENS=5000
 MAX_TOKENS_RANDOM=100
 MODEL_CHAT=gpt-4o-mini
-SOLR_URL = "http://localhost:8983/solr/soupy"
 ```
-**Note**
-Channel IDS and REGISTEr_CHANNEL_IDS are the channel id's to be allowed for GPT chat.
 
-### 2. Run solr server
-
-```shell
-solr start
-```
-### 3. Naviagte to project directory
+### 2. Naviagte to project directory
 
 ```shell
 cd apps
 cd GPTdiscord
 ```
-### 4. Run the python script
+### 3. Run the python script
 ```shell
 python run_discordGPT.py
 ```
-### 5. Text generation 
+### 4. Text generation 
 
 ```
 !gpt your message here
@@ -222,7 +214,7 @@ python run_discordGPT.py
 !analyze your message here
 ```
 
-### 5. Image generation
+### 6. Image generation
 
 ```
 !generate Image details
@@ -230,4 +222,9 @@ python run_discordGPT.py
 **Note**
 Image generation use dalle-3 which cost around $0.04 per image.  
 
+### 7. Refresh chat history
+
+```
+!refresh 
+```
 ## See /docs for more
