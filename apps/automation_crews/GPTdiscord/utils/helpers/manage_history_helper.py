@@ -4,15 +4,15 @@ import json
 from pathlib import Path
 from datetime import datetime
 from dotenv import load_dotenv
-from utils.helpers.prompt_helper import read_prompt
+from GPTdiscord.utils.helpers.prompt_helper import read_prompt
 
 load_dotenv()
-system_prompt = read_prompt("./components/prompts/GPTbot_system.txt")
+system_prompt = read_prompt("./GPTdiscord/components/prompts/GPTbot_system.txt")
 openai_model = os.getenv("MODEL_CHAT")
 
 
 async def fetch_recent_messages(channel, bot, history_length=5):
-    file_name = f"chat_history/{channel.id}.json"
+    file_name = f"./GPTdiscord/chat_history/{channel.id}.json"
     file_path = Path(file_name)
     if not file_path.exists():
         return []

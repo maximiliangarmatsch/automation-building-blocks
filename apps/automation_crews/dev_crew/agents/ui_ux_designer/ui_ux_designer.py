@@ -1,7 +1,7 @@
 import os
 from textwrap import dedent
 from crewai import Agent
-from apps.automation_crews.utils.helper.initialize_llm import llm
+from utils.helper.initialize_llm import llm
 
 
 def ui_ux_designer(project_description: str) -> Agent:

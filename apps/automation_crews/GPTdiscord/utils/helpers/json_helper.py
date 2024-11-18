@@ -12,7 +12,7 @@ def generate_message_id(channel_id, timestamp):
 
 
 def clear_channel_history(channel):
-    file_name = f"chat_history/{channel.id}.json"
+    file_name = f"./GPTdiscord/chat_history/{channel.id}.json"
     file_path = Path(file_name)
 
     if file_path.exists():
@@ -26,7 +26,7 @@ def clear_channel_history(channel):
 
 
 async def save_channel_history_to_json(channel):
-    file_name = f"chat_history/{channel.id}.json"
+    file_name = f"./GPTdiscord/chat_history/{channel.id}.json"
     days_to_look_back = 15 if os.path.exists(file_name) else 365
 
     try:
@@ -96,7 +96,7 @@ def index_all_json_files(directory):
 
 
 def save_message_to_json(channel_id, username, content, timestamp):
-    filename = f"chat_history/{channel_id}.json"
+    filename = f"./GPTdiscord/chat_history/{channel_id}.json"
     message_id = generate_message_id(channel_id, timestamp)
     data = {
         "id": message_id,

@@ -2,7 +2,7 @@ from textwrap import dedent
 from crewai import Agent
 from tools.file_write import FileWrite
 from tools.file_read import FileRead
-from apps.automation_crews.utils.helper.initialize_llm import llm
+from utils.helper.initialize_llm import llm
 
 
 def database_developer() -> Agent:

@@ -3,19 +3,22 @@ import openai
 import asyncio
 import re
 from dotenv import load_dotenv
-from utils.helpers.manage_history_helper import (
+from GPTdiscord.utils.helpers.manage_history_helper import (
     fetch_message_history,
     remove_redundant_messages,
     split_message,
     should_bot_respond_to_message,
 )
-from utils.helpers.json_helper import save_message_to_json, clear_channel_history
-from utils.helpers.image_analysis_helper import handle_image_attachments
-from utils.helpers.prompt_helper import read_prompt
+from GPTdiscord.utils.helpers.json_helper import (
+    save_message_to_json,
+    clear_channel_history,
+)
+from GPTdiscord.utils.helpers.image_analysis_helper import handle_image_attachments
+from GPTdiscord.utils.helpers.prompt_helper import read_prompt
 
 load_dotenv()
 
-system_prompt = read_prompt("./components/prompts/GPTbot_system.txt")
+system_prompt = read_prompt("./GPTdiscord/components/prompts/GPTbot_system.txt")
 RATE_LIMIT = 0.25
 
 

@@ -4,7 +4,7 @@ import io
 import requests
 import base64
 from PIL import Image
-from utils.helpers.openai_message_format_helper import format_error_message
+from GPTdiscord.utils.helpers.openai_message_format_helper import format_error_message
 from dotenv import load_dotenv
 
 load_dotenv()
