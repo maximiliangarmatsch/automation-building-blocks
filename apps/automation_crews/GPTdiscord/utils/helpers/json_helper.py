@@ -11,16 +11,26 @@ def generate_message_id(channel_id, timestamp):
     return f"{channel_id}_{formatted_timestamp}"
 
 
-def clear_channel_history(channel):
+def clear_user_history(channel, bot):
     file_name = f"./GPTdiscord/chat_history/{channel.id}.json"
     file_path = Path(file_name)
 
     if file_path.exists():
-        with open(file_path, "w") as file:
-            file.write("[]")
-        print(f"Cleared JSON data for channel ID: {channel.id}")
-        return True
+        with open(file_path, "r") as file:
+            try:
+                messages = json.load(file)
+            except json.JSONDecodeError:
+                print("Failed to decode JSON. Resetting file.")
+                messages = []
 
+        updated_messages = [
+            message for message in messages if message["username"] != bot.user.name
+        ]
+
+        with open(file_path, "w") as file:
+            json.dump(updated_messages, file, indent=4)
+
+        return True
     else:
         return False
 
@@ -54,7 +64,11 @@ async def save_channel_history_to_json(channel):
                     {
                         "id": message_id,
                         "username": str(message.author),
-                        "content": message.content,
+                        "user": [
+                            "user",
+                            message.content,
+                        ],
+                        "assistant": ["assistant", ""],
                         "timestamp": message.created_at.strftime(
                             "%Y-%m-%dT%H:%M:%S.%f"
                         )[:-3],
@@ -95,13 +109,14 @@ def index_all_json_files(directory):
                     print(f"Failed to index entry from {json_file_path}. Error: {e}")
 
 
-def save_message_to_json(channel_id, username, content, timestamp):
+def save_message_to_json(channel_id, username, content, timestamp, airesponse):
     filename = f"./GPTdiscord/chat_history/{channel_id}.json"
     message_id = generate_message_id(channel_id, timestamp)
     data = {
         "id": message_id,
         "username": username,
-        "content": content,
+        "user": ["user", content],
+        "assistant": ["assistant", airesponse],
         "timestamp": timestamp.strftime("%Y-%m-%dT%H:%M:%S.%f"),
     }
 

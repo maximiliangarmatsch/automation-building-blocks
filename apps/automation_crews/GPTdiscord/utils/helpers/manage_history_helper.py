@@ -16,18 +16,27 @@ async def fetch_recent_messages(channel, bot, history_length=5):
     file_path = Path(file_name)
     if not file_path.exists():
         return []
+
     with open(file_path, "r") as file:
         messages = json.load(file)
+
     parsed_messages = sorted(
         messages, key=lambda x: datetime.fromisoformat(x["timestamp"])
     )
     recent_messages = parsed_messages[-history_length:]
+
     formatted_history = []
     for message in recent_messages:
-        role = "assistant" if message["username"] == bot.user.name else "user"
-        formatted_history.append(
-            {"role": role, "content": f'{message["username"]}: {message["content"]}'}
-        )
+        if message["username"] == bot.user.name:
+            if "assistant" in message and message["assistant"]:
+                role = "assistant"
+                content = f'{message["assistant"][0]}: {message["assistant"][1]}'
+            elif "user" in message and message["user"]:
+                role = "user"
+                content = f'{message["user"][0]}: {message["user"][1]}'
+            else:
+                continue
+            formatted_history.append({"role": role, "content": content})
     return formatted_history
 
 

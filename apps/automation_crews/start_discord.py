@@ -171,7 +171,7 @@ async def on_message(message: discord.Message) -> None:
         await handle_gpt_command(message, bot)
         return
     elif message.content.startswith("!refresh"):
-        await handle_refresh_command(message)
+        await handle_refresh_command(message, bot)
         return
     else:
         return
