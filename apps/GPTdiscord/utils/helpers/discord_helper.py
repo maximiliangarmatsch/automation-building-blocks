@@ -3,22 +3,19 @@ import openai
 import asyncio
 import re
 from dotenv import load_dotenv
-from GPTdiscord.utils.helpers.manage_history_helper import (
+from utils.helpers.manage_history_helper import (
     fetch_message_history,
     remove_redundant_messages,
     split_message,
     should_bot_respond_to_message,
 )
-from GPTdiscord.utils.helpers.json_helper import (
-    save_message_to_json,
-    clear_user_history,
-)
-from GPTdiscord.utils.helpers.image_analysis_helper import handle_image_attachments
-from GPTdiscord.utils.helpers.prompt_helper import read_prompt
+from utils.helpers.json_helper import save_message_to_json, clear_channel_history
+from utils.helpers.image_analysis_helper import handle_image_attachments
+from utils.helpers.prompt_helper import read_prompt
 
 load_dotenv()
 
-system_prompt = read_prompt("./GPTdiscord/components/prompts/GPTbot_system.txt")
+system_prompt = read_prompt("./components/prompts/GPTbot_system.txt")
 RATE_LIMIT = 0.25
 
 
@@ -29,20 +26,22 @@ async def chat_completion(*args, **kwargs):
 
 async def handle_response_chunks(message, airesponse, user_message):
     airesponse_chunks = split_message(airesponse)
-    final_response = ""
-    for chunk in airesponse_chunks:
-        chunk = re.sub(r"^([^\s:]+(\s+[^\s:]+)?):\s*", "", chunk)
-        final_response = final_response + chunk
-        sent_message = await message.channel.send(chunk)
-        await asyncio.sleep(RATE_LIMIT)
     save_message_to_json(
         message.channel.id,
         message.author.name,
         user_message,
         message.created_at,
-
-        final_response,
     )
+    for chunk in airesponse_chunks:
+        chunk = re.sub(r"^([^\s:]+(\s+[^\s:]+)?):\s*", "", chunk)
+        sent_message = await message.channel.send(chunk)
+        save_message_to_json(
+            sent_message.channel.id,
+            "Assistant",
+            chunk,
+            sent_message.created_at,
+        )
+        await asyncio.sleep(RATE_LIMIT)
 
 
 async def handle_chat_response(message, user_message, is_random_response, bot):
@@ -104,6 +103,7 @@ async def handle_gpt_command(message, bot):
     if should_respond:
         await handle_chat_response(message, user_message, is_random_response, bot)
 
-async def handle_refresh_command(message, bot):
-    clear_user_history(message.channel, bot)
+
+async def handle_refresh_command(message):
+    clear_channel_history(message.channel)
     await message.channel.send("Cleared Previous Chat")

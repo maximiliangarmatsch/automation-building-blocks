@@ -4,38 +4,30 @@ import json
 from pathlib import Path
 from datetime import datetime
 from dotenv import load_dotenv
-from GPTdiscord.utils.helpers.prompt_helper import read_prompt
+from utils.helpers.prompt_helper import read_prompt
 
 load_dotenv()
-system_prompt = read_prompt("./GPTdiscord/components/prompts/GPTbot_system.txt")
+system_prompt = read_prompt("./components/prompts/GPTbot_system.txt")
 openai_model = os.getenv("MODEL_CHAT")
 
 
 async def fetch_recent_messages(channel, bot, history_length=5):
-    file_name = f"./GPTdiscord/chat_history/{channel.id}.json"
+    file_name = f"chat_history/{channel.id}.json"
     file_path = Path(file_name)
     if not file_path.exists():
         return []
-
     with open(file_path, "r") as file:
         messages = json.load(file)
     parsed_messages = sorted(
         messages, key=lambda x: datetime.fromisoformat(x["timestamp"])
     )
     recent_messages = parsed_messages[-history_length:]
-
     formatted_history = []
     for message in recent_messages:
-        if message["username"] == bot.user.name:
-            if "assistant" in message and message["assistant"]:
-                role = "assistant"
-                content = f'{message["assistant"][0]}: {message["assistant"][1]}'
-            elif "user" in message and message["user"]:
-                role = "user"
-                content = f'{message["user"][0]}: {message["user"][1]}'
-            else:
-                continue
-            formatted_history.append({"role": role, "content": content})
+        role = "assistant" if message["username"] == bot.user.name else "user"
+        formatted_history.append(
+            {"role": role, "content": f'{message["username"]}: {message["content"]}'}
+        )
     return formatted_history
 
 
