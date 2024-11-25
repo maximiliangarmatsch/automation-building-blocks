@@ -11,7 +11,7 @@ def generate_message_id(channel_id, timestamp):
     return f"{channel_id}_{formatted_timestamp}"
 
 
-def clear_user_history(channel, bot):
+def clear_user_history(channel, query):
     file_name = f"./GPTdiscord/chat_history/{channel.id}.json"
     file_path = Path(file_name)
 
@@ -24,7 +24,7 @@ def clear_user_history(channel, bot):
                 messages = []
 
         updated_messages = [
-            message for message in messages if message["username"] != bot.user.name
+            message for message in messages if message["username"] != query.author.name
         ]
 
         with open(file_path, "w") as file:

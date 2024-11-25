@@ -105,5 +105,5 @@ async def handle_gpt_command(message, bot):
 
 
 async def handle_refresh_command(message, bot):
-    clear_user_history(message.channel, bot)
+    clear_user_history(message.channel, message)
     await message.channel.send("Cleared Previous Chat")
