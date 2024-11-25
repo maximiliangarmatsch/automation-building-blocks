@@ -40,7 +40,6 @@ async def handle_response_chunks(message, airesponse, user_message):
         message.author.name,
         user_message,
         message.created_at,
-
         final_response,
     )
 
@@ -104,6 +103,7 @@ async def handle_gpt_command(message, bot):
     if should_respond:
         await handle_chat_response(message, user_message, is_random_response, bot)
 
+
 async def handle_refresh_command(message, bot):
-    clear_user_history(message.channel, bot)
+    clear_user_history(message.channel, message)
     await message.channel.send("Cleared Previous Chat")
