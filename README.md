@@ -5,171 +5,27 @@
 - GPT4 Vision API
 - Gemini vision API
 - Puppeteer
+- CrewAI
+- Discord
 
 ## Use Cases
 
-- Crawl google accounts
-- Read unread emails and attached PDFs
-- Respond based on screenshot
+- Access user accounts using Password manager Like.  
+- Manage emails and Create drafts.  
+- Conduct Financial research  
+- Create Website or app complete code base  
+- Perform any task on gSheet, gCalender.  
+  - Insert or delete data in gSheet  
+  - Create Salary Slip or financial reports
+  - Monthly summary report from gSheet   
+  - Send salary slip or financial report via Gmail attachment  
+  - Create, Update, Delete gCalender event  
 
-## Pre-Setup
+## Projects Overiew
 
-Install Python (newest version, currently 3.11.0)
+  - `financial_crew`: Conduct financial research.  
+  - `personal_assistant_crew`: Automate tasks like updating gCalendar and gSheet events or sending emails.  
+  - `GPTdiscord`: Integrates GPT into Discord.  
+  - `dev_crew`: Multi-agnets based Web/App dvelopment tool. 
 
-- https://www.python.org/downloads/
-
-
-## (MacOS Only) Pre-Setup
-
-```shell
-#General Fixes:
-export HNSWLIB_NO_NATIVE=1
-
-#For Certificates
-/Applications/Python\ 3.12/Install\ Certificates.command
-pip install --upgrade certifi
-
-#For pyAutoGui
-brew install --cask xquartz
-```
-
-## Setup for Python
-
-```shell
-python3 -m venv venv
-       OR
-python -m venv venv
-source venv/bin/activate
-pip install -r apps/automation_crews/requirements.txt
-```
-
-### Create ./.env file
-
-```
-OPENAI_API_KEY = ""
-SERPAPI_API_KEY = ""
-CHANNEL_ID = ""
-BITWARDEN_EMAIL = ""
-BITWARDEN_PASSWORD = ""
-DISCORD_TOKEN = ""
-GROQ_API_KEY = ""
-```
-```
-
-### Start "Python App"
-
-```shell
-python3 start_discord.py
-      OR
-python start_discord.py
-
-```
-
-
-### Start ONLY "Financial Crew"
-#### Requires ./src/fincancial_crew/assets/Bank-of-America-Bank-Statement-TemplateLab.com_.pdf to exist
-#### fix some imports
-#### replace the keys in pyautogui.gmail
-
-```shell
-python3 ./apps/automation_crews/financial_crew/run_crew.py
-      OR
-python ./apps/automation_crews/financial_crew/run_crew.py
-
-```
-
-### Start "Website automation" with Puppeteer
-
-```shell
-npm install
-cd ./apps/automation_crews
-node index.js
-```
-
-## Other
-
-### Stop "venv"
-
-```shell
-$ deactivate
-```
-
-### Start Only "Dev Crew"
-```shell
-source venv/bin/activate
-cd apps/automation_crews/dev_crew
-python app.py
-```
-Example prompt "an ecommerce website for drawings"
-- Output directory is in `apps/automation_crews/dev_crew/generated_src`
-- `allow_code_excecution` is activated in file "...". It allows crewAI to "test" code on the fly
-
-# start Only Personal Assistant Crew
-
-## Steps to Run
-**Navigate to the Project Directory:**
-Change to the directory where the `setup.sh`, `run_crew.py`, `requirements.txt` files are located. For example:
-```shell
-cd path/to/project/directory
-```
-
-### 1. Run the Setup File
-Make the setup.sh Script Executable (if necessary):
-On Linux or macOS, you might need to make the setup.sh script executable:
-```shell
-chmod +x setup.sh
-```
-Execute the setup.sh script to set up the environment, install dependencies, login to composio and 
-add necessary tools:
-```shell
-./setup.sh
-```
-Now, Fill in the .env file with your secrets.
-
-### Update ./.env file
-
-```
-OPENAI_API_KEY = ""
-SERPAPI_API_KEY = ""
-CHANNEL_ID = ""
-BITWARDEN_EMAIL = ""
-BITWARDEN_PASSWORD = ""
-DISCORD_TOKEN = ""
-MODEL = gpt-4o-mini
-```
-### 2. Run the python script
-```shell
-python run_crew.py
-```
-
-## Steps to Run any crew with "!"command
-
-### 1. Navigate to the Project Directory
-
-Change to the to automation_crews:
-```shell
-cd apps/automation_crews
-```
-
-### 2. Run the python script
-```shell
-python start_discord.py
-```
-### 3. Ask to assitant crew from discord
-
-```
-!assistant_crew your message here
-```
-
-### 4. Ask to financial crew from discord
-
-```
-!financial_crew your message here
-```
-
-### 5. Connect to dev_crew for development support
-
-```
-!dev_crew Project description here (Which you want to develop)
-```
 ## See /docs for more
