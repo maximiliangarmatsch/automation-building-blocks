@@ -21,11 +21,11 @@ MODEL_CHAT=gpt-4o-mini
 
 ```shell
 cd apps
-cd GPTdiscord
+cd automation_crews
 ```
 ### 3. Run the python script
 ```shell
-python run_discordGPT.py
+python start_discord.py
 ```
 ### 4. Text generation 
 

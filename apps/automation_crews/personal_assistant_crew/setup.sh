@@ -1,6 +1,8 @@
 
 #!/bin/bash
 
+# To set up the environment, install dependencies, login to composio and add other necessary tools:
+
 # Create a virtual environment
 echo "Creating virtual environment..."
 python3 -m venv ~/.venvs/calendar_agent
