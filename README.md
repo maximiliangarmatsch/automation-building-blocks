@@ -10,8 +10,8 @@
 
 ## Use Cases
 
-- Crawl google accounts  
-- Read unread emails and attached PDFs  
+- Access user accounts using Password manager Like.  
+- Manage emails and Create drafts.  
 - Conduct Financial research  
 - Create Website or app complete code base  
 - Perform any task on gSheet, gCalender.  
