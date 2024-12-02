@@ -1,19 +1,19 @@
 # start Only Personal Assistant Crew
 
 ## Steps to Run
-**Navigate to the Project Directory:**
+
 ```shell
 cd apps/automation_crews/personal_assistant_crew
 ```
-Change to the directory where the `setup.sh`, `run_crew.py`, `requirements.txt` files are located. For example:
-
 
 ### 1. Run the Setup File
-Make the setup.sh Script Executable (if necessary):
-On Linux or macOS, you might need to make the setup.sh script executable:
+
+Linux or macOS
+
 ```shell
 chmod +x setup.sh
 ```
+Windows
 
 ```shell
 ./setup.sh

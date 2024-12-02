@@ -5,12 +5,22 @@
 - GPT4 Vision API
 - Gemini vision API
 - Puppeteer
+- CrewAI
+- Discord
 
 ## Use Cases
 
-- Crawl google accounts
-- Read unread emails and attached PDFs
-- Respond based on screenshot
+- Crawl google accounts  
+- Read unread emails and attached PDFs  
+- Conduct Financial research  
+- Create Website or app complete code base  
+- Perform any task on gSheet, gCalender.  
+  - Insert or delete data in gSheet  
+  - Create Salary Slip or financial reports
+  - Monthly summary report from gSheet   
+  - Send salary slip or financial report via Gmail attachment  
+  - Create, Update, Delete gCalender event  
+
 
 ## Pre-Setup
 
@@ -67,30 +77,31 @@ python start_discord.py
 
 ## Steps to Run any crew with "!"command
 
-### 1. Navigate to the Project Directory
+### 1. Step
 
-Change to the to automation_crews:
 ```shell
 cd apps/automation_crews
 ```
 
-### 2. Run the python script
+### 2. Step
+
 ```shell
 python start_discord.py
 ```
-### 3. Ask to assitant crew from discord
+
+### 3. Assistant crew command
 
 ```
 !assistant_crew your message here
 ```
 
-### 4. Ask to financial crew from discord
+### 4. Financial crew command
 
 ```
 !financial_crew your message here
 ```
 
-### 5. Connect to dev_crew for development support
+### 5. Dev crew command
 
 ```
 !dev_crew Project description here (Which you want to develop)

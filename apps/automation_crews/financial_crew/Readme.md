@@ -1,7 +1,14 @@
 ### Start ONLY "Financial Crew"
-#### Requires ./src/fincancial_crew/assets/Bank-of-America-Bank-Statement-TemplateLab.com_.pdf to exist
-#### fix some imports
-#### replace the keys in pyautogui.gmail
+
+### /.env file
+
+```
+OPENAI_API_KEY = ""
+SERPAPI_API_KEY = ""
+CHANNEL_ID = ""
+DISCORD_TOKEN = ""
+MODEL = gpt-4o-mini
+```
 
 ```shell
 python3 ./apps/automation_crews/financial_crew/run_crew.py
