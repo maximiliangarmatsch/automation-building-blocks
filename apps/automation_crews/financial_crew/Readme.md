@@ -9,19 +9,3 @@ python3 ./apps/automation_crews/financial_crew/run_crew.py
 python ./apps/automation_crews/financial_crew/run_crew.py
 
 ```
-
-### Start "Website automation" with Puppeteer
-
-```shell
-npm install
-cd ./apps/automation_crews
-node index.js
-```
-
-## Other
-
-### Stop "venv"
-
-```shell
-$ deactivate
-```
