@@ -53,6 +53,12 @@ BITWARDEN_EMAIL = ""
 BITWARDEN_PASSWORD = ""
 DISCORD_TOKEN = ""
 GROQ_API_KEY = ""
+HISTORYLENGTH=12
+CHANNEL_IDS=1233073621849866352 //Garmatsch-Server: "ai-testing"
+REGISTERED_CHANNEL_IDS = [1233073621849866352] //Garmatsch-Server: "ai-testing"
+MAX_TOKENS=5000
+MAX_TOKENS_RANDOM=100
+MODEL_CHAT=gpt-4o-mini
 
 ## Setup Python, Database, Requirements
 
@@ -62,6 +68,19 @@ python3 -m venv venv
 python -m venv venv
 source venv/bin/activate
 pip install -r apps/automation_crews/requirements.txt
+```
+
+
+### Login to Compose.io (in Browser)
+10000 actions/month free
+```shell
+
+composio login
+[login via browser]
+[copy CLI key]
+[paste in terminal]
+composio add googlesheets
+
 ```
 
 ### Start Discord-Server
@@ -77,33 +96,20 @@ python start_discord.py
 
 ```
 
-### Compose.io Login (in Browser)
-10000 actions/month free
-```shell
 
-composio login
-[login via browser]
-[copy CLI key]
-[paste in terminal]
-
-```
-
-
-## Run any crew with "!"command
-
-### Assistant-Crew
+## Run Assistant-Crew
 
 ```
 !assistant_crew your message here
 ```
 
-### Financial-Crew
+## Run Financial-Crew
 
 ```
 !financial_crew your message here
 ```
 
-### Dev-Crew
+## Run Dev-Crew
 
 ```
 !dev_crew Project description here (Which you want to develop)

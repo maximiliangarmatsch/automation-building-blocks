@@ -52,7 +52,7 @@ openai_api_key = os.getenv("OPENAI_API_KEY")
 openai_model = os.getenv("MODEL_CHAT")
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 
-regsitered_channels_ids = registered_channels_ids = [
+registered_channels_ids = registered_channels_ids = [
     int(id.strip())
     for id in os.getenv("REGISTERED_CHANNEL_IDS", "").strip("[]").split(",")
 ]
@@ -89,7 +89,7 @@ async def on_ready():
         processed_channels = set()
 
         for channel in all_channels:
-            if channel.id in regsitered_channels_ids:
+            if channel.id in registered_channels_ids:
                 try:
                     await save_channel_history_to_json(channel)
                     processed_channels.add(channel.id)
