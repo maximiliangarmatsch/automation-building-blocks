@@ -1,6 +1,6 @@
-## Pre-Setup
+## Install Python
 
-Install Python (newest version, currently 3.11.0)
+Install Python (newest version, currently 3.11.0, ~Nov 2024)
 
 - https://www.python.org/downloads/
 
@@ -19,7 +19,17 @@ pip install --upgrade certifi
 brew install --cask xquartz
 ```
 
-## Setup for Python
+
+## Create .apps/automations_crews/.env file
+OPENAI_API_KEY = ""
+SERPAPI_API_KEY = ""
+CHANNEL_ID = ""
+BITWARDEN_EMAIL = ""
+BITWARDEN_PASSWORD = ""
+DISCORD_TOKEN = ""
+GROQ_API_KEY = ""
+
+## Setup Python, Database, Requirements
 
 ```shell
 python3 -m venv venv
@@ -29,55 +39,46 @@ source venv/bin/activate
 pip install -r apps/automation_crews/requirements.txt
 ```
 
-### Create ./.env file
-
-```
-OPENAI_API_KEY = ""
-SERPAPI_API_KEY = ""
-CHANNEL_ID = ""
-BITWARDEN_EMAIL = ""
-BITWARDEN_PASSWORD = ""
-DISCORD_TOKEN = ""
-GROQ_API_KEY = ""
-```
-```
-
-### Start "Python App"
-
-```shell
-python3 start_discord.py
-      OR
-python start_discord.py
-
-```
-
-## Steps to Run any crew with "!"command
-
-### 1. Step
+### Start Discord-Server
 
 ```shell
 cd apps/automation_crews
-```
 
-### 2. Step
+[MAC] 
+python3 start_discord.py
 
-```shell
+[LINUX/Windows]
 python start_discord.py
+
 ```
 
-### 3. Assistant crew command
+### Compose.io Login (in Browser)
+10000 actions/month free
+```shell
+
+composio login
+[login via browser]
+[copy CLI key]
+[paste in terminal]
+
+```
+
+
+## Run any crew with "!"command
+
+### Assistant-Crew
 
 ```
 !assistant_crew your message here
 ```
 
-### 4. Financial crew command
+### Financial-Crew
 
 ```
 !financial_crew your message here
 ```
 
-### 5. Dev crew command
+### Dev-Crew
 
 ```
 !dev_crew Project description here (Which you want to develop)

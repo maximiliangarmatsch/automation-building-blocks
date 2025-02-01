@@ -7,8 +7,8 @@ export default [
       "no-unused-vars": "warn",
       "no-undef": "warn",
       "max-lines": [
-        "error",
-        { max: 500, skipBlankLines: true, skipComments: true },
+        "warn",
+        { max: 150, skipBlankLines: true, skipComments: true },
       ],
     },
     ignores: ["**/Extensions/"],

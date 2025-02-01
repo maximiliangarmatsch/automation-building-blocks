@@ -1,8 +1,8 @@
 import os
 import sys
+import importlib
 import openai
 import discord
-import importlib
 from openai import OpenAI
 from discord.ext import commands
 from discord import Intents
@@ -11,17 +11,8 @@ from watchdog.events import FileSystemEventHandler
 from colorama import init, Fore, Style
 from dotenv import load_dotenv
 
-assets_folder_path = "./financial_crew/assets"
-os.makedirs(assets_folder_path, exist_ok=True)
-
 # Import your modules here
-import components.pyautogui.gmail as gmail
-import financial_crew.run_crew as crew
-import personal_assistant_crew.run_crew as assistant_crew
-
-from dev_crew.app import WebsiteDevCrew
-from dev_crew.crew_business import BusinessCrew
-from dev_crew.crew_frontend import FrontendCrew
+from components.pyautogui import gmail
 from components.discord.discord_helper_function import (
     send_message,
     run_finance_crew,
@@ -29,6 +20,10 @@ from components.discord.discord_helper_function import (
     run_assistant_crew,
     run_dev_crew,
 )
+
+import financial_crew.run_crew as crew
+import personal_assistant_crew.run_crew as assistant_crew
+from dev_crew.app import WebsiteDevCrew
 from GPTdiscord.utils.helpers.discord_helper import (
     handle_gpt_command,
     handle_refresh_command,
@@ -39,6 +34,9 @@ from GPTdiscord.utils.helpers.json_helper import (
 )
 from GPTdiscord.utils.helpers.image_generator import generate_image
 from GPTdiscord.utils.helpers.image_analyzer import image_analyzer
+
+assets_folder_path = "./financial_crew/assets"
+os.makedirs(assets_folder_path, exist_ok=True)
 
 load_dotenv()
 
@@ -85,8 +83,8 @@ def reload_modules():
 
 @bot.event
 async def on_ready():
-    synced = await bot.tree.sync()
-    for guild_idx, guild in enumerate(bot.guilds, start=1):
+    await bot.tree.sync()
+    for _guild_idx, guild in enumerate(bot.guilds, start=1):
         all_channels = guild.text_channels
         processed_channels = set()
 
