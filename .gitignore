@@ -7,3 +7,4 @@ __pycache__
 !/db/*/
 !/db/*
 /src/components/pyautogui/screenshots/*.png
+.DS_Store

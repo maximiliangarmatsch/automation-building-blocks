@@ -1,15 +1,14 @@
 {
+  "editor.defaultFormatter": "ms-python.black-formatter",
   "[python]": {
-    "editor.formatOnSave": true,
     "editor.defaultFormatter": "ms-python.black-formatter"
   },
   "[javascript]": {
-    "editor.formatOnSave": true,
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "editor.defaultFormatter": "ms-python.black-formatter",
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "files.autoSave": "afterDelay"
 }
