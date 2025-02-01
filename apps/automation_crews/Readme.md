@@ -1,3 +1,28 @@
+## Tools & functions
+
+- GPT4 Vision API
+- Gemini vision API
+- Puppeteer
+- CrewAI
+- Discord
+- `GPTdiscord`: Integrates GPT into Discord
+- `financial_crew`: Conduct financial research
+- `personal_assistant_crew`: Automate tasks like updating gCalendar and gSheet events or sending emails
+- `dev_crew`: Multi-agnets based Web/App dvelopment tool
+
+## Use Cases
+
+- Access user accounts using Password manager Like.  
+- Manage emails and Create drafts.  
+- Conduct Financial research  
+- Create Website or app complete code base  
+- Perform any task on gSheet, gCalender.  
+  - Insert or delete data in gSheet  
+  - Create Salary Slip or financial reports
+  - Monthly summary report from gSheet   
+  - Send salary slip or financial report via Gmail attachment  
+  - Create, Update, Delete gCalender event  
+
 ## Install Python
 
 Install Python (newest version, currently 3.11.0, ~Nov 2024)
