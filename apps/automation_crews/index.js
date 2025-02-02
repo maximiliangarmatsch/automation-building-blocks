@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import OpenAI from "openai";
 import { loginGoogle_navigateToGmail } from "./components/puppeteer/login_automation.js";
 import { fetchEmailsAndAttachments } from "./components/puppeteer/automation_response.js";
-import { logoutGmail } from "./components/puppeteer/puppeteer_automation_helper.js";
+import { logoutGmail } from "./components/puppeteer/helper.js";
 
 // Create OpenAI object
 const openai = new OpenAI({ apiKey: process.env.API_KEY });
@@ -83,7 +83,7 @@ client.on("messageCreate", async (message) => {
     if (content.startsWith("!history")) {
       const userQuery = content.slice("!history".length).trim();
       const result = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo",
+        model: "gpt-4o-mini",
         messages: historyOutput,
         max_tokens: 2000, // limit token usage
       });
@@ -113,7 +113,7 @@ client.on("messageCreate", async (message) => {
       // All other Messages
       if (isLoggedIn) {
         //TODO THIS NEVER HAPPENS
-        [result, page, isLoggedIn, browser] = await fetchEmailsAndAttachments(
+        [result, page, browser] = await fetchEmailsAndAttachments(
           message.content + " Action:email",
           page,
           browser

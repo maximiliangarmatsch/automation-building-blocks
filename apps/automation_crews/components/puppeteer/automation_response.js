@@ -17,7 +17,7 @@ import {
   highlightLinks,
   waitForEvent,
   readPromptFromFile,
-} from "./puppeteer_automation_helper.js";
+} from "./helper.js";
 
 // Pupeteer stealth for pupeteer plugins
 const stealth = StealthPlugin();
@@ -36,7 +36,6 @@ export async function fetchEmailsAndAttachments(
   web_page,
   web_browser
 ) {
-  console.log("# Email Automation AI Tool #");
   const browser = web_browser;
   const page = web_page;
   await page.setViewport({
@@ -69,7 +68,6 @@ export async function fetchEmailsAndAttachments(
   let action_take = false;
   let download_attachement_file = false;
   let screenshot_taken = false;
-  let login_status = false;
   let openai_final_response = "";
   let action = "";
   let unread_email = false;
@@ -92,7 +90,6 @@ export async function fetchEmailsAndAttachments(
         await page.waitForNavigation({ waitUntil: "networkidle2" });
 
         // Change login status
-        login_status = true;
         await highlightLinks(page);
         await page.screenshot({
           path: "screenshot_emails.jpg",
@@ -119,10 +116,8 @@ export async function fetchEmailsAndAttachments(
               console.log("No Unread email found");
               download_attachement_file = false;
               openai_final_response = "No Unread email found";
-              // break the loop
               break;
             } else {
-              // Handle other potential errors
               console.error("Error occurred:", error);
             }
           }
@@ -269,7 +264,7 @@ export async function fetchEmailsAndAttachments(
             `;
 
       // Return reponse data
-      return [openai_final_response, page, login_status, browser];
+      return [openai_final_response, page, browser];
     }
     // LLM Actions Based Response
     else if (screenshot_taken) {
@@ -294,7 +289,7 @@ export async function fetchEmailsAndAttachments(
       screenshot_taken = false;
     } else {
       console.log("No Context OR Action Given");
-      return ["No Context OR Action Given", page, login_status, browser];
+      return ["No Context OR Action Given", page, browser];
     }
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
@@ -355,9 +350,9 @@ export async function fetchEmailsAndAttachments(
       openai_final_response = message_text;
 
       // Return response data
-      return [openai_final_response, page, login_status, browser];
+      return [openai_final_response, page, browser];
     }
   }
   // Return response data.
-  return [openai_final_response, page, login_status, browser];
+  return [openai_final_response, page, browser];
 }
