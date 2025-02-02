@@ -10,8 +10,6 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from colorama import init, Fore, Style
 from dotenv import load_dotenv
-
-# Import your modules here
 from components.pyautogui import gmail
 from components.discord.discord_helper_function import (
     send_message,
@@ -35,10 +33,10 @@ from GPTdiscord.utils.helpers.json_helper import (
 from GPTdiscord.utils.helpers.image_generator import generate_image
 from GPTdiscord.utils.helpers.image_analyzer import image_analyzer
 
+load_dotenv()
+
 assets_folder_path = "./financial_crew/assets"
 os.makedirs(assets_folder_path, exist_ok=True)
-
-load_dotenv()
 
 directory = "./GPTdiscord/chat_history"
 if not os.path.exists(directory):
@@ -52,7 +50,7 @@ openai_api_key = os.getenv("OPENAI_API_KEY")
 openai_model = os.getenv("MODEL_CHAT")
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 
-registered_channels_ids = registered_channels_ids = [
+registered_channels_ids = [
     int(id.strip())
     for id in os.getenv("REGISTERED_CHANNEL_IDS", "").strip("[]").split(",")
 ]
@@ -87,7 +85,6 @@ async def on_ready():
     for _guild_idx, guild in enumerate(bot.guilds, start=1):
         all_channels = guild.text_channels
         processed_channels = set()
-
         for channel in all_channels:
             if channel.id in registered_channels_ids:
                 try:
@@ -95,9 +92,7 @@ async def on_ready():
                     processed_channels.add(channel.id)
                 except Exception as e:
                     print(
-                        Fore.RED
-                        + f"Failed to save history for channel {channel.name} (ID: {channel.id}): {e}"
-                        + Style.RESET_ALL
+                        f"Failed to save history for channel {channel.name} (ID: {channel.id}): {e}"
                     )
             else:
                 continue
@@ -132,36 +127,21 @@ async def on_message(message: discord.Message) -> None:
         return
     user_message = message.content
     if user_message.startswith("!crew"):
-        username = str(message.author)
-        channel = str(message.channel)
-        print(f'[{channel}] {username}: "{user_message}"')
         await send_message(message, user_message[len("!crew") :].strip(), crew, gmail)
     elif user_message.startswith("!finance_crew"):
-        username = str(message.author)
-        channel = str(message.channel)
-        print(f'[{channel}] {username}: "{user_message}"')
         await run_finance_crew(
             message, user_message[len("!finance_crew") :].strip(), crew, gmail
         )
     elif user_message.startswith("!assistant_crew"):
-        username = str(message.author)
-        channel = str(message.channel)
-        print(f'[{channel}] {username}: "{user_message}"')
         await run_assistant_crew(
             message, user_message[len("!assistant_crew") :].strip(), assistant_crew
         )
     elif user_message.startswith("!dev_crew"):
-        username = str(message.author)
-        channel = str(message.channel)
-        print(f'[{channel}] {username}: "{user_message}"')
         await run_dev_crew(
             message, user_message[len("!dev_crew") :].strip(), WebsiteDevCrew
         )
 
     elif user_message.startswith("!train"):
-        username = str(message.author)
-        channel = str(message.channel)
-        print(f'[{channel}] {username}: "{user_message}"')
         await train_finance_crew(
             message, user_message[len("!train") :].strip(), crew, gmail
         )
@@ -179,17 +159,13 @@ async def on_message(message: discord.Message) -> None:
 class ReloadHandler(FileSystemEventHandler):
     def on_modified(self, event):
         if event.src_path.endswith(".py"):
-            print(f"Detected change in {event.src_path}. Reloading modules...")
             reload_modules()
 
 
 # Start the observer for watching file changes
 def start_observer():
     event_handler = ReloadHandler()
-
-    # Set path to current directory (assuming script is executed from 'src')
     watch_path = os.path.abspath(".")
-
     observer = Observer()
     observer.schedule(event_handler, path=watch_path, recursive=True)
     observer.start()
