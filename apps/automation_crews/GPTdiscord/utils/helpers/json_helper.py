@@ -16,7 +16,7 @@ def clear_user_history(channel, query):
     file_path = Path(file_name)
 
     if file_path.exists():
-        with open(file_path, "r") as file:
+        with open(file_name, "r", encoding="utf-8") as file:
             try:
                 messages = json.load(file)
             except json.JSONDecodeError:
@@ -27,7 +27,7 @@ def clear_user_history(channel, query):
             message for message in messages if message["username"] != query.author.name
         ]
 
-        with open(file_path, "w") as file:
+        with open(file_path, "w", encoding="utf-8") as file:
             json.dump(updated_messages, file, indent=4)
 
         return True
@@ -40,11 +40,12 @@ async def save_channel_history_to_json(channel):
     days_to_look_back = 15 if os.path.exists(file_name) else 365
 
     try:
-        existing_data = (
-            json.load(open(file_name, "r", encoding="utf-8"))
-            if os.path.exists(file_name)
-            else []
-        )
+        if os.path.exists(file_name):
+            with open(file_name, "r", encoding="utf-8") as f:
+                existing_data = json.load(f)
+        else:
+            existing_data = []
+
     except (PermissionError, Exception) as e:
         print(f"Error handling file {file_name} for {channel.name}: {e}")
         return
@@ -91,7 +92,7 @@ def index_all_json_files(directory):
     for idx, json_file_path in enumerate(json_files, start=1):
         channel_id = os.path.splitext(os.path.basename(json_file_path))[0]
 
-        with open(json_file_path, "r") as file:
+        with open(json_file_path, "r", encoding="utf-8") as file:
             data = json.load(file)
 
             if not data:

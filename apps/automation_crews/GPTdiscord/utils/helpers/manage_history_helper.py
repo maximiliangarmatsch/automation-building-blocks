@@ -17,7 +17,7 @@ async def fetch_recent_messages(channel, bot, history_length=5):
     if not file_path.exists():
         return []
 
-    with open(file_path, "r") as file:
+    with open(file_path, "r", encoding="utf-8") as file:
         messages = json.load(file)
     parsed_messages = sorted(
         messages, key=lambda x: datetime.fromisoformat(x["timestamp"])
@@ -74,10 +74,12 @@ def remove_redundant_messages(messages):
 
 
 def should_bot_respond_to_message(message, bot):
-    channel_ids_str = os.getenv("CHANNEL_IDS")
-    if not channel_ids_str:
+    allowed_channel_ids = [
+        int(id.strip())
+        for id in os.getenv("REGISTERED_CHANNEL_IDS", "").strip("[]").split(",")
+    ]
+    if not allowed_channel_ids:
         return False, False
-    allowed_channel_ids = [int(cid) for cid in channel_ids_str.split(",")]
     if message.author == bot.user or "Generated Image" in message.content:
         return False, False
     is_random_response = random.random() < 0.015
