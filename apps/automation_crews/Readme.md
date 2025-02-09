@@ -237,12 +237,6 @@ curl -X POST http://localhost:5000/join-discord \
 ```
 ## 3. Personal Assistant Crew
 
-### Steps to Run
-
-```shell
-cd apps/automation_crews/personal_assistant_crew
-```
-
 ### Run the Setup File
 
 Linux or macOS

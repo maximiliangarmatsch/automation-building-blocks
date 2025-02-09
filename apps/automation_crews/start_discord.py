@@ -18,8 +18,8 @@ from components.discord.discord_helper_function import (
     run_dev_crew,
 )
 
-import financial_crew.run_crew as crew
-import personal_assistant_crew.run_crew as assistant_crew
+import financial_crew.execute_financial_crew as crew
+import personal_assistant_crew.execute_assistant_crew as assistant_crew
 from dev_crew.app import WebsiteDevCrew
 from GPTdiscord.utils.helpers.discord_helper import (
     handle_gpt_command,
@@ -70,7 +70,7 @@ bot = commands.Bot(command_prefix="/", intents=discord.Intents.all())
 
 # Function to reload modules when a change is detected
 def reload_modules():
-    module_names = ["components.pyautogui.gmail", "financial_crew.run_crew"]
+    module_names = ["components.pyautogui.gmail", "financial_crew.execute_financial_crew", "personal_assistant_crew.execute_assistant_crew"]
     for module_name in module_names:
         if module_name in sys.modules:
             print(f"Reloading module: {module_name}")
