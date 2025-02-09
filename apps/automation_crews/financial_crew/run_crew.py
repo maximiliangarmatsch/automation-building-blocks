@@ -23,4 +23,4 @@ async def train_crew():
         )
         return final_response
     except Exception as e:
-        raise Exception(f"An error occurred while training the crew: {e}")
+        raise ValueError(f"An error occurred while training the crew: {e}") from e

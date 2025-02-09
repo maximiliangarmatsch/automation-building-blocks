@@ -10,7 +10,6 @@ tools = composio_toolset.get_tools(
     apps=[App.GOOGLESHEETS], actions=[Action.SHELLTOOL_EXEC_COMMAND]
 )
 
-
 def prepare_invoice():
     agent = Agent(
         role="Google Sheet Agent",

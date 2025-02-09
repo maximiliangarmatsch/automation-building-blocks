@@ -1,7 +1,7 @@
 import os
-import openai
 import asyncio
 import re
+import openai
 from dotenv import load_dotenv
 from GPTdiscord.utils.helpers.manage_history_helper import (
     fetch_message_history,
@@ -87,7 +87,7 @@ async def handle_chat_response(message, user_message, is_random_response, bot):
             f"An error has occurred with your request. Please try again. Error details: {e}"
         )
 
-    except Exception as e:
+    except Exception:
         await message.channel.send("An unexpected error has occurred.")
 
 

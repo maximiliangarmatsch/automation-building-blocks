@@ -1,8 +1,8 @@
 import os
-import aiohttp
-import io
-import requests
 import base64
+import io
+import aiohttp
+import requests
 from PIL import Image
 from GPTdiscord.utils.helpers.openai_message_format_helper import format_error_message
 from dotenv import load_dotenv
@@ -49,7 +49,7 @@ async def analyze_image(base64_image, instructions):
         "Authorization": f"Bearer {openai_api_key}",
     }
     response = requests.post(
-        "https://api.openai.com/v1/chat/completions", headers=headers, json=payload
+        "https://api.openai.com/v1/chat/completions", headers=headers, json=payload, timeout=100
     )
     response_json = response.json()
     return response_json
@@ -87,7 +87,5 @@ async def handle_image_attachments(message, is_mentioned):
 
                 except Exception as e:
                     error_details = str(e)
-                    if hasattr(e, "response") and e.response is not None:
-                        error_details += f" Response: {e.response.text}"
                     formatted_error = format_error_message(error_details)
                     await message.channel.send(formatted_error)

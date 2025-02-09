@@ -2,6 +2,7 @@
 
 - Install [Pylint Extension](https://marketplace.visualstudio.com/items?itemName=ms-python.pylint) on vscode (it is enabled by default)
 - Install [Black Formatter Extension](https://marketplace.visualstudio.com/items?itemName=ms-python.black-formatter) to enable formatting on save
+See documenttaion [Pylint Installation](https://code.visualstudio.com/docs/editor/extension-marketplace)
 
 ## Configuration
 

@@ -1,5 +1,5 @@
 from datetime import datetime
-from crewai import Task, Crew
+from crewai import Crew
 from dotenv import load_dotenv
 from personal_assistant_crew.agents.prepare_invoice.prepare_invoice_agent import (
     prepare_invoice,

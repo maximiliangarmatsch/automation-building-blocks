@@ -8,7 +8,6 @@ from discord.ext import commands
 from discord import Intents
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
-from colorama import init, Fore, Style
 from dotenv import load_dotenv
 from components.pyautogui import gmail
 from components.discord.discord_helper_function import (
@@ -41,7 +40,6 @@ os.makedirs(assets_folder_path, exist_ok=True)
 directory = "./GPTdiscord/chat_history"
 if not os.path.exists(directory):
     os.makedirs(directory)
-init(autoreset=True)
 
 upload_folder = "data"
 os.makedirs(upload_folder, exist_ok=True)

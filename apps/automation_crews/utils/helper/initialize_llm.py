@@ -1,6 +1,6 @@
 import os
 from langchain_groq import ChatGroq
-from langchain_openai import ChatOpenAI
+# from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
 
 load_dotenv()

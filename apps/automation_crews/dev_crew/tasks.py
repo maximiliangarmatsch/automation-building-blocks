@@ -1,5 +1,5 @@
-from crewai import Task
 from textwrap import dedent
+from crewai import Task
 
 
 class Tasks:
