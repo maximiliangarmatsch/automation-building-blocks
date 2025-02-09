@@ -6,7 +6,7 @@ def execute_url(url):
     :return: None
     """
     try:
-        response = requests.get(url)
+        response = requests.get(url, timeout=100)
         if response.status_code == 200:
             print("Execution successful, returned 200.")
         else:

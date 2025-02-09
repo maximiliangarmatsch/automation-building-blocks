@@ -1,6 +1,7 @@
-import asyncio
+# import asyncio
+import traceback
 import discord
-from discord.ext import commands
+# from discord.ext import commands
 
 
 def log_member_join(member, guild_invites, invite_user_data):
@@ -75,6 +76,4 @@ def update_invite_cache(guild_id, current_invite_dict, guild_invites):
 
 def handle_exception(e):
     print(f"Error in on_member_join: {e}")
-    import traceback
-
     traceback.print_exc()

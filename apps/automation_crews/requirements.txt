@@ -26,11 +26,10 @@ flask
 flask-cors
 asgiref
 google-generativeai 
-python-dotenv
-openai
 gunicorn
 colorama
 asyncio
 aiohttp
 regex
 hnswlib
+pylint

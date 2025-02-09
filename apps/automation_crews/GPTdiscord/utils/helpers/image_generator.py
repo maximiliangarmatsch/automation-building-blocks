@@ -1,8 +1,8 @@
 import os
+from io import BytesIO
 import discord
 import requests
 from openai import OpenAI
-from io import BytesIO
 from dotenv import load_dotenv
 from GPTdiscord.utils.helpers.generate_image_helper import (
     parse_image_size,
@@ -32,7 +32,7 @@ async def generate_image(ctx, *, prompt: str):
                 n=1,
             )
             image_url = response.data[0].url
-            image_data = requests.get(image_url).content
+            image_data = requests.get(image_url, timeout=100).content
             image_file = BytesIO(image_data)
             image_file.seek(0)
             unique_filename = generate_unique_filename(prompt)
