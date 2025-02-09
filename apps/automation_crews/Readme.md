@@ -114,3 +114,188 @@ python start_discord.py
 ```
 !dev_crew Project description here (Which you want to develop)
 ```
+## 1. GPTdiscord bot
+
+### Setup
+
+```shell
+pip install -r apps/automation_crews/requirements.txt
+```
+Create .env inside automation-building-blocks and put secrets below
+```shell
+OPENAI_API_KEY = ""
+DISCORD_TOKEN = ""
+HISTORYLENGTH=12
+CHANNEL_IDS=1233073621849866352, 1245390947395698711 
+REGISTERED_CHANNEL_IDS = [1233073621849866352, 1245390947395698711]
+MAX_TOKENS=5000
+MAX_TOKENS_RANDOM=100
+MODEL_CHAT=gpt-4o-mini
+```
+
+### Naviagte to project directory
+
+```shell
+cd apps
+cd automation_crews
+```
+### Run the python script
+```shell
+python start_discord.py
+```
+### Text generation 
+
+```
+!gpt your message here
+```
+
+### Image analysis or insights
+
+```
+!analyze your message here
+```
+
+### Image generation
+
+```
+!generate Image details
+```
+**Note**
+Image generation use dalle-3 which cost around $0.04 per image.  
+
+### Refresh chat history
+
+```
+!refresh 
+```
+## 2. ProActiveDiscord Bot
+
+A Discord bot that creates custom invite links and sends personalized welcome messages to new members when they join using those links.
+
+### Features
+
+- Creates single-use invite links with custom user data
+- Tracks invite usage
+- Sends personalized welcome messages
+- REST API endpoint for invite generation
+
+### Prerequisites
+
+- Python 3.10+
+- Discord Bot Token
+- Discord Developer Portal Access
+
+### Installation
+
+1. Clone the repository
+2. Install dependencies:
+```bash
+pip install discord.py flask python-dotenv quart_cors quart
+```
+3. Create a `.env` file:
+```env
+DISCORD_TOKEN=your_bot_token_here
+```
+
+### Discord Developer configuration
+
+1. Create a Discord application at [Discord Developer Portal](https://discord.com/developers/applications)
+2. Enable required intents:
+   - Server Members Intent
+   - Message Content Intent
+   - Presence Intent
+3. Invite bot to your server with required permissions:
+   - Manage Server
+   - Create Instant Invite
+   - Send Messages
+   - View Channels
+
+### Usage
+
+1. Start the bot:
+```bash
+python flask_discord_server.py.py
+```
+
+2. Generate invite via API:
+```bash
+curl -X POST http://localhost:5000/join-discord \
+  -H "Content-Type: application/json" \
+  -d '{"username": "user123", "server_name": "Your Server", "channel_name": "general", "user_id": "123"}'
+```
+
+### API Endpoint
+
+`POST /join-discord`
+```json
+{
+  "username": "string",
+  "server_name": "string",
+  "channel_name": "string",
+  "user_id": "string"
+}
+```
+## 3. Personal Assistant Crew
+
+### Steps to Run
+
+```shell
+cd apps/automation_crews/personal_assistant_crew
+```
+
+### Run the Setup File
+
+Linux or macOS
+
+```shell
+chmod +x setup.sh
+```
+Windows
+
+```shell
+./setup.sh
+```
+
+### Update ./.env file
+
+```
+OPENAI_API_KEY = ""
+SERPAPI_API_KEY = ""
+CHANNEL_ID = ""
+BITWARDEN_EMAIL = ""
+BITWARDEN_PASSWORD = ""
+DISCORD_TOKEN = ""
+MODEL = gpt-4o-mini
+```
+### Run the python script
+```shell
+python run_crew.py
+```
+
+## 4. Financial Crew
+
+### /.env file
+
+```
+OPENAI_API_KEY = ""
+SERPAPI_API_KEY = ""
+CHANNEL_ID = ""
+DISCORD_TOKEN = ""
+MODEL = gpt-4o-mini
+```
+
+```shell
+python3 ./apps/automation_crews/financial_crew/run_crew.py
+      OR
+python ./apps/automation_crews/financial_crew/run_crew.py
+
+```
+### 5. Dev Crew
+```shell
+source venv/bin/activate
+cd apps/automation_crews/dev_crew
+python app.py
+```
+Example prompt "an ecommerce website for drawings"
+- Output directory is in `apps/automation_crews/dev_crew/generated_src`
+- `allow_code_excecution` is activated in file "...". It allows crewAI to "test" code on the fly
