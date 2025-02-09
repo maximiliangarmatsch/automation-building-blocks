@@ -1,13 +1,12 @@
 import os
-from flask import jsonify
 import sqlite3
-import google.generativeai as genai
+from flask import jsonify
+# import google.generativeai as genai
 
 DB_PATH = "cupid_ai.db"
 
 
 def make_prompt(file_path) -> str:
-    file_path = file_path
     with open(file_path, "r", encoding="utf8") as file:
         prompt = file.read()
     return prompt
