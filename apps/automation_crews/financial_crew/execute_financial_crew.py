@@ -1,9 +1,9 @@
 import os
-from financial_crew.crew import FinnaceCrew
+from financial_crew.crew import FinanceCrew
 
 
 def run_financial_crew():
-    final_response = FinnaceCrew().crew().kickoff()
+    final_response = FinanceCrew().crew().kickoff()
     folder_path = "./financial_crew/assets"
     files = os.listdir(folder_path)
     for file in files:
@@ -17,7 +17,7 @@ async def train_crew():
     try:
         # final_response = FinnaceCrew().crew().train(n_iterations=int(sys.argv[1]))
         final_response = (
-            FinnaceCrew()
+            FinanceCrew()
             .crew()
             .train(n_iterations=1, filename="./financial_crew/trained_data.pkl")
         )
