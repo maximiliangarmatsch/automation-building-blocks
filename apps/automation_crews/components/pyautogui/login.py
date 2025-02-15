@@ -29,7 +29,7 @@ def detect_icon(icon_path: str):
 
 def login_via_bitwarden():
     """
-    login_via_bitwarden method will to the specific url and step by step perfomr action to login to make.com via bitwarden.
+    login_via_bitwarden method will go to specific url and step by step perform action to login to make.com via bitwarden.
 
     Parameters
     ----------

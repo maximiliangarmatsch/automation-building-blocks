@@ -43,7 +43,7 @@ pyautogui._pyautogui_x11._display = Xlib.display.Display(os.environ["DISPLAY"])
 
 def login_via_bitwarden():
     """
-    login_via_bitwarden method will to the specific url and step by step perfomr action to login to make.com via bitwarden.
+    login_via_bitwarden method will go to the specific url and step by step perform action to login to make.com via bitwarden.
 
     Parameters
     ----------
