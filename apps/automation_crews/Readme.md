@@ -100,13 +100,13 @@ python start_discord.py
 ## Run Invoice-Crew from Discord
 
 ```
-!invoice_crew your message here
+!invoice_crew YOUR_MESSAGE
 ```
 
 ## Run Financial-Crew from Discord
 
 ```
-!financial_crew your message here
+!financial_crew YOUR_MESSAGE
 ```
 
 ## Run Dev-Crew from Discord
