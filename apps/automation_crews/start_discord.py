@@ -70,7 +70,11 @@ bot = commands.Bot(command_prefix="/", intents=discord.Intents.all())
 
 # Function to reload modules when a change is detected
 def reload_modules():
-    module_names = ["components.pyautogui.gmail", "financial_crew.execute_financial_crew", "invoice_crew.execute_invoice_crew"]
+    module_names = [
+        "components.pyautogui.gmail",
+        "financial_crew.execute_financial_crew",
+        "invoice_crew.execute_invoice_crew",
+    ]
     for module_name in module_names:
         if module_name in sys.modules:
             print(f"Reloading module: {module_name}")

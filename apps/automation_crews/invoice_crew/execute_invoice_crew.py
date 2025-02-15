@@ -14,7 +14,8 @@ load_dotenv()
 date = datetime.today().strftime("%Y-%m-%d")
 timezone = datetime.now().astimezone().tzinfo
 
-# Create and Execute Agent
+
+# Run Agent
 def run_invoice_crew():
     crew = Crew(agents=[prepare_invoice()], tasks=[invoice_preparation()])
     result = crew.kickoff()
