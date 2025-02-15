@@ -7,7 +7,7 @@
 - Discord
 - `GPTdiscord`: Integrates GPT into Discord
 - `financial_crew`: Conduct financial research
-- `personal_assistant_crew`: Automate tasks like updating gCalendar and gSheet events or sending emails
+- `invoice_crew`: Automate tasks like updating gCalendar and gSheet events or sending emails
 - `dev_crew`: Multi-agnets based Web/App dvelopment tool
 
 ## Use Cases
@@ -97,10 +97,10 @@ python start_discord.py
 ```
 
 
-## Run Assistant-Crew from Discord
+## Run Invoice-Crew from Discord
 
 ```
-!assistant_crew your message here
+!invoice_crew your message here
 ```
 
 ## Run Financial-Crew from Discord

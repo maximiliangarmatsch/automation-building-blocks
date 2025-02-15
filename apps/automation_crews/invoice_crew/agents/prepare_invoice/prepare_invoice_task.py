@@ -1,5 +1,5 @@
 from crewai import Task
-from personal_assistant_crew.agents.prepare_invoice.prepare_invoice_agent import (
+from invoice_crew.agents.prepare_invoice.prepare_invoice_agent import (
     prepare_invoice,
 )
 
