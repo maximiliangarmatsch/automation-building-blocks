@@ -133,14 +133,9 @@ MAX_TOKENS_RANDOM=100
 MODEL_CHAT=gpt-4o-mini
 ```
 
-### Naviagte to project directory
-
+### Start Discord Bot
 ```shell
-cd apps
-cd automation_crews
-```
-### Run the python script
-```shell
+cd apps/automation_crews
 python start_discord.py
 ```
 ### Text generation 
