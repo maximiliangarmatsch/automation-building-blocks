@@ -33,3 +33,5 @@ aiohttp
 regex
 hnswlib
 pylint
+Quart
+quart-cors
