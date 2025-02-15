@@ -1,10 +1,10 @@
 from datetime import datetime
 from crewai import Crew
 from dotenv import load_dotenv
-from personal_assistant_crew.agents.prepare_invoice.prepare_invoice_agent import (
+from invoice_crew.agents.prepare_invoice.prepare_invoice_agent import (
     prepare_invoice,
 )
-from personal_assistant_crew.agents.prepare_invoice.prepare_invoice_task import (
+from invoice_crew.agents.prepare_invoice.prepare_invoice_task import (
     invoice_preparation,
 )
 
@@ -13,15 +13,10 @@ load_dotenv()
 
 date = datetime.today().strftime("%Y-%m-%d")
 timezone = datetime.now().astimezone().tzinfo
-# Setup Todo
 
-
-# Create and Execute Agent.
-def run_personal_assistant_crew():
+# Create and Execute Agent
+def run_invoice_crew():
     crew = Crew(agents=[prepare_invoice()], tasks=[invoice_preparation()])
     result = crew.kickoff()
     print(result)
     return "Crew run initiated", 200
-
-
-# run_personal_assistant_crew()

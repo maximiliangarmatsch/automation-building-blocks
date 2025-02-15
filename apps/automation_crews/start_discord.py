@@ -14,12 +14,12 @@ from components.discord.discord_helper_function import (
     send_message,
     run_finance_crew,
     train_finance_crew,
-    run_assistant_crew,
+    run_invoice_crew,
     run_dev_crew,
 )
 
 import financial_crew.execute_financial_crew as crew
-import personal_assistant_crew.execute_assistant_crew as assistant_crew
+import invoice_crew.execute_invoice_crew as invoice_crew
 from dev_crew.app import WebsiteDevCrew
 from GPTdiscord.utils.helpers.discord_helper import (
     handle_gpt_command,
@@ -70,7 +70,7 @@ bot = commands.Bot(command_prefix="/", intents=discord.Intents.all())
 
 # Function to reload modules when a change is detected
 def reload_modules():
-    module_names = ["components.pyautogui.gmail", "financial_crew.execute_financial_crew", "personal_assistant_crew.execute_assistant_crew"]
+    module_names = ["components.pyautogui.gmail", "financial_crew.execute_financial_crew", "invoice_crew.execute_invoice_crew"]
     for module_name in module_names:
         if module_name in sys.modules:
             print(f"Reloading module: {module_name}")
@@ -130,9 +130,9 @@ async def on_message(message: discord.Message) -> None:
         await run_finance_crew(
             message, user_message[len("!finance_crew") :].strip(), crew, gmail
         )
-    elif user_message.startswith("!assistant_crew"):
-        await run_assistant_crew(
-            message, user_message[len("!assistant_crew") :].strip(), assistant_crew
+    elif user_message.startswith("!invoice_crew"):
+        await run_invoice_crew(
+            message, user_message[len("!invoice_crew") :].strip(), invoice_crew
         )
     elif user_message.startswith("!dev_crew"):
         await run_dev_crew(

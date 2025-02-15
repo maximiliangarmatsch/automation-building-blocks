@@ -76,8 +76,8 @@ async def run_finance_crew(
         print(f"An error occurred while sending a message: {e}")
 
 
-async def run_assistant_crew(
-    message: discord.Message, user_message: str, assistant_crew
+async def run_invoice_crew(
+    message: discord.Message, user_message: str, invoice_crew
 ) -> None:
 
     if not user_message:
@@ -88,7 +88,7 @@ async def run_assistant_crew(
     if is_private:
         user_message = user_message[1:]
     try:
-        crew_response = str(assistant_crew.run_personal_assistant_crew())
+        crew_response = str(invoice_crew.run_invoice_crew())
         response = crew_response
         chunks = [response[i : i + 2000] for i in range(0, len(response), 2000)]
         for chunk in chunks:
