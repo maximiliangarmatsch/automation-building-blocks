@@ -45,7 +45,7 @@ brew install --cask xquartz
 ```
 
 
-## Create .apps/automations_crews/.env file
+## Create .env file in .apps/automations_crews
 OPENAI_API_KEY = ""
 SERPAPI_API_KEY = ""
 CHANNEL_ID = ""
@@ -54,13 +54,13 @@ BITWARDEN_PASSWORD = ""
 DISCORD_TOKEN = ""
 GROQ_API_KEY = ""
 HISTORYLENGTH=12
-CHANNEL_IDS=1233073621849866352 //Garmatsch-Server: "ai-testing"
+CHANNEL_IDS=1233073621849866352 //"Garmatsch"-Server: "ai-testing"-Channel
 REGISTERED_CHANNEL_IDS = [1233073621849866352] //Garmatsch-Server: "ai-testing"
 MAX_TOKENS=5000
 MAX_TOKENS_RANDOM=100
 MODEL_CHAT=gpt-4o-mini
 
-## Setup Python, Database, Requirements
+## Install Python Requirements
 
 ```shell
 python3 -m venv venv
@@ -71,7 +71,7 @@ pip install -r apps/automation_crews/requirements.txt
 ```
 
 
-### Login to Compose.io (in Browser)
+## Login to Compose.io (in Browser)
 10000 actions/month free
 ```shell
 
@@ -83,7 +83,7 @@ composio add googlesheets
 
 ```
 
-### Start Discord-Server
+## Start Discord-Server locally
 
 ```shell
 cd apps/automation_crews
@@ -97,144 +97,50 @@ python start_discord.py
 ```
 
 
-## Run Assistant-Crew
+## Run Assistant-Crew from Discord
 
 ```
 !assistant_crew your message here
 ```
 
-## Run Financial-Crew
+## Run Financial-Crew from Discord
 
 ```
 !financial_crew your message here
 ```
 
-## Run Dev-Crew
+## Run Dev-Crew from Discord
 
 ```
 !dev_crew Project description here (Which you want to develop)
 ```
-## 1. GPTdiscord bot
 
-### Setup
 
-```shell
-pip install -r apps/automation_crews/requirements.txt
-```
-Create .env inside automation-building-blocks and put secrets below
-```shell
-OPENAI_API_KEY = ""
-DISCORD_TOKEN = ""
-HISTORYLENGTH=12
-CHANNEL_IDS=1233073621849866352, 1245390947395698711 
-REGISTERED_CHANNEL_IDS = [1233073621849866352, 1245390947395698711]
-MAX_TOKENS=5000
-MAX_TOKENS_RANDOM=100
-MODEL_CHAT=gpt-4o-mini
-```
+## Usages
 
-### Start Discord Bot
-```shell
-cd apps/automation_crews
-python start_discord.py
-```
 ### Text generation 
-
 ```
 !gpt your message here
 ```
 
 ### Image analysis or insights
-
 ```
 !analyze your message here
 ```
 
-### Image generation
-
+### Image generation (Uses dalle-3, ~$0.04 per image)
 ```
 !generate Image details
 ```
-**Note**
-Image generation uses dalle-3 (~$0.04 per image)
 
 ### Refresh chat history
-
 ```
 !refresh 
 ```
-## 2. ProActiveDiscord Bot
 
-A Discord bot that creates custom invite links and sends personalized welcome messages to new members when they join using those links.
 
-### Features
-
-- Creates single-use invite links with custom user data
-- Tracks invite usage
-- Sends personalized welcome messages
-- REST API endpoint for invite generation
-
-### Prerequisites
-
-- Python 3.10+
-- Discord Bot Token
-- Discord Developer Portal Access
-
-### Installation
-
-1. Clone the repository
-2. Install dependencies:
-```bash
-pip install discord.py flask python-dotenv quart_cors quart
-```
-3. Create a `.env` file:
-```env
-DISCORD_TOKEN=your_bot_token_here
-```
-
-### Discord Developer configuration
-
-1. Create a Discord application at [Discord Developer Portal](https://discord.com/developers/applications)
-2. Enable required intents:
-   - Server Members Intent
-   - Message Content Intent
-   - Presence Intent
-3. Invite bot to your server with required permissions:
-   - Manage Server
-   - Create Instant Invite
-   - Send Messages
-   - View Channels
-
-### Usage
-
-1. Start ProActive Discord Bot
-```bash
-cd ./apps/automation_crews/ProActiveDiscord
-python flask_discord_server.py
-```
-
-2. Generate invite via API:
-```bash
-curl -X POST http://localhost:5000/join-discord \
-  -H "Content-Type: application/json" \
-  -d '{"username": "user123", "server_name": "Your Server", "channel_name": "general", "user_id": "123"}'
-```
-
-### API Endpoint
-
-`POST /join-discord`
-```json
-{
-  "username": "string",
-  "server_name": "string",
-  "channel_name": "string",
-  "user_id": "string"
-}
-```
-
-## 3. Personal Assistant Crew
-
-### Setup Composio and Run Personal Assistant Crew
+## Run Crews individually 
+### 1. Personal Assistant Crew (and Setup Composio)
 ```shell
 cd ./apps/automation_crews
 
@@ -244,11 +150,12 @@ chmod +x setup_composio.sh
 [Windows]
 ./setup_composio.sh
 
-python run_crew.py
+//TODO IS THIS CORRECT?
+python run_crew.py 
 ```
 
 
-## 4. Financial Crew
+### 2. Financial Crew
 ```shell
 cd ./apps/automation_crews/financial_crew
 python3 run_crew.py
@@ -258,7 +165,7 @@ python run_crew.py
 ```
 
 
-### 5. Dev Crew
+### 3. Dev Crew
 ```shell
 cd apps/automation_crews/dev_crew
 python app.py
