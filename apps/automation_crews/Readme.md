@@ -109,10 +109,12 @@ python start_discord.py
 !finance_crew YOUR_MESSAGE
 ```
 
-## Run Dev-Crew from Discord
+## Run Dev-Crew from Discord 
 
 ```
-!dev_crew Project description here (Which you want to develop)
+!dev_crew PROJECT_DESCRIPTION (Which you want developed)
+Example PROJECT_DESCRIPTION: !dev_crew "An ecommerce website for drawings"
+
 ```
 
 
