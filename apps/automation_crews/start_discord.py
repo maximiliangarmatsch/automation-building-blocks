@@ -18,7 +18,7 @@ from components.discord.discord_helper_function import (
     run_dev_crew,
 )
 
-import financial_crew.execute_financial_crew as crew
+import finance_crew.execute_finance_crew as crew
 import invoice_crew.execute_invoice_crew as invoice_crew
 from dev_crew.app import WebsiteDevCrew
 from GPTdiscord.utils.helpers.discord_helper import (
@@ -34,7 +34,7 @@ from GPTdiscord.utils.helpers.image_analyzer import image_analyzer
 
 load_dotenv()
 
-assets_folder_path = "./financial_crew/assets"
+assets_folder_path = "./finance_crew/assets"
 os.makedirs(assets_folder_path, exist_ok=True)
 
 directory = "./GPTdiscord/chat_history"
@@ -72,7 +72,7 @@ bot = commands.Bot(command_prefix="/", intents=discord.Intents.all())
 def reload_modules():
     module_names = [
         "components.pyautogui.gmail",
-        "financial_crew.execute_financial_crew",
+        "finance_crew.execute_finance_crew",
         "invoice_crew.execute_invoice_crew",
     ]
     for module_name in module_names:

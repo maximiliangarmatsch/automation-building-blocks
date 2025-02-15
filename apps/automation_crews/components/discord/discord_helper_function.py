@@ -32,7 +32,7 @@ async def send_message(
                         await message.channel.send(chunk)
 
             else:
-                crew_response = str(crew.run_financial_crew())
+                crew_response = str(crew.run_finance_crew())
                 response = (
                     response
                     + "\n\n"
@@ -64,7 +64,7 @@ async def run_finance_crew(
     if is_private:
         user_message = user_message[1:]
     try:
-        crew_response = str(crew.run_financial_crew())
+        crew_response = str(crew.run_finance_crew())
         response = crew_response
         chunks = [response[i : i + 2000] for i in range(0, len(response), 2000)]
         for chunk in chunks:
