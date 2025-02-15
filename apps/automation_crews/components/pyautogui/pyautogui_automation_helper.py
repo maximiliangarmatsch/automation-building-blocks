@@ -66,7 +66,7 @@ def show_custom_message(title, text, duration = 3):
 
 def move_pdf_to_finance_assets():
     source_dir = "./data"
-    destination_dir = "./financial_crew/assets"
+    destination_dir = "./finance_crew/assets"
     files = os.listdir(source_dir)
     for file_name in files:
         source_file = os.path.join(source_dir, file_name)

@@ -6,8 +6,8 @@
 - CrewAI
 - Discord
 - `GPTdiscord`: Integrates GPT into Discord
-- `financial_crew`: Conduct financial research
-- `invoice_crew`: Automate tasks like updating gCalendar and gSheet events or sending emails
+- `finance_crew`: Conduct financial research
+- `invoice_crew`: Update fields in gSheet and trigger gSheet-Script
 - `dev_crew`: Multi-agnets based Web/App dvelopment tool
 
 ## Use Cases
@@ -103,10 +103,10 @@ python start_discord.py
 !invoice_crew YOUR_MESSAGE
 ```
 
-## Run Financial-Crew from Discord
+## Run Finance-Crew from Discord
 
 ```
-!financial_crew YOUR_MESSAGE
+!finance_crew YOUR_MESSAGE
 ```
 
 ## Run Dev-Crew from Discord
@@ -155,9 +155,9 @@ python run_crew.py
 ```
 
 
-### 2. Financial Crew
+### 2. Finance Crew
 ```shell
-cd ./apps/automation_crews/financial_crew
+cd ./apps/automation_crews/finance_crew
 python3 run_crew.py
       OR
 python run_crew.py
