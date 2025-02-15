@@ -156,7 +156,7 @@ python start_discord.py
 !generate Image details
 ```
 **Note**
-Image generation use dalle-3 which cost around $0.04 per image.  
+Image generation uses dalle-3 (~$0.04 per image)
 
 ### Refresh chat history
 
@@ -207,9 +207,10 @@ DISCORD_TOKEN=your_bot_token_here
 
 ### Usage
 
-1. Start the bot:
+1. Start ProActive Discord Bot
 ```bash
-python flask_discord_server.py.py
+cd ./apps/automation_crews/ProActiveDiscord
+python flask_discord_server.py
 ```
 
 2. Generate invite via API:
@@ -230,58 +231,35 @@ curl -X POST http://localhost:5000/join-discord \
   "user_id": "string"
 }
 ```
+
 ## 3. Personal Assistant Crew
 
-### Run the Setup File
-
-Linux or macOS
-
+### Setup Composio and Run Personal Assistant Crew
 ```shell
-chmod +x setup.sh
-```
-Windows
+cd ./apps/automation_crews
 
-```shell
-./setup.sh
-```
+[Linux or macOS]
+chmod +x setup_composio.sh
 
-### Update ./.env file
+[Windows]
+./setup_composio.sh
 
-```
-OPENAI_API_KEY = ""
-SERPAPI_API_KEY = ""
-CHANNEL_ID = ""
-BITWARDEN_EMAIL = ""
-BITWARDEN_PASSWORD = ""
-DISCORD_TOKEN = ""
-MODEL = gpt-4o-mini
-```
-### Run the python script
-```shell
 python run_crew.py
 ```
 
+
 ## 4. Financial Crew
-
-### /.env file
-
-```
-OPENAI_API_KEY = ""
-SERPAPI_API_KEY = ""
-CHANNEL_ID = ""
-DISCORD_TOKEN = ""
-MODEL = gpt-4o-mini
-```
-
 ```shell
-python3 ./apps/automation_crews/financial_crew/run_crew.py
+cd ./apps/automation_crews/financial_crew
+python3 run_crew.py
       OR
-python ./apps/automation_crews/financial_crew/run_crew.py
+python run_crew.py
 
 ```
+
+
 ### 5. Dev Crew
 ```shell
-source venv/bin/activate
 cd apps/automation_crews/dev_crew
 python app.py
 ```
