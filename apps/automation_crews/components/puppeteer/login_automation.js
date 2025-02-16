@@ -1,10 +1,9 @@
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import puppeteer from "puppeteer-extra";
-import readline from "readline";
 import dotenv from "dotenv";
 dotenv.config();
 import { readPromptFromFile, askQuestion } from "./helper.js";
-import { fetchEmailsAndAttachments } from "./components/puppeteer/automation_response.js";
+import { fetchEmailsAndAttachments } from "./automation_response.js";
 const stealth = StealthPlugin();
 stealth.enabledEvasions.delete("iframe.contentWindow");
 stealth.enabledEvasions.delete("media.codecs");
@@ -23,7 +22,7 @@ export async function loginGoogle_navigateToGmail(userInput) {
 
   // Read GPT main prompt from text file
   const main_prompt = await readPromptFromFile(
-    "./src/components/puppeteer/prompts/openai_prompt.txt"
+    "./components/puppeteer/prompts/openai_prompt.txt"
   );
   const messages = [
     {
@@ -35,9 +34,7 @@ export async function loginGoogle_navigateToGmail(userInput) {
   console.log(prompt);
   messages.push({ role: "user", content: prompt });
 
-  // Initialize variables
   let url = process.env.LOGIN_URL;
-  let action_exists = false;
   let email = process.env.EMAIL;
   let phone = process.env.PHONE;
   let password = process.env.PASSWORD;
@@ -53,7 +50,6 @@ export async function loginGoogle_navigateToGmail(userInput) {
     }
   }
 
-  // Navigate to requested URL
   while (true) {
     if (url) {
       await page.goto(url, {
@@ -61,19 +57,14 @@ export async function loginGoogle_navigateToGmail(userInput) {
       });
       if (email && password) {
         try {
-          // Wait for the email input and fill it
           await page.waitForSelector('input[type="email"]', { timeout: 60000 });
           await page.type('input[type="email"]', email);
-
-          // Click the next button after entering the email
-          const emailNextButtonSelector = "#identifierNext";
+          const emailNextButtonSelector = "#identifierNext"; // Click the next button after entering the email
           await page.waitForSelector(emailNextButtonSelector, {
             timeout: 60000,
           });
           await page.click(emailNextButtonSelector);
-
-          // Wait for navigation to the password page
-          await page.waitForNavigation({ waitUntil: "networkidle0" });
+          await page.waitForNavigation({ waitUntil: "networkidle0" }); // Wait for navigation to the password page
 
           // Wait for the password input to appear
           await page.waitForSelector('input[type="password"]', {
@@ -86,9 +77,7 @@ export async function loginGoogle_navigateToGmail(userInput) {
           await page.waitForSelector(passwordNextButtonSelector, {
             timeout: 60000,
           });
-
-          // Ensure the button is visible and enabled
-          const passwordNextButton = await page.$(passwordNextButtonSelector);
+          const passwordNextButton = await page.$(passwordNextButtonSelector); // Ensure the button is visible and enabled
           await page.evaluate(
             (button) => button.scrollIntoView(),
             passwordNextButton
@@ -99,7 +88,6 @@ export async function loginGoogle_navigateToGmail(userInput) {
             passwordNextButton
           );
 
-          console.log("Clicking the password next button...");
           await passwordNextButton.click();
 
           // Wait for the navigation to complete after logging in
@@ -120,12 +108,9 @@ export async function loginGoogle_navigateToGmail(userInput) {
           await page.evaluate((selector) => {
             document.querySelector(selector).scrollIntoView();
           }, sendButtonSelector);
+          await new Promise((r) => setTimeout(r, 500)); // Wait for a short moment to ensure the button is clickable
 
-          // Wait for a short moment to ensure the button is clickable
-          await new Promise((r) => setTimeout(r, 500));
-
-          // Click the "Send" button
-          await page.click(sendButtonSelector);
+          await page.click(sendButtonSelector); // Click the "Send" button
           await page.waitForNavigation({ waitUntil: "networkidle0" });
 
           // Prompt the user to enter the verification code
@@ -145,15 +130,13 @@ export async function loginGoogle_navigateToGmail(userInput) {
             await page.click(
               ".VfPpkd-LgbsSe.VfPpkd-LgbsSe-OWXEXe-k8QpJ.VfPpkd-LgbsSe-OWXEXe-dgl2Hf.nCP5yc.AjY5Oe.DuMIQc.LQeN7.BqKGqe.Jskylb.TrZEUc.lw1w4b"
             );
-            // Wait for navigation
             await page.waitForNavigation();
             login_status = true;
 
             const [result, updatedPage, updatedBrowser] =
               await fetchEmailsAndAttachments(userInput, page, browser);
 
-            // Return response data
-            return [result, updatedPage, login_status, updatedBrowser];
+            return [result, updatedPage, login_status, updatedBrowser]; // Return response data
           } catch (error) {
             console.log("Login failed or navigation error:", error);
           }
