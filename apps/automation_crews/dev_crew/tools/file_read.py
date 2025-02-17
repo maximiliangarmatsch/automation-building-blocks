@@ -1,15 +1,26 @@
-import os
+from typing import Type, Optional
 from langchain.tools import BaseTool
+from pydantic import BaseModel
 
 
-class FileRead(BaseTool):
-    name: str = "File_Read_Tool"
-    description: str = "Use this tool to read content from a file"
+class FileReadSchema(BaseModel):
+    file_path: str
 
-    def run(self, file_path: str) -> str:
+
+class FileRead:
+    name = "File_Read_Tool"
+    description = "Use this tool to read content from a file"
+    args_schema = FileReadSchema
+
+    def __init__(self):
+        pass
+
+    def func(self, file_path: str) -> str:
+        """Execute the file read tool."""
+        import os
+
         if not os.path.exists(file_path):
             return f"Error: The file {file_path} does not exist."
-
         try:
             with open(file_path, "r", encoding="utf-8") as file:
                 content = file.read()
@@ -17,5 +28,6 @@ class FileRead(BaseTool):
         except Exception as e:
             return f"Error reading file: {str(e)}"
 
-    def arun(self, file_path: str):
+    async def _arun(self, file_path: str) -> str:
+        """Execute the file read tool asynchronously."""
         raise NotImplementedError("FileReadTool does not support async")

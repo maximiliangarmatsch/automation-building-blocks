@@ -1,9 +1,8 @@
 import os
 import sys
 import importlib
-import openai
-import discord
 from openai import OpenAI
+import discord
 from discord.ext import commands
 from discord import Intents
 from watchdog.observers import Observer
@@ -54,7 +53,6 @@ registered_channels_ids = [
 ]
 
 client = OpenAI(api_key=openai_api_key)
-openai.api_key = openai_api_key
 user_chat_history = {}
 intents = discord.Intents.default()
 intents.messages = True

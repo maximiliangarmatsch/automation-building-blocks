@@ -1,11 +1,15 @@
 from crewai import Agent
 from dev_crew.tools.file_write import FileWrite
+from dev_crew.tools.file_read import FileRead
 from utils.helper.initialize_llm import llm
 
 
 class Agents:
     def __init__(self, project_description):
         self.project_description = project_description
+        # Instantiate tools once
+        self.file_write = FileWrite()
+        self.file_read = FileRead()
 
     def project_manager(self) -> Agent:
         return Agent(
@@ -34,9 +38,9 @@ class Agents:
             backstory="You're a senior frontend expert with a lot of experience, specializing in React, TailwindCSS and the ecosystem of tools surrounding React. You're passionate about creating seamless user experiences, beautiful UI and have a strong foundation in web performance optimization and progressive enhancement techniques. You also know how to document starting your app in a markdown file.",
             allow_delegation=False,
             verbose=True,
-            allow_code_execution=True,
+            allow_code_execution=False,
             llm=llm,
-            tools=[FileWrite()],
+            tools=[self.file_write, self.file_read],
         )
 
     def backend_developer(self) -> Agent:
@@ -46,9 +50,9 @@ class Agents:
             backstory="With a lot of backend development experience, you're proficient in languages like Python, GraphQL, NestJs and Node.js, and have extensive knowledge of database systems and cloud platforms. You've successfully built and maintained high-traffic web applications and are well-versed in microservices architecture. You also know how to document starting your app in a markdown file.",
             allow_delegation=False,
             verbose=True,
-            allow_code_execution=True,
+            allow_code_execution=False,
             llm=llm,
-            tools=[FileWrite()],
+            tools=[self.file_write, self.file_read],
         )
 
     def content_writer(self) -> Agent:

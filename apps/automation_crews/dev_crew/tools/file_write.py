@@ -1,12 +1,21 @@
-import os
-from langchain.tools import BaseTool
+from pydantic import BaseModel
+from typing import Optional
 
 
-class FileWrite(BaseTool):
-    name: str = "File_Write_Tool"
-    description: str = "Use this tool to write content to a file"
+class FileWriteSchema(BaseModel):
+    file_path: str
+    content: str
 
-    def run(self, file_path: str, content: str) -> str:
+
+class FileWrite:
+    name = "File_Write_Tool"
+    description = "Use this tool to write content to a file"
+    args_schema = FileWriteSchema
+
+    def func(self, file_path: str, content: str) -> str:
+        """Execute the file write tool."""
+        import os
+
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
         try:
             with open(file_path, "w", encoding="utf-8") as file:
@@ -15,5 +24,6 @@ class FileWrite(BaseTool):
         except Exception as e:
             return f"Error writing to file: {str(e)}"
 
-    def arun(self, file_path: str, content: str):
+    async def _arun(self, file_path: str, content: str) -> str:
+        """Execute the file write tool asynchronously."""
         raise NotImplementedError("FileWriteTool does not support async")

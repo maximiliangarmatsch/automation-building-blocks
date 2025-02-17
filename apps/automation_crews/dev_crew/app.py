@@ -2,6 +2,7 @@
 from crewai import Crew, Process
 from dev_crew._agents import Agents
 from dev_crew.tasks import Tasks
+
 # from utils.helper.initialize_llm import llm
 
 
@@ -40,10 +41,10 @@ class WebsiteDevCrew:
         result = crew.kickoff()
         return result
 
-
-# if __name__ == "__main__":
-#     print("==========================================")
-#     project = input("What Project would you like to build: \n")
-#     website_crew = WebsiteDevCrew(project_description=project)
-#     result = website_crew.run()
-#     print(result)
+# Un-Comment to run without Discord Bot
+if __name__ == "__main__":
+    print("==========================================")
+    project = input("What Project would you like to build: \n")
+    website_crew = WebsiteDevCrew(project_description=project)
+    result = website_crew.run()
+    print(result)
