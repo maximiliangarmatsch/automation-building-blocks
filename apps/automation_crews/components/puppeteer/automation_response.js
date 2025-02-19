@@ -1,36 +1,30 @@
-/*
-website automation main module
-*/
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import puppeteer from "puppeteer-extra";
 import OpenAI from "openai";
 import dotenv from "dotenv";
-dotenv.config();
-
-// Module Import
-import { processAllFiles } from "./pdf_reader.js";
 import {
-  checkFolderIsEmpty,
-  downloadEmailAttachement,
   imageToBase64,
   sleep,
   highlightLinks,
   waitForEvent,
   readPromptFromFile,
 } from "./helper.js";
+import {
+  handleEmailNavigation,
+  handleAttachmentDownload,
+  processGPTResponse,
+} from "./automation_response_helper.js";
+dotenv.config();
 
-// Pupeteer stealth for pupeteer plugins
-const stealth = StealthPlugin();
+const stealth = StealthPlugin(); // Pupeteer stealth configuration
 stealth.enabledEvasions.delete("iframe.contentWindow");
 stealth.enabledEvasions.delete("media.codecs");
 puppeteer.use(stealth);
 
-// Extract Text From PDF Variables
 const folderPath = "./data";
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const timeout = 8000;
 
-// Intialize workflow
 export async function fetchEmailsAndAttachments(
   userInput,
   web_page,
@@ -38,246 +32,89 @@ export async function fetchEmailsAndAttachments(
 ) {
   const browser = web_browser;
   const page = web_page;
+
+  // Set viewport
   await page.setViewport({
     width: 1200,
     height: 1200,
     deviceScaleFactor: 1.75,
   });
-  // Read GPT main prompt from text file
+
   const main_prompt = await readPromptFromFile(
-    "./src/components/puppeteer/prompts/openai_prompt.txt"
+    "./components/puppeteer/prompts/openai_prompt.txt"
   );
-  // Format Prompt
   const messages = [
-    {
-      role: "system",
-      content: main_prompt,
-    },
+    { role: "system", content: main_prompt },
+    { role: "user", content: userInput },
   ];
 
-  // Get user input
-  const prompt = userInput;
-  console.log(prompt);
-
-  // Push user prompt to main Prompt
-  messages.push({
-    role: "user",
-    content: prompt,
-  });
-  //Intialize variables
-  let action_take = false;
-  let download_attachement_file = false;
+  // Initialize state variables
   let screenshot_taken = false;
   let openai_final_response = "";
   let action = "";
   let unread_email = false;
-  // Get action from User input.
-  if (prompt.toLowerCase()) {
-    const actionMatch = prompt.match(/Action:(\S+)/);
-    if (actionMatch) {
-      action = actionMatch[1];
-      action_take = true;
-    }
+  let download_attachement_file = false;
+
+  // Extract action from user input
+  if (userInput.toLowerCase()) {
+    const actionMatch = userInput.match(/Action:(\S+)/);
+    action = actionMatch ? actionMatch[1] : "";
   }
-  // Start to navigate the requested URL
+
   while (true) {
     if (page) {
       try {
         // Navigate to Gmail
         await page.goto("https://mail.google.com/mail/");
-        console.log("Navigated to Gmail.");
-        // Wait for navigation after login
         await page.waitForNavigation({ waitUntil: "networkidle2" });
 
-        // Change login status
         await highlightLinks(page);
-        await page.screenshot({
-          path: "screenshot_emails.jpg",
-          quality: 100,
-        });
+        await page.screenshot({ path: "screenshot_emails.jpg", quality: 100 });
 
-        // Check user action is open unread email or other navigation
-        if (action_take) {
-          try {
-            // Wait for the unread emails to load (optional increase of timeout)
-            await page.waitForSelector("tr.zA.zE", { visible: true });
+        // Handle email navigation if action is specified
+        if (action) {
+          [unread_email, download_attachement_file, openai_final_response] =
+            await handleEmailNavigation(page);
 
-            // Check if the first unread email exists
-            const firstUnreadEmail = await page.$("tr.zA.zE");
-            if (firstUnreadEmail) {
-              await firstUnreadEmail.click({ delay: 100 });
-              unread_email = true;
-            } else {
-              console.log("No Unread email found");
-              unread_email = false;
-            }
-          } catch (error) {
-            if (error.name === "TimeoutError") {
-              console.log("No Unread email found");
-              download_attachement_file = false;
-              openai_final_response = "No Unread email found";
-              break;
-            } else {
-              console.error("Error occurred:", error);
-            }
+          if (openai_final_response === "No Unread email found") {
+            break;
           }
 
-          // Check for Email Attachment
-          try {
-            // Wait for the email content to load
-            await page.waitForSelector("a.aQy.aZr.e");
-
-            // Get the URL of the attachment and modify disp parameter to 'safe'
-            const attachmentUrl = await page.evaluate(() => {
-              const anchor = document.querySelector("a.aQy.aZr.e");
-              if (anchor) {
-                let url = anchor.href;
-                url = url.replace("disp=inline", "disp=safe");
-                return url;
-              }
-              return null;
-            });
-
-            // Download the email attachment in specified folder or path.
-            downloadEmailAttachement(page, attachmentUrl);
-
-            // wait for 3 seconds to download the file.
-            await sleep(3000);
-
-            // check attachment file download or not.
-            (async () => {
-              const folderPath = "./data"; // Replace with your actual folder path
-              const isDownloaded = await checkFolderIsEmpty(folderPath);
-              if (isDownloaded) {
-                download_attachement_file = true;
-              } else {
-                download_attachement_file = false;
-              }
-            })();
-          } catch (error) {
-            if (error.name === "TimeoutError") {
-              console.log("Email attachement not found");
-              download_attachement_file = false;
-            } else {
-              // Handle other potential errors
-              console.error("Error occurred:", error);
-            }
+          // Handle attachment download if email is found
+          if (unread_email) {
+            download_attachement_file = await handleAttachmentDownload(page);
           }
         }
+
+        // Take screenshot of current state
+        await highlightLinks(page);
+        await Promise.race([waitForEvent(page, "load"), sleep(timeout)]);
+        await page.screenshot({ path: "screenshot.jpg", quality: 100 });
+        screenshot_taken = true;
       } catch (error) {
-        console.error("Error during login:", error);
+        console.error("Error during operation:", error);
       }
-      await highlightLinks(page);
-      await Promise.race([waitForEvent(page, "load"), sleep(timeout)]);
-
-      await highlightLinks(page);
-
-      await page.screenshot({
-        path: "screenshot.jpg",
-        quality: 100,
-      });
-
-      screenshot_taken = true;
-      url = null;
     }
-    // LLM Text Based Response
+
+    // Process response based on email state
     if (unread_email) {
-      const base64_image = await imageToBase64("screenshot.jpg");
-      // GPT promtp to response from screenshots.
-      messages.push({
-        role: "user",
-        content: [
-          {
-            type: "image_url",
-            image_url: {
-              url: base64_image,
-            },
-          },
-          {
-            type: "text",
-            text: "Here's the screenshot of the email just Give me the Summary of Email in bullet points.",
-          },
-        ],
-      });
-
-      const response_screenshot = await openai.chat.completions.create({
-        model: "gpt-4o",
-        max_tokens: 1024,
-        messages: messages,
-      });
-
-      const message_screenshot = response_screenshot.choices[0].message;
-      const message_text_screenshot = message_screenshot.content;
-
-      messages.push({
-        role: "assistant",
-        content: message_text_screenshot,
-      });
-      // Check if the attchement found with Email or not
-      let extractedText = "";
-      if (download_attachement_file) {
-        // Extract content from PDF file
-        processAllFiles(folderPath)
-          .then((pdfContent) => {
-            extractedText = pdfContent;
-            console.log("Extracted PDF Content");
-          })
-          .catch((error) => {
-            console.error("Error extracting PDF content:", error);
-          });
-        await sleep(3000);
-      }
-      // GPT prompt to reponse from PDF
-      messages.push({
-        role: "user",
-        content: [
-          {
-            type: "text",
-            text: `As an helpfull assiatnt read the below context carefully and provide the Account summary from given bank statement in bullet points Only. Remember that do not include any information whihc is not relevent to context. If context not given then say Email has no attachment.
-                        CONTEXT: ${extractedText}.
-                        Example Response:
-
-                        `,
-          },
-        ],
-      });
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o",
-        max_tokens: 1024,
-        messages: messages,
-      });
-      const message = response.choices[0].message;
-      const message_text = message.content;
-      messages.push({
-        role: "assistant",
-        content: message_text,
-      });
-      // Format output
-      const openai_final_response = `
-            **# Email Summary #**
-            
-            ${message_text_screenshot}
-            
-            **# Email Attachment Summary #**
-            
-            ${message_text}
-            `;
-
-      // Return reponse data
-      return [openai_final_response, page, browser];
+      const response = await processGPTResponse(
+        messages,
+        openai,
+        download_attachement_file,
+        folderPath
+      );
+      return [response, page, browser];
     }
-    // LLM Actions Based Response
+    // Handle screenshot-based navigation
     else if (screenshot_taken) {
       const base64_image = await imageToBase64("screenshot.jpg");
-      // GPT promtp to response from screenshots.
       messages.push({
         role: "user",
         content: [
           {
             type: "image_url",
-            image_url: {
-              url: base64_image,
-            },
+            image_url: { url: base64_image },
           },
           {
             type: "text",
@@ -285,74 +122,28 @@ export async function fetchEmailsAndAttachments(
           },
         ],
       });
-
       screenshot_taken = false;
     } else {
-      console.log("No Context OR Action Given");
       return ["No Context OR Action Given", page, browser];
     }
+
+    // Process GPT response and handle navigation
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
       max_tokens: 1024,
       messages: messages,
     });
-    const message = response.choices[0].message;
-    const message_text = message.content;
 
-    messages.push({
-      role: "assistant",
-      content: message_text,
-    });
-    console.log("GPT: " + message_text);
+    const message_text = response.choices[0].message.content;
+    messages.push({ role: "assistant", content: message_text });
 
-    // Check GPT predicted action
-    if (message_text.indexOf('{"click": "') !== -1) {
-      let parts = message_text.split('{"click": "');
-      parts = parts[1].split('"}');
-      const link_text = parts[0]
-        .replace(/[^a-zA-Z0-9 ]/g, "")
-        .toLocaleLowerCase();
-      link_text.toLocaleLowerCase();
-      console.log("Navigating to link " + link_text);
-      // Check GPT suggest any action or not
-      try {
-        if (link_text != "compose") {
-          let navogation_url = `https://mail.google.com/mail/u/0/#${link_text}`;
-          await page.goto(navogation_url);
-          // Wait for navigation
-          await page.waitForNavigation({ waitUntil: "networkidle2" });
-          console.log("Successful. navigate the page.");
-          //Highlight the href or buttons on new page
-          await highlightLinks(page);
-
-          // Take screenshot of navigated page
-          await page.screenshot({
-            path: "screenshot.jpg",
-            quality: 100,
-          });
-          screenshot_taken = true;
-          console.log("Screenshot taken.");
-        } else if (link_text == "compose") {
-          let current_page_url = page.url();
-          let navogation_url = `${current_page_url}?${link_text}=new`;
-          console.log(navogation_url);
-        } else {
-          throw new Error("Can't find link");
-        }
-      } catch (error) {
-        console.log("Failed to click on the link: " + error.message);
-      }
-    } else if (message_text.indexOf('{"url": "') !== -1) {
-      let parts = message_text.split('{"url": "');
-      parts = parts[1].split('"}');
-      url = parts[0];
+    // Handle navigation based on GPT response
+    if (message_text.includes('{"click": "')) {
+      await handleLinkNavigation(page, message_text);
+    } else if (message_text.includes('{"url": "')) {
     } else {
-      openai_final_response = message_text;
-
-      // Return response data
-      return [openai_final_response, page, browser];
+      return [message_text, page, browser];
     }
   }
-  // Return response data.
   return [openai_final_response, page, browser];
 }
