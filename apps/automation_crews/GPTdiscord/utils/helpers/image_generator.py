@@ -20,7 +20,7 @@ client = OpenAI(api_key=openai_api_key)
 openai.api_key = openai_api_key
 
 
-async def generate_image(ctx, *, prompt: str):
+async def generate_image(ctx, prompt: str):
     try:
         prompt, size = parse_image_size(prompt)
         async with ctx.typing():
