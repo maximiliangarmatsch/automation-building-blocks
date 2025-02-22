@@ -98,7 +98,7 @@ async def handle_gpt_command(message, bot):
 
     if message.attachments:
         await handle_image_attachments(message, is_mentioned)
-        return
+        # Do not return here; let the function continue
 
     if should_respond:
         await handle_chat_response(message, user_message, is_random_response, bot)
