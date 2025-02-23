@@ -1,6 +1,7 @@
-## 2. ProActiveDiscord Bot
+## ProActiveDiscord Bot
 
 A Discord bot that creates custom invite links and sends personalized welcome messages to new members when they join using those links.
+
 
 ### Features
 
@@ -9,23 +10,13 @@ A Discord bot that creates custom invite links and sends personalized welcome me
 - Sends personalized welcome messages
 - REST API endpoint for invite generation
 
+
 ### Prerequisites
 
 - Python 3.10+
 - Discord Bot Token
 - Discord Developer Portal Access
 
-### Installation
-
-1. Clone the repository
-2. Install dependencies:
-```bash
-pip install discord.py flask python-dotenv quart_cors quart
-```
-3. Create a `.env` file:
-```env
-DISCORD_TOKEN=your_bot_token_here
-```
 
 ### Discord Developer configuration
 
@@ -41,18 +32,32 @@ DISCORD_TOKEN=your_bot_token_here
    - View Channels
    
 
-1. Start ProActive Discord Bot
+### Installation
+
+1. Install dependencies:
+```bash
+pip install discord.py flask python-dotenv quart_cors quart
+```
+2. Create a `.env` file:
+```env
+DISCORD_TOKEN=your_bot_token_here
+```
+
+
+### Start Bot
 ```bash
 cd ./apps/automation_crews/ProActiveDiscord
 python flask_discord_server.py
 ```
 
-2. Generate invite via API:
+
+### Generate invite via API:
 ```bash
 curl -X POST http://localhost:5000/join-discord \
   -H "Content-Type: application/json" \
   -d '{"username": "user123", "server_name": "Your Server", "channel_name": "general", "user_id": "123"}'
 ```
+
 
 ### API Endpoint
 

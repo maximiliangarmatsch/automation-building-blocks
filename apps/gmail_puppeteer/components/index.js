@@ -2,9 +2,9 @@ dotenv.config();
 import { Client, IntentsBitField } from "discord.js";
 import dotenv from "dotenv";
 import OpenAI from "openai";
-import { loginGoogle_navigateToGmail } from "./components/puppeteer/login_automation.js";
-import { fetchEmailsAndAttachments } from "./components/puppeteer/automation_response.js";
-import { logoutGmail } from "./components/puppeteer/helper.js";
+import { loginGoogle_navigateToGmail } from "./puppeteer/login_automation.js";
+import { fetchEmailsAndAttachments } from "./puppeteer/automation_response.js";
+import { logoutGmail } from "./puppeteer/helper.js";
 
 // Create OpenAI object
 const openai = new OpenAI({ apiKey: process.env.API_KEY });
