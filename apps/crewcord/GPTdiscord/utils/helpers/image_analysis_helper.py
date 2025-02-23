@@ -56,7 +56,7 @@ async def analyze_image(base64_image, instructions):
 
 
 async def handle_image_attachments(message, is_mentioned):
-    valid_channel_ids = [int(cid) for cid in os.getenv("CHANNEL_IDS", "").split(",")]
+    valid_channel_ids = [int(cid) for cid in os.getenv("REGISTERED_CHANNEL_IDS", "").split(",")]
     if not (is_mentioned or message.channel.id in valid_channel_ids):
         return
 

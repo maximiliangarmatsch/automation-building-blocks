@@ -1,5 +1,5 @@
 # Automation Building Blocks
 
-- apps/automation_crews/README.md
-- apps/ProActiveDiscord/README.md
+- apps/crewcord/README.md
+- apps/discord_proactive/README.md
 - apps/cupid_ai/frontend/README.md

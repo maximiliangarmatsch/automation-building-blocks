@@ -48,14 +48,12 @@ brew install --cask xquartz
 ## Create .env file in .apps/automations_crews
 OPENAI_API_KEY = ""
 SERPAPI_API_KEY = ""
-CHANNEL_ID = ""
 BITWARDEN_EMAIL = ""
 BITWARDEN_PASSWORD = ""
 DISCORD_TOKEN = ""
 GROQ_API_KEY = ""
 HISTORYLENGTH=12
-CHANNEL_IDS=1233073621849866352 //"Garmatsch"-Server: "ai-testing"-Channel
-REGISTERED_CHANNEL_IDS = [1233073621849866352] //Garmatsch-Server: "ai-testing"
+REGISTERED_CHANNEL_IDS = [1233073621849866352] //Garmatsch-Server: "ai-testing"-Channel
 MAX_TOKENS=5000
 MAX_TOKENS_RANDOM=100
 MODEL_CHAT=gpt-4o-mini
@@ -67,7 +65,7 @@ python3 -m venv venv
        OR
 python -m venv venv
 source venv/bin/activate
-pip install -r apps/automation_crews/requirements.txt
+pip install -r apps/crewcord/requirements.txt
 ```
 
 
@@ -86,7 +84,7 @@ composio add googlesheets
 ## Start Discord-Server locally
 
 ```shell
-cd apps/automation_crews
+cd apps/crewcord
 
 [MAC] 
 python3 start_discord.py
@@ -144,7 +142,7 @@ Example PROJECT_DESCRIPTION: !dev_crew "An ecommerce website for drawings"
 ## Run Crews individually 
 ### 1. Personal Assistant Crew (and Setup Composio)
 ```shell
-cd ./apps/automation_crews
+cd ./apps/crewcord
 
 [Linux or macOS]
 chmod +x setup_composio.sh
@@ -159,7 +157,7 @@ python run_crew.py
 
 ### 2. Finance Crew
 ```shell
-cd ./apps/automation_crews/finance_crew
+cd ./apps/crewcord/finance_crew
 python3 run_crew.py
       OR
 python run_crew.py
@@ -169,9 +167,9 @@ python run_crew.py
 
 ### 3. Dev Crew
 ```shell
-cd apps/automation_crews/dev_crew
+cd apps/crewcord/dev_crew
 python app.py
 ```
 Example prompt "an ecommerce website for drawings"
-- Output directory is in `apps/automation_crews/dev_crew/generated_src`
+- Output directory is in `apps/crewcord/dev_crew/generated_src`
 - `allow_code_excecution` is activated in file "...". It allows crewAI to "test" code on the fly

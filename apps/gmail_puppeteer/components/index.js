@@ -35,7 +35,7 @@ client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
 
   // Only allow 1 Channel (will change in Production)
-  if (message.channel.id !== process.env.CHANNEL_ID) return;
+  if (message.channel.id !== process.env.CHANNEL_ID) return; // TODO required in .env
 
   // Show typing indicator
   const sendTypingInterval = setInterval(() => {

@@ -1,4 +1,4 @@
-## ProActiveDiscord Bot
+## Discord Proactive Bot
 
 A Discord bot that creates custom invite links and sends personalized welcome messages to new members when they join using those links.
 
@@ -46,7 +46,7 @@ DISCORD_TOKEN=your_bot_token_here
 
 ### Start Bot
 ```bash
-cd ./apps/automation_crews/ProActiveDiscord
+cd ./apps/discord_proactive
 python flask_discord_server.py
 ```
 
