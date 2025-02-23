@@ -26,8 +26,10 @@ bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
 
 setup_commands(bot, registered_channels_ids)
 
+
 def start_discord():
     bot.run(DISCORD_TOKEN)
+
 
 if __name__ == "__main__":
     observer = start_observer()
