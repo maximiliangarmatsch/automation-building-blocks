@@ -18,12 +18,6 @@ caption_model_processor = get_caption_model_processor(model_name="florence2", mo
 
 MARKDOWN = """
 # OmniParser for Pure Vision Based General GUI Agent 🔥
-<div>
-    <a href="https://arxiv.org/pdf/2408.00203">
-        <img src="https://img.shields.io/badge/arXiv-2408.00203-b31b1b.svg" alt="Arxiv" style="display:inline-block;">
-    </a>
-</div>
-
 OmniParser is a screen parsing tool to convert general GUI screen to structured elements. 
 """
 

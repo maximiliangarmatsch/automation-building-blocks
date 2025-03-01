@@ -41,5 +41,5 @@ rename weights\icon_caption icon_caption_florence
 ## Gradio Demo
 It,s just screenshot based icons detection demo.
 ```python
-python gradio_demo.py
+python image_icon_detection_demo.py
 ```
