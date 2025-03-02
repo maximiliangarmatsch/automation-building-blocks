@@ -173,3 +173,9 @@ python app.py
 Example prompt "an ecommerce website for drawings"
 - Output directory is in `apps/crewcord/dev_crew/generated_src`
 - `allow_code_excecution` is activated in file "...". It allows crewAI to "test" code on the fly
+
+
+# Other notes
+
+1. pytest: excluded folder:
+  --ignore=apps/dev_crew --ignore=apps/crewcord --ignore=tests
