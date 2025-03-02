@@ -9,7 +9,6 @@ limit-inference-results=100
 recursive=no
 suggestion-mode=yes
 unsafe-load-any-extension=no
-
 [BASIC]
 argument-naming-style=snake_case
 attr-naming-style=snake_case
@@ -140,7 +139,7 @@ check-str-concat-over-line-jumps=no
 
 [TYPECHECK]
 contextmanager-decorators=contextlib.contextmanager
-generated-members=
+generated-members=cv2.*
 ignore-none=yes
 ignore-on-opaque-inference=yes
 ignored-checks-for-mixins=no-member,
