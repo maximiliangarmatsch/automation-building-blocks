@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 from supervision.detection.core import Detections
 from supervision.draw.color import Color, ColorPalette
-from box_annotator_helper import get_optimal_label_pos
+from util.box_annotator_helper import get_optimal_label_pos
 
 
 class BoxAnnotator:

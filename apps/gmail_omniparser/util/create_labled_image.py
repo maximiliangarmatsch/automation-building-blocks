@@ -6,11 +6,11 @@ from PIL import Image
 import numpy as np
 import torch
 from torchvision.ops import box_convert
-from remove_overlap_object import remove_overlap_new
-from create_labled_image_helper import (predict_yolo, int_box_area,
+from util.remove_overlap_object import remove_overlap_new
+from util.create_labled_image_helper import (predict_yolo, int_box_area,
                                         get_parsed_content_icon_phi3v,
                                         get_parsed_content_icon)
-from utils import annotate
+from util.utils import annotate
 
 
 def get_som_labeled_img(image_source: Union[str, Image.Image],

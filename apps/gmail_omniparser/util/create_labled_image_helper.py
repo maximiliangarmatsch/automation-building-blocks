@@ -1,6 +1,6 @@
 import torch
 import cv2
-from utils import ToPILImage
+from torchvision.transforms import ToPILImage
 
 
 def predict_yolo(model, image, box_threshold, imgsz, scale_img,

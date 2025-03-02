@@ -117,4 +117,4 @@ def remove_overlap_new(boxes, iou_threshold, ocr_bbox=None):
                                                })
             else:
                 filtered_boxes.append(box1)
-    return filtered_boxes  # torch.tensor(filtered_boxes)
+    return filtered_boxes
