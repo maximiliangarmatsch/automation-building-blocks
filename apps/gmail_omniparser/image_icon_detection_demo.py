@@ -43,7 +43,7 @@ def process(
         'text_padding': max(int(3 * box_overlay_ratio), 1),
         'thickness': max(int(3 * box_overlay_ratio), 1),
     }
-    ocr_bbox_rslt, is_goal_filtered = check_ocr_box(
+    ocr_bbox_rslt, _ = check_ocr_box(
         image_save_path,
         display_img=False,
         output_bb_format='xyxy',
@@ -53,7 +53,7 @@ def process(
             'text_threshold': 0.9},
         use_paddleocr=use_paddleocr)
     text, ocr_bbox = ocr_bbox_rslt
-    dino_labled_img, label_coordinates, parsed_content_list = get_som_labeled_img(
+    dino_labled_img, _, parsed_content_list = get_som_labeled_img(
         image_save_path,
         yolo_model,
         BOX_TRESHOLD=box_threshold,

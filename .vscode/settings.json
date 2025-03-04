@@ -1,5 +1,5 @@
 {
-  "editor.defaultFormatter": "ms-python.black-formatter",
+  "editor.defaultFormatter": "SonarSource.sonarlint-vscode",
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter"
   },
@@ -10,5 +10,11 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "editor.formatOnSave": true,
-  "files.autoSave": "afterDelay"
+  "files.autoSave": "afterDelay",
+  "notebook.defaultFormatter": "SonarSource.sonarlint-vscode",
+  "sonarlint.connectedMode.project": {
+    "connectionId": "maximiliangarmatsch",
+    "projectKey": "maximiliangarmatsch_automation-building-blocks"
+  },
+  "sonarlint.pathToNodeExecutable": "C:/Program Files/nodejs/node.exe"
 }
